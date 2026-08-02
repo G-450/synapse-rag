@@ -1,45 +1,54 @@
-# Synapse RAG: Project & Architecture Overview
+# Synapse RAG: Project & Approach Overview
 
-This document provides a comprehensive, high-level explanation of the **Synapse RAG** project. It covers the core concepts, the dataset, and how all the technologies in our stack work together to create a powerful AI application.
+Synapse RAG is an intelligent question-answering application built for legal contracts. It allows users to ask plain-English questions about a specific contract, or compare information across a whole collection of contracts. The system guarantees that its answers are provably grounded in actual contract text, preventing LLM hallucination.
 
----
+## 1. Core Architecture
 
-## 1. What is this project?
-**Synapse RAG** is an intelligent web application designed to analyze and answer complex questions about legal contracts. Instead of relying on a standard AI that might hallucinate (make up facts), this application uses **Retrieval-Augmented Generation (RAG)** to guarantee that its answers are strictly based on the real legal documents we feed into it.
+The system is built on **Retrieval-Augmented Generation (RAG)**:
+1. **Ingestion**: Contracts are chunked, converted to vector embeddings, and stored.
+2. **Retrieval**: User queries are embedded, and semantic similarity search finds the most relevant passages.
+3. **Generation**: An LLM (powered by Groq) generates an answer strictly using the retrieved text, and will refuse to answer if the context does not support it.
 
-## 2. How Does RAG Work?
-LLMs (like ChatGPT or Gemini) are smart, but they don't know your specific private documents. **RAG (Retrieval-Augmented Generation)** solves this by giving the AI a "search engine" for your documents. 
+## 2. The Dataset: LegalBench-RAG
 
-Here is the three-step RAG process:
-1. **Ingestion (The Setup):** We take a massive document (like a 50-page legal contract), break it down into small, digestible paragraphs (chunks), and convert those chunks into mathematical representations called **vector embeddings**. These vectors are stored in a database.
-2. **Retrieval (The Search):** When a user asks a question (e.g., *"What is the termination clause?"*), the system converts that question into a vector and searches the database for the document chunks that are most mathematically similar to the question.
-3. **Generation (The Answer):** The system takes the retrieved paragraphs and sends them to the LLM along with the user's question, essentially saying: *"Answer the user's question, but ONLY use the information provided in these paragraphs."*
+Instead of generic text or the limited CUAD v1 dataset, this project uses **LegalBench-RAG**.
+This dataset provides expert-verified ground truth exact character spans across four distinct legal sub-corpora:
+- **CUAD**: Commercial contracts (clause types).
+- **ContractNLI**: NDAs (hypothesis checking).
+- **MAUD**: Merger agreements.
+- **PrivacyQA**: Privacy policies.
 
-## 3. The Dataset: CUAD v1
-To build and test this system, we are using the **Contract Understanding Atticus Dataset (CUAD v1)**. 
-- **What is it?** A massive, expert-annotated dataset of commercial legal contracts. It contains raw text files of contracts and thousands of labels pointing out specific legal clauses (like non-compete clauses, indemnification, etc.).
-- **How we use it:** We will use the raw text contracts to populate our vector database. We will use the annotations to test our AI and make sure it is retrieving and generating the correct legal answers.
+This guarantees we can evaluate accuracy against a true legal baseline.
 
-## 4. The Technology Stack
-Here is how every piece of technology we chose fits into the puzzle:
+## 3. Query Routing: Single vs. Multi-Document
 
-- **The Front-End & Back-End: Next.js**
-  Next.js is a React framework that allows us to build both the user interface (the front-end) and the API server (the back-end) in a single codebase. It will serve our highly-interactive, premium UI and handle the server-side logic of talking to the AI and database.
+Synapse RAG strictly separates two types of searches:
 
-- **Authentication: NextAuth.js**
-  We need to secure the application. NextAuth is an open-source library that handles user logins (passwords, Google, GitHub, etc.) completely for free. It will store user credentials securely in our database.
+### Single-Document Mode
+- **Use Case:** *"What is the termination clause in this agreement?"*
+- **Action:** Searches only within the specified document and grounds the answer locally.
 
-- **The Database: PostgreSQL + `pgvector`**
-  PostgreSQL is an enterprise-grade database. We need it to store standard relational data (like our NextAuth Users and Passwords). However, because we are building a RAG app, we also need to store those mathematical **vector embeddings**. By adding the `pgvector` extension to PostgreSQL, it gains the ability to perform high-speed similarity searches on vectors. This means we only need **one** database for everything.
+### Multi-Document (Fan-Out) Mode
+- **Use Case:** *"Which of these agreements have an uncapped liability clause?"*
+- **Action:** 
+  1. Searches each relevant document independently.
+  2. Generates an answer per document.
+  3. Combines the results into a single aggregated comparison (e.g., a table).
 
-- **The ORM: Prisma**
-  Prisma is a tool that sits between Next.js and PostgreSQL. Instead of writing raw, complex SQL queries, Prisma lets us interact with the database using simple, type-safe TypeScript code.
+*Blending chunks from unrelated documents into a single search often yields incorrect conclusions. Our fan-out approach solves this.*
 
-## 5. The User Journey (How it all flows)
-1. A user visits the app and logs in securely using **NextAuth**.
-2. Behind the scenes, our **Ingestion Script** has already processed the **CUAD v1** dataset, chunked it, and stored the vectors in **PostgreSQL**.
-3. The user types a question into the beautiful **Next.js** interface: *"Are there any non-compete agreements?"*
-4. Next.js converts that question into a vector embedding.
-5. Next.js queries **PostgreSQL (`pgvector`)** to find the top 5 most relevant chunks from the CUAD contracts.
-6. Next.js passes those 5 chunks to an LLM.
-7. The LLM generates a precise, accurate answer based purely on the contracts and streams it back to the user's screen.
+## 4. Evaluation Strategy
+
+To prove the system works, we measure performance in two independent stages:
+- **Retrieval Quality (LegalBench-RAG):** Measures precision, recall, and F1 score at the exact character span level to verify we retrieved the right text.
+- **Answer Quality (Ragas):** Evaluates faithfulness, answer relevancy, context precision, and context recall using an LLM-as-a-judge to ensure the generated answer faithfully represents the retrieved text without hallucinations.
+
+## 5. Technology Stack Summary
+
+- **Frontend & API**: Next.js App Router (TypeScript), Tailwind CSS, shadcn/ui.
+- **Database**: PostgreSQL with `pgvector`.
+- **ORM**: Prisma.
+- **Auth**: NextAuth.js.
+- **Embedding Model**: OpenAI `text-embedding-3-small` (or BGE/e5).
+- **Generation LLM**: Groq (LPU inference for high-speed multi-document parallel generation).
+- **Orchestration**: Custom TypeScript pipelines (no LangChain overhead).
