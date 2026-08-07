@@ -1,5 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import { generateEmbedding } from './embeddings';
+import { rankChunks } from './cross-encoder';
 
 export interface RetrievedChunk {
   id: string;
@@ -8,6 +9,7 @@ export interface RetrievedChunk {
   similarity: number;
   filename?: string;
   source_corpus?: string;
+  cross_score?: number;
 }
 
 export interface DocumentWithChunks {
@@ -25,9 +27,10 @@ const getSql = () => neon(process.env.DATABASE_URL!);
  */
 export async function retrieveChunks(
   query: string,
-  options: { documentId?: string; limit?: number } = {}
+  options: { documentId?: string; limit?: number; rerank?: boolean } = {}
 ): Promise<RetrievedChunk[]> {
-  const { documentId, limit = 5 } = options;
+  const { documentId, limit = 5, rerank = false } = options;
+  const fetchLimit = rerank ? Math.max(limit * 4, 20) : limit;
   const embeddingArray = await generateEmbedding(query);
   const embeddingString = JSON.stringify(embeddingArray);
   const sql = getSql();
@@ -45,7 +48,7 @@ export async function retrieveChunks(
       WHERE c.document_id = ${documentId}
         AND c.embedding IS NOT NULL
       ORDER BY c.embedding <=> ${embeddingString}::vector
-      LIMIT ${limit}
+      LIMIT ${fetchLimit}
     `;
   } else {
     // Global retrieval across all documents
@@ -57,8 +60,13 @@ export async function retrieveChunks(
       JOIN "Document" d ON d.id = c.document_id
       WHERE c.embedding IS NOT NULL
       ORDER BY c.embedding <=> ${embeddingString}::vector
-      LIMIT ${limit}
+      LIMIT ${fetchLimit}
     `;
+  }
+
+  if (rerank && chunks.length > 0) {
+    chunks = await rankChunks(query, chunks);
+    chunks = chunks.slice(0, limit);
   }
 
   return chunks;

@@ -1,6 +1,6 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# ========================================
+# Dependencies
+# ========================================
 /node_modules
 /.pnp
 .pnp.*
@@ -10,44 +10,88 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# ========================================
+# Next.js
+# ========================================
 /.next/
 /out/
-
-# production
 /build
 
-# misc
-.DS_Store
-*.pem
+# ========================================
+# Environment Variables
+# ========================================
+.env
+.env.*
+!.env.example
 
-# debug
+# ========================================
+# Prisma Generated Client
+# ========================================
+/src/generated/
+
+# ========================================
+# Data & Evaluation
+# ========================================
+/data/
+/eval-env/
+
+# ========================================
+# Python
+# ========================================
+/.venv/
+/venv/
+__pycache__/
+*.pyc
+
+# ========================================
+# OS Files
+# ========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ========================================
+# Editor / IDE Configs
+# ========================================
+/.claude/
+/.windsurf/
+/.agents/
+/scratch/
+*.swp
+*.swo
+*~
+
+# ========================================
+# Debug Logs
+# ========================================
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
+# ========================================
+# TypeScript
+# ========================================
 *.tsbuildinfo
 next-env.d.ts
 
-/src/generated/prisma
+# ========================================
+# Build & Deploy
+# ========================================
+.vercel
+*.pem
 
-# Data and python envs
-/data/
-/eval-env/
-/.venv/
-/venv/
-__pycache__/
-/.claude/
-/.windsurf/
-/scratch/
+# ========================================
+# Testing
+# ========================================
+/coverage
+
+# ========================================
+# Generated PDFs (keep the .md sources)
+# ========================================
+*.pdf
+
+# ========================================
+# Prisma CLI lock
+# ========================================
+skills-lock.json
