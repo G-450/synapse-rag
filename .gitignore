@@ -51,11 +51,15 @@ Thumbs.db
 Desktop.ini
 
 # ========================================
-# Editor / IDE Configs
+# Editor / IDE / AI Assistant Configs
 # ========================================
 /.claude/
 /.windsurf/
 /.agents/
+AGENTS.md
+CLAUDE.md
+CONTEXT.md
+PROJECT_OVERVIEW.md
 /scratch/
 *.swp
 *.swo
