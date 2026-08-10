@@ -1,0 +1,82 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma/client"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+model User {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  hashed_password String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model Document {
+  id             String           @id @default(uuid())
+  filename       String
+  title          String
+  category       String?
+  source_corpus  String
+  createdAt      DateTime         @default(now())
+  
+  chunks         Chunk[]
+  queryLogs      QueryLog[]       // relation for single-doc queries
+  answerCitations AnswerCitation[]
+}
+
+model Chunk {
+  id          String   @id @default(uuid())
+  document_id String
+  document    Document @relation(fields: [document_id], references: [id], onDelete: Cascade)
+  content     String
+  
+  // Vector embedding for pgvector. Dimensionality is 384 for Xenova/all-MiniLM-L6-v2
+  embedding   Unsupported("vector(384)")?
+
+  char_start  Int
+  char_end    Int
+
+  answerCitations AnswerCitation[]
+}
+
+model QueryLog {
+  id                 String   @id @default(uuid())
+  question           String
+  mode               String   // "single" or "multi"
+  documents_in_scope String[] // Array of document IDs in scope
+  timestamp          DateTime @default(now())
+
+  // Optional link to a primary document if single-mode
+  document_id        String?
+  document           Document? @relation(fields: [document_id], references: [id])
+  
+  answerCitations    AnswerCitation[]
+}
+
+model AnswerCitation {
+  id          String   @id @default(uuid())
+  query_id    String
+  query       QueryLog @relation(fields: [query_id], references: [id], onDelete: Cascade)
+  
+  document_id String
+  document    Document @relation(fields: [document_id], references: [id])
+  
+  chunk_id    String
+  chunk       Chunk    @relation(fields: [chunk_id], references: [id])
+  
+  answer_text String
+}
+
+model EvaluationRun {
+  id               String   @id @default(uuid())
+  run_id           String
+  config_snapshot  Json
+  metric_scores    Json
+  timestamp        DateTime @default(now())
+}
