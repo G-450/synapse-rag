@@ -99,3 +99,9 @@ next-env.d.ts
 # Prisma CLI lock
 # ========================================
 skills-lock.json
+
+# ========================================
+# Literature Survey
+# ========================================
+/literature_survey/
+/scripts/download_papers.py
