@@ -39,9 +39,11 @@
 # Python
 # ========================================
 /.venv/
-/venv/
+venv/
+python/venv/
 __pycache__/
 *.pyc
+qdrant_db/
 
 # ========================================
 # OS Files
@@ -105,4 +107,3 @@ skills-lock.json
 # ========================================
 /literature_survey/
 /scripts/download_papers.py
-

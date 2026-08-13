@@ -19,6 +19,7 @@ export default function Chat({
   onToggleCitations,
 }: ChatProps) {
   const { messages, sendMessage, status } = useChat({
+    // @ts-expect-error - body is not in UseChatOptions type but is passed to fetch
     body: documentId ? { documentId } : undefined,
     onFinish: async () => {
       // Fetch citations after response completes
