@@ -39,9 +39,11 @@
 # Python
 # ========================================
 /.venv/
-/venv/
+venv/
+python/venv/
 __pycache__/
 *.pyc
+qdrant_db/
 
 # ========================================
 # OS Files

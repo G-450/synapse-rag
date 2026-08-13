@@ -22,11 +22,6 @@ function getSimilarityColor(score: number): string {
   return 'var(--error)';
 }
 
-function getSimilarityLabel(score: number): string {
-  if (score >= 0.7) return 'High';
-  if (score >= 0.5) return 'Medium';
-  return 'Low';
-}
 
 export default function CitationPanel({
   citations,
@@ -121,10 +116,7 @@ export default function CitationPanel({
                   }}
                 >
                   <BarChart3 size={10} />
-                  {(citation.similarity * 100).toFixed(0)}%
-                  <span className="opacity-70">
-                    {getSimilarityLabel(citation.similarity)}
-                  </span>
+                  {(citation.similarity * 100).toFixed(0)}% Match
                 </div>
               </div>
 
