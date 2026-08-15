@@ -1,62 +1,60 @@
 """
 Chat API route — POST /api/python/chat
-Conversational RAG with chat history, implementing the AI SDK Data Stream Protocol.
+Conversational RAG with stateless AI SDK Data Stream Protocol.
 """
 
 import json
-import os
+from typing import Any
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough, RunnableLambda
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.chat_history import InMemoryChatMessageHistory
 
 from app.rag import (
     retrieve_chunks,
-    retriever,
-    format_doc,
-    llm,
+    fan_out_retrieve,
+    format_context,
+    format_fan_out_context,
     SYSTEM_PROMPT,
-    get_session_history,
-    conversational_rag_chain,
+    get_llm,
 )
 
 router = APIRouter()
 
-
-from typing import Any
 
 class Message(BaseModel):
     role: str
     content: Any = None
     parts: Any = None
 
+
 class ChatRequest(BaseModel):
     messages: list[Message]
     documentId: str | None = None
-    sessionId: str | None = None
+
+
+def _extract_message_content(m: Message) -> str:
+    """Extract plain text string from message content or AI SDK parts."""
+    if isinstance(m.content, str):
+        return m.content
+    elif isinstance(m.content, list):
+        return "".join(
+            c.get("text", "") for c in m.content if isinstance(c, dict) and c.get("type") == "text"
+        )
+    elif isinstance(m.parts, list):
+        return "".join(
+            p.get("text", "") for p in m.parts if isinstance(p, dict) and p.get("type") == "text"
+        )
+    return ""
+
 
 def _extract_query(messages: list[Message]) -> str:
-    """Get the text of the last user message."""
-    if not messages:
-        return ""
-    latest = messages[-1]
-
-    # Handle standard content string
-    if isinstance(latest.content, str):
-        return latest.content
-    # Handle content array
-    elif isinstance(latest.content, list):
-        return "".join(c.get("text", "") for c in latest.content if isinstance(c, dict) and c.get("type") == "text")
-    # Handle AI SDK v4 parts array
-    elif isinstance(latest.parts, list):
-        return "".join(p.get("text", "") for p in latest.parts if isinstance(p, dict) and p.get("type") == "text")
-    
+    """Get the text of the latest user message."""
+    for m in reversed(messages):
+        if m.role == "user":
+            content = _extract_message_content(m)
+            if content.strip():
+                return content
     return ""
 
 
@@ -75,7 +73,7 @@ async def _ai_sdk_stream(langchain_stream, citations: list[dict]):
     citations_payload = json.dumps(citations, default=str)
 
     async for chunk in langchain_stream:
-        # chunk is an AIMessageChunk
+        # chunk is an AIMessageChunk or string
         token = ""
         if hasattr(chunk, "content"):
             token = chunk.content
@@ -106,34 +104,66 @@ async def chat(body: ChatRequest):
     if not user_query:
         raise HTTPException(status_code=400, detail="Query is empty")
 
-    # Use a session ID for chat history (from request, or default)
-    session_id = body.sessionId or "default"
-
-    # Retrieve chunks for citations (separate from the chain's internal retrieval)
+    # Scoped retrieval vs multi-document fan-out retrieval
     citations: list[dict] = []
     if body.documentId:
         chunks = retrieve_chunks(user_query, document_id=body.documentId, limit=5)
+        context_text = format_context(chunks)
+        citations = [
+            {
+                "chunk_id": c["id"],
+                "document_id": c["document_id"],
+                "filename": c.get("filename", ""),
+                "content": c["content"],
+                "similarity": c.get("similarity", 0),
+            }
+            for c in chunks
+        ]
     else:
-        chunks = retrieve_chunks(user_query, limit=5)
+        doc_groups = fan_out_retrieve(user_query, top_docs=3, chunks_per_doc=3)
+        context_text = format_fan_out_context(doc_groups)
+        citations = [
+            {
+                "chunk_id": c["id"],
+                "document_id": c["document_id"],
+                "filename": group["filename"],
+                "content": c["content"],
+                "similarity": c.get("similarity", 0),
+            }
+            for group in doc_groups
+            for c in group["chunks"]
+        ]
 
-    citations = [
-        {
-            "chunk_id": c["id"],
-            "document_id": c["document_id"],
-            "filename": c.get("filename", ""),
-            "content": c["content"],
-            "similarity": c.get("similarity", 0),
-        }
-        for c in chunks
-    ]
-
-    # Stream using the conversational RAG chain
-    config = {"configurable": {"session_id": session_id}}
-
-    langchain_stream = conversational_rag_chain.astream(
-        {"input": user_query},
-        config=config,
+    augmented_system = (
+        SYSTEM_PROMPT
+        + "\n\n=== CONTEXT (Retrieved Contract Excerpts) ===\n\n"
+        + context_text
     )
+
+    # Reconstruct message history for LangChain dynamically from frontend payload
+    model_messages = [SystemMessage(content=augmented_system)]
+    for m in body.messages:
+        text = _extract_message_content(m)
+        if not text:
+            continue
+
+        if m.role == "user":
+            model_messages.append(HumanMessage(content=text))
+        elif m.role == "assistant":
+            model_messages.append(AIMessage(content=text))
+        elif m.role == "system":
+            model_messages.append(SystemMessage(content=text))
+        else:
+            model_messages.append(HumanMessage(content=text))
+
+    # Initialize LLM lazily
+    try:
+        llm = get_llm(streaming=True)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # Stream using async generator
+    langchain_stream = llm.astream(model_messages)
 
     return StreamingResponse(
         _ai_sdk_stream(langchain_stream, citations),
