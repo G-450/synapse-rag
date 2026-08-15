@@ -1,14 +1,13 @@
 """
 Chat API route — POST /api/python/chat
-RAG retrieval + LangChain ChatGroq streaming, implementing the AI SDK Data Stream Protocol.
+Conversational RAG with stateless AI SDK Data Stream Protocol.
 """
 
 import json
-import os
+from typing import Any
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from app.rag import (
@@ -16,27 +15,17 @@ from app.rag import (
     fan_out_retrieve,
     format_context,
     format_fan_out_context,
+    SYSTEM_PROMPT,
+    get_llm,
 )
 
 router = APIRouter()
 
-SYSTEM_PROMPT = """You are Synapse RAG, an expert legal contract analyst.
-You will be given relevant excerpts from legal contracts (the "Context") and a user question.
-
-CRITICAL RULES:
-1. Answer ONLY using information found in the Context. Do NOT use outside knowledge.
-2. If the Context does not contain the information needed, respond with: "I cannot answer this question based on the provided contract excerpts."
-3. Be precise. Quote exact clauses or passages when relevant, wrapping quotes in quotation marks.
-4. When citing information, mention the source document name.
-5. For multi-document queries, structure your response clearly by document.
-6. Use professional legal analysis tone."""
-
-
-from typing import Any
 
 class Message(BaseModel):
     role: str
-    content: Any
+    content: Any = None
+    parts: Any = None
 
 
 class ChatRequest(BaseModel):
@@ -44,16 +33,28 @@ class ChatRequest(BaseModel):
     documentId: str | None = None
 
 
+def _extract_message_content(m: Message) -> str:
+    """Extract plain text string from message content or AI SDK parts."""
+    if isinstance(m.content, str):
+        return m.content
+    elif isinstance(m.content, list):
+        return "".join(
+            c.get("text", "") for c in m.content if isinstance(c, dict) and c.get("type") == "text"
+        )
+    elif isinstance(m.parts, list):
+        return "".join(
+            p.get("text", "") for p in m.parts if isinstance(p, dict) and p.get("type") == "text"
+        )
+    return ""
+
+
 def _extract_query(messages: list[Message]) -> str:
-    """Get the text of the last user message."""
-    if not messages:
-        return ""
-    latest = messages[-1]
-    
-    if isinstance(latest.content, str):
-        return latest.content
-    elif isinstance(latest.content, list):
-        return "".join(c.get("text", "") for c in latest.content if isinstance(c, dict) and c.get("type") == "text")
+    """Get the text of the latest user message."""
+    for m in reversed(messages):
+        if m.role == "user":
+            content = _extract_message_content(m)
+            if content.strip():
+                return content
     return ""
 
 
@@ -72,9 +73,15 @@ async def _ai_sdk_stream(langchain_stream, citations: list[dict]):
     citations_payload = json.dumps(citations, default=str)
 
     async for chunk in langchain_stream:
-        # chunk is an AIMessageChunk
-        if chunk.content:
-            encoded = json.dumps(chunk.content)
+        # chunk is an AIMessageChunk or string
+        token = ""
+        if hasattr(chunk, "content"):
+            token = chunk.content
+        elif isinstance(chunk, str):
+            token = chunk
+
+        if token:
+            encoded = json.dumps(token)
             yield f"0:{encoded}\n"
 
             # Send citations as a data event right after the first text token
@@ -97,7 +104,7 @@ async def chat(body: ChatRequest):
     if not user_query:
         raise HTTPException(status_code=400, detail="Query is empty")
 
-    # Retrieve context
+    # Scoped retrieval vs multi-document fan-out retrieval
     citations: list[dict] = []
     if body.documentId:
         chunks = retrieve_chunks(user_query, document_id=body.documentId, limit=5)
@@ -133,28 +140,29 @@ async def chat(body: ChatRequest):
         + context_text
     )
 
-    # Build model messages
+    # Reconstruct message history for LangChain dynamically from frontend payload
     model_messages = [SystemMessage(content=augmented_system)]
     for m in body.messages:
-        content_text = m.content if isinstance(m.content, str) else "".join(c.get("text", "") for c in m.content if isinstance(c, dict) and c.get("type") == "text")
+        text = _extract_message_content(m)
+        if not text:
+            continue
+
         if m.role == "user":
-            model_messages.append(HumanMessage(content=content_text))
+            model_messages.append(HumanMessage(content=text))
         elif m.role == "assistant":
-            model_messages.append(AIMessage(content=content_text))
+            model_messages.append(AIMessage(content=text))
+        elif m.role == "system":
+            model_messages.append(SystemMessage(content=text))
         else:
-            # Fallback
-            model_messages.append(HumanMessage(content=content_text))
+            model_messages.append(HumanMessage(content=text))
 
-    # Initialize ChatGroq
-    llm = ChatGroq(
-        model="llama-3.1-8b-instant",
-        api_key=os.environ["GROQ_API_KEY"],
-        temperature=0.2,
-        max_tokens=2048,
-        streaming=True,
-    )
+    # Initialize LLM lazily
+    try:
+        llm = get_llm(streaming=True)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-    # We use astream() for async streaming with FastAPI
+    # Stream using async generator
     langchain_stream = llm.astream(model_messages)
 
     return StreamingResponse(
