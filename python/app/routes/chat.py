@@ -1,6 +1,6 @@
 """
 Chat API route — POST /api/python/chat
-RAG retrieval + LangChain ChatGroq streaming, implementing the AI SDK Data Stream Protocol.
+Conversational RAG with chat history, implementing the AI SDK Data Stream Protocol.
 """
 
 import json
@@ -10,50 +10,53 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.chat_history import InMemoryChatMessageHistory
 
 from app.rag import (
     retrieve_chunks,
-    fan_out_retrieve,
-    format_context,
-    format_fan_out_context,
+    retriever,
+    format_doc,
+    llm,
+    SYSTEM_PROMPT,
+    get_session_history,
+    conversational_rag_chain,
 )
 
 router = APIRouter()
-
-SYSTEM_PROMPT = """You are Synapse RAG, an expert legal contract analyst.
-You will be given relevant excerpts from legal contracts (the "Context") and a user question.
-
-CRITICAL RULES:
-1. Answer ONLY using information found in the Context. Do NOT use outside knowledge.
-2. If the Context does not contain the information needed, respond with: "I cannot answer this question based on the provided contract excerpts."
-3. Be precise. Quote exact clauses or passages when relevant, wrapping quotes in quotation marks.
-4. When citing information, mention the source document name.
-5. For multi-document queries, structure your response clearly by document.
-6. Use professional legal analysis tone."""
 
 
 from typing import Any
 
 class Message(BaseModel):
     role: str
-    content: Any
-
+    content: Any = None
+    parts: Any = None
 
 class ChatRequest(BaseModel):
     messages: list[Message]
     documentId: str | None = None
-
+    sessionId: str | None = None
 
 def _extract_query(messages: list[Message]) -> str:
     """Get the text of the last user message."""
     if not messages:
         return ""
     latest = messages[-1]
-    
+
+    # Handle standard content string
     if isinstance(latest.content, str):
         return latest.content
+    # Handle content array
     elif isinstance(latest.content, list):
         return "".join(c.get("text", "") for c in latest.content if isinstance(c, dict) and c.get("type") == "text")
+    # Handle AI SDK v4 parts array
+    elif isinstance(latest.parts, list):
+        return "".join(p.get("text", "") for p in latest.parts if isinstance(p, dict) and p.get("type") == "text")
+    
     return ""
 
 
@@ -73,8 +76,14 @@ async def _ai_sdk_stream(langchain_stream, citations: list[dict]):
 
     async for chunk in langchain_stream:
         # chunk is an AIMessageChunk
-        if chunk.content:
-            encoded = json.dumps(chunk.content)
+        token = ""
+        if hasattr(chunk, "content"):
+            token = chunk.content
+        elif isinstance(chunk, str):
+            token = chunk
+
+        if token:
+            encoded = json.dumps(token)
             yield f"0:{encoded}\n"
 
             # Send citations as a data event right after the first text token
@@ -97,65 +106,34 @@ async def chat(body: ChatRequest):
     if not user_query:
         raise HTTPException(status_code=400, detail="Query is empty")
 
-    # Retrieve context
+    # Use a session ID for chat history (from request, or default)
+    session_id = body.sessionId or "default"
+
+    # Retrieve chunks for citations (separate from the chain's internal retrieval)
     citations: list[dict] = []
     if body.documentId:
         chunks = retrieve_chunks(user_query, document_id=body.documentId, limit=5)
-        context_text = format_context(chunks)
-        citations = [
-            {
-                "chunk_id": c["id"],
-                "document_id": c["document_id"],
-                "filename": c.get("filename", ""),
-                "content": c["content"],
-                "similarity": c.get("similarity", 0),
-            }
-            for c in chunks
-        ]
     else:
-        doc_groups = fan_out_retrieve(user_query, top_docs=3, chunks_per_doc=3)
-        context_text = format_fan_out_context(doc_groups)
-        citations = [
-            {
-                "chunk_id": c["id"],
-                "document_id": c["document_id"],
-                "filename": group["filename"],
-                "content": c["content"],
-                "similarity": c.get("similarity", 0),
-            }
-            for group in doc_groups
-            for c in group["chunks"]
-        ]
+        chunks = retrieve_chunks(user_query, limit=5)
 
-    augmented_system = (
-        SYSTEM_PROMPT
-        + "\n\n=== CONTEXT (Retrieved Contract Excerpts) ===\n\n"
-        + context_text
+    citations = [
+        {
+            "chunk_id": c["id"],
+            "document_id": c["document_id"],
+            "filename": c.get("filename", ""),
+            "content": c["content"],
+            "similarity": c.get("similarity", 0),
+        }
+        for c in chunks
+    ]
+
+    # Stream using the conversational RAG chain
+    config = {"configurable": {"session_id": session_id}}
+
+    langchain_stream = conversational_rag_chain.astream(
+        {"input": user_query},
+        config=config,
     )
-
-    # Build model messages
-    model_messages = [SystemMessage(content=augmented_system)]
-    for m in body.messages:
-        content_text = m.content if isinstance(m.content, str) else "".join(c.get("text", "") for c in m.content if isinstance(c, dict) and c.get("type") == "text")
-        if m.role == "user":
-            model_messages.append(HumanMessage(content=content_text))
-        elif m.role == "assistant":
-            model_messages.append(AIMessage(content=content_text))
-        else:
-            # Fallback
-            model_messages.append(HumanMessage(content=content_text))
-
-    # Initialize ChatGroq
-    llm = ChatGroq(
-        model="llama-3.1-8b-instant",
-        api_key=os.environ["GROQ_API_KEY"],
-        temperature=0.2,
-        max_tokens=2048,
-        streaming=True,
-    )
-
-    # We use astream() for async streaming with FastAPI
-    langchain_stream = llm.astream(model_messages)
 
     return StreamingResponse(
         _ai_sdk_stream(langchain_stream, citations),

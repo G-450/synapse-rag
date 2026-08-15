@@ -15,10 +15,9 @@ def main():
     split = 'train' if 'train' in ds else list(ds.keys())[0]
     
     documents = []
+    
     for i, row in enumerate(ds[split]):
-        if i >= 50: # Limit to 50 for quick prototyping
-            break
-        
+        # Removed limit to load the entire dataset
         doc_text = row.get('text', row.get('document', row.get('content', str(row))))
         doc_id = row.get('id', row.get('doc_id', f"doc_{i}"))
         
