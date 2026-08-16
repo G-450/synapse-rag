@@ -753,6 +753,13 @@ The evaluation reveals both strengths and areas for improvement:
 - The precision of 20.4% indicates that chunks often contain more text than just the answer span. Finer-grained chunking strategies could improve precision.
 - The vocabulary gap between user queries (informal, short) and contract text (formal, verbose) is the primary challenge. Techniques like query expansion or Hypothetical Document Embeddings (HyDE) could bridge this gap.
 
+### 10.4 Advanced Evaluation Suites (LLM-as-a-Judge) <a name="104-advanced-eval"></a>
+
+Beyond basic precision and recall, Synapse RAG employs automated LLM-as-a-Judge scripts to measure real-world reliability:
+
+1. **Faithfulness Evaluation** (`evaluate_faithfulness.py`): An LLM acts as an impartial judge to score whether our final generated answer is completely supported by the retrieved citations. If the system invents a detail not present in the citations, it fails the faithfulness check. This provides a strict, automated **Hallucination Rate**.
+2. **Multi-Document Benchmark** (`evaluate_multidoc.py`): Tests the system's ability to answer complex questions that require synthesizing information across multiple different contracts (e.g., comparing termination clauses between two NDAs), measuring **Citation Diversity** and **Synthesis Accuracy**.
+
 ---
 
 ## 11. The User Interface <a name="11-user-interface"></a>

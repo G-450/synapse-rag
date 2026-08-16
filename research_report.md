@@ -824,6 +824,17 @@ The precision-recall gap (Precision: 20.4% vs Recall: 60.3%) is explained by the
 2. **Top-$k$ aggregation**: Concatenating 5 chunks (~5000 characters total) further dilutes precision when the ground-truth span is short.
 3. **Semantic vs. lexical matching**: The dense encoder excels at semantic similarity but cannot perform exact entity matching, causing failures on entity-specific queries.
 
+### 9.6 LLM-as-a-Judge Faithfulness & Multi-Document Evaluation
+
+To address key research gaps in standard RAG literature, Synapse RAG incorporates two automated evaluation harnesses utilizing an "LLM-as-a-Judge" methodology:
+
+1. **End-to-End Faithfulness Evaluation**: Measures whether the LLM's final answer is strictly supported by the retrieved text, eliminating hallucination. This suite (`scripts/evaluate_faithfulness.py`) captures:
+   - **Retrieval Hit Rate**: Presence of the ground truth document in citations.
+   - **Answer Accuracy**: Alignment with the LegalBench ground truth answer.
+   - **Faithfulness Score**: A strict binary score indicating if the generated answer relies exclusively on provided context without introducing parametric knowledge.
+
+2. **Multi-Document Reasoning Benchmark**: Standard LegalBench queries focus on single documents. To validate our `fan_out_retrieve` logic, the system is tested against complex synthesized queries (e.g., comparing clauses across multiple contracts). The multi-document suite (`scripts/evaluate_multidoc.py`) measures **Citation Diversity** and **Synthesis Accuracy**.
+
 ---
 
 ## 10. Discussion
