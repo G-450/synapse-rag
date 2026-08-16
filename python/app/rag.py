@@ -177,43 +177,59 @@ def fan_out_retrieve(
 # Context Formatting & Prompts
 # ---------------------------------------------------------------------------
 
-SYSTEM_PROMPT = """You are Synapse RAG, an expert legal contract analyst.
-You will be given relevant excerpts from legal contracts (the "Context") and a user question.
+SYSTEM_PROMPT = """You are Synapse RAG, an expert legal contract analyst specializing in corporate M&A agreements, commercial contracts, and regulatory filings.
 
-CRITICAL RULES:
-1. Answer ONLY using information found in the Context. Do NOT use outside knowledge.
-2. If the Context does not contain the information needed, respond with: "I cannot answer this question based on the provided contract excerpts."
-3. Be precise. Quote exact clauses or passages when relevant, wrapping quotes in quotation marks.
-4. When citing information, mention the source document name.
-5. For multi-document queries, structure your response clearly by document.
-6. Use professional legal analysis tone."""
+Your primary directive is to provide rigorous, accurate, and completely grounded legal analysis based EXCLUSIVELY on the provided contract excerpts.
+
+CORE OPERATING PRINCIPLES:
+1. STRICT FACTUAL GROUNDING:
+   - Base your answer ONLY on the provided Context excerpts.
+   - Do NOT assume, extrapolate, or introduce outside legal terms or clauses not present in the excerpts.
+   - If the Context does not contain the necessary information to answer the question, state clearly: "I cannot answer this question based on the provided contract excerpts."
+
+2. PRECISE LEGAL CITATION & QUOTATION:
+   - Directly cite the specific section numbers, article headings, and document names whenever available (e.g., "Under Section 6.2(a) of [Document]...").
+   - Quote operative contractual language verbatim using quotation marks for key definitions, conditions, thresholds, and covenants.
+
+3. STRUCTURED & THOROUGH ANALYSIS:
+   - Provide a direct answer upfront.
+   - Break down complex multi-part clauses (e.g., conditions, exceptions, carve-outs, triggers) using clear bullet points or numbered lists.
+   - For multi-document comparisons, contrast the terms agreement-by-agreement, highlighting material differences in definitions, liability caps, governing laws, or closing conditions.
+
+4. PROFESSIONAL TONE:
+   - Maintain an objective, authoritative legal counsel advisory tone."""
 
 
 def format_context(chunks: list[dict]) -> str:
-    """Format retrieved chunks into a context string for the LLM prompt."""
+    """Format retrieved chunks into a clean, structured context string for the LLM prompt."""
+    if not chunks:
+        return "[NO RELEVANT CONTRACT EXCERPTS FOUND]"
     parts = []
-    for chunk in chunks:
-        source = chunk.get("filename") or chunk.get("document_id", "")
+    for i, chunk in enumerate(chunks, 1):
+        source = chunk.get("filename") or chunk.get("document_id", "Unknown Document")
         relevance = float(chunk.get("similarity", 0))
         parts.append(
-            f"[Source: {source} | Score: {relevance:.3f}]\n{chunk['content']}"
+            f"--- [Excerpt {i} | Document: {source} | Relevance Score: {relevance:.3f}] ---\n{chunk['content'].strip()}"
         )
-    return "\n\n---\n\n".join(parts)
+    return "\n\n".join(parts)
 
 
 def format_fan_out_context(doc_groups: list[dict]) -> str:
-    """Format fan-out results grouped by document."""
+    """Format fan-out multi-document results grouped distinctly by contract."""
+    if not doc_groups:
+        return "[NO RELEVANT CONTRACT EXCERPTS FOUND]"
     sections = []
     for group in doc_groups:
-        header = f"=== Document: {group['filename']} ({group['source_corpus']}) ==="
+        corpus = group.get("source_corpus", "legalbench-rag")
+        header = f"================================================================================\n=== CONTRACT DOCUMENT: {group['filename']} ({corpus}) ===\n================================================================================"
         chunk_texts = []
-        for i, chunk in enumerate(group["chunks"], 1):
+        for i, chunk in enumerate(group.get("chunks", []), 1):
             relevance = float(chunk.get("similarity", 0))
             chunk_texts.append(
-                f"[Snippet {i} | Score: {relevance:.3f}]\n{chunk['content']}"
+                f"[Excerpt {i} | Relevance: {relevance:.3f}]:\n{chunk['content'].strip()}"
             )
         sections.append(header + "\n\n" + "\n\n".join(chunk_texts))
-    return ("\n\n" + "=" * 60 + "\n\n").join(sections)
+    return "\n\n".join(sections)
 
 
 # ---------------------------------------------------------------------------
