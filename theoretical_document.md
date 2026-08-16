@@ -1,5 +1,13 @@
 # Synapse RAG: A Complete Theoretical Explanation
 
+> [!NOTE]
+> **V2 Architecture Update**: Since this document was originally drafted, the Synapse RAG system has been upgraded with several key features:
+> - **Vector Database Migration**: The system now utilizes **Qdrant** (`qdrant_client`) for vector storage and similarity search instead of pgvector, providing enhanced local performance and Python-native integration via LangChain.
+> - **Advanced User Interface**: A new Glassmorphism dark-mode UI built with Tailwind CSS v4 and Framer Motion.
+> - **Real-Time Streaming & Citations**: Utilizing the Vercel AI SDK Data Stream Protocol, the LLM (`llama-3.1-8b-instant` via Groq) now streams answers in real-time, accompanied by verifiable, interactive citation panels.
+> 
+> *The fundamental theoretical concepts regarding embeddings, HNSW, bi-encoders, and cross-encoders described below remain fully applicable to the new architecture.*
+
 ## How Every Process Works — From Raw Contracts to Grounded Legal Answers
 
 ---
