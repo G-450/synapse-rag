@@ -755,10 +755,10 @@ The evaluation reveals both strengths and areas for improvement:
 
 ### 10.4 Advanced Evaluation Suites (LLM-as-a-Judge) <a name="104-advanced-eval"></a>
 
-Beyond basic precision and recall, Synapse RAG employs automated LLM-as-a-Judge scripts to measure real-world reliability:
+Beyond basic precision and recall, Synapse RAG employs automated LLM-as-a-Judge scripts to address two major research gaps identified in recent literature (e.g., *Magesh et al., 2024*; *Peng et al., 2024*): the inability of standard metrics to capture end-to-end hallucination, and the failure of traditional RAG to handle multi-document reasoning.
 
-1. **Faithfulness Evaluation** (`evaluate_faithfulness.py`): An LLM acts as an impartial judge to score whether our final generated answer is completely supported by the retrieved citations. If the system invents a detail not present in the citations, it fails the faithfulness check. This provides a strict, automated **Hallucination Rate**.
-2. **Multi-Document Benchmark** (`evaluate_multidoc.py`): Tests the system's ability to answer complex questions that require synthesizing information across multiple different contracts (e.g., comparing termination clauses between two NDAs), measuring **Citation Diversity** and **Synthesis Accuracy**.
+1. **Faithfulness Evaluation** (`evaluate_faithfulness.py`): Addressing the "End-to-End Evaluation Gap" (noted by *Pipitone & Alami (2024)* and *Brown et al. (2025)*), an LLM acts as an impartial judge to score whether our final generated answer is completely supported by the retrieved citations. If the system invents a detail not present in the citations, it fails the faithfulness check. This provides a strict, automated **Hallucination Rate**.
+2. **Multi-Document Benchmark** (`evaluate_multidoc.py`): Addressing the "Relational Reasoning Gap" (noted by *Li et al. (2025)* and *Kalra et al. (2024)*), this script tests the system's ability to answer complex questions that require synthesizing information across multiple different contracts (e.g., comparing termination clauses between two NDAs), measuring **Citation Diversity** and **Synthesis Accuracy** via our novel `fan_out_retrieve` architecture.
 
 ---
 

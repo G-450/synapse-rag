@@ -181,10 +181,10 @@ Synapse RAG was built against the **LegalBench-RAG** corpus, a curated dataset f
 **Performance Metrics:**
 We evaluate retrieval success using Document Retrieval Match (DRM) and character-span Precision/Recall. By employing the Cross-Encoder re-ranker, the system achieves significant improvements in exact passage recall, establishing a robust baseline for legal domain LLM adoption.
 
-**Advanced LLM-as-a-Judge Evaluation Suites:**
-To ensure strict adherence to safety and faithfulness in the legal domain, Synapse RAG includes two specialized automated evaluation scripts:
-- **End-to-End Faithfulness Evaluation (`scripts/evaluate_faithfulness.py`)**: Tests whether the LLM's final generated answer is strictly supported by the retrieved citations without relying on outside knowledge. It calculates Retrieval Hit Rate, Answer Accuracy, and a strict Faithfulness Score (Hallucination Rate).
-- **Multi-Document Reasoning Benchmark (`scripts/evaluate_multidoc.py`)**: Tests the system's `fan_out_retrieve` logic by issuing complex queries that require synthesizing information across multiple contracts, measuring Citation Diversity and Synthesis Accuracy.
+**Novelty & Advanced Evaluation (LLM-as-a-Judge):**
+Synapse RAG explicitly addresses two major gaps identified in 2024-2025 RAG literature (such as the inability to detect hallucinations end-to-end, and failures in multi-document reasoning highlighted by *Magesh et al.* and *Peng et al.*):
+- **End-to-End Faithfulness Evaluation (`scripts/evaluate_faithfulness.py`)**: Addresses the evaluation gap noted by *Pipitone & Alami (2024)* and *Brown et al. (2025)* by testing whether the LLM's final generated answer is strictly supported by the retrieved citations without relying on outside knowledge. It calculates Retrieval Hit Rate, Answer Accuracy, and a strict Faithfulness Score (Hallucination Rate).
+- **Multi-Document Reasoning Benchmark (`scripts/evaluate_multidoc.py`)**: Addresses the relational reasoning gap noted by *Li et al. (2025)* and *Kalra et al. (2024)* by testing the system's lightweight `fan_out_retrieve` logic against complex queries requiring cross-contract synthesis, measuring Citation Diversity and Synthesis Accuracy as a performant alternative to expensive GraphRAG approaches.
 
 ---
 

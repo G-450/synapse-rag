@@ -31,7 +31,29 @@ This paper makes the following contributions:
 
 4. **Domain-Specific Evaluation**: Quantitative retrieval performance metrics (Precision, Recall, F1, Document Retrieval Match) on the LegalBench-RAG corpus, providing a reproducible baseline for legal domain RAG systems.
 
-### 1.3 Paper Organization
+### 1.3 Research Gaps and Novelty
+
+The architectural improvements in Synapse RAG are driven by two critical gaps identified in recent RAG literature:
+
+**1. The Faithfulness & End-to-End Evaluation Gap**
+Recent literature emphasizes that while the industry excels at measuring isolated retrieval accuracy, standard evaluation frameworks fail to measure whether the LLM's final answer is actually grounded and free of hallucinations. 
+- **Magesh et al. (2024)** in *Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools* found that current legal RAG tools still hallucinate 17% to 33% of the time, highlighting that standard RAG architectures do not inherently eliminate hallucinations.
+- **Pipitone & Alami (2024)** in their introduction of *LegalBench-RAG* highlighted that the main gap prior to their benchmark was that evaluation was purely retrieval-specific (snippet level), lacking a joint retrieval-generation validation step.
+- **Brown et al. (2025)** pointed out that the field lacks holistic benchmarks that combine quality (faithfulness), latency, cost, and safety into a single metric.
+- **Amugongo et al. (2025)**, in a comprehensive healthcare review, echoed this sentiment by stating that systems aggressively optimize retrieval details but lack standard evaluation metrics for generative safety and ethics.
+
+*Synapse RAG Novelty*: To bridge this gap, Synapse RAG introduces a specialized LLM-as-a-Judge End-to-End Faithfulness Evaluation suite (`scripts/evaluate_faithfulness.py`). This strictly penalizes ungrounded generation and calculates an explicit Hallucination Rate, ensuring outputs are directly tied to the retrieved legal citations.
+
+**2. The Multi-Document & Relational Reasoning Gap**
+Standard RAG systems struggle severely when user queries require connecting the dots across multiple documents or mapping complex relationships, often overwhelming the context window with redundant snippets.
+- **Peng et al. (2024)** in their *GraphRAG Survey* identified that standard RAG misses relationships and global structure, wasting context window space on redundant snippets instead of synthesizing knowledge across documents.
+- **Li et al. (2025)** in *LexRAG* noted that existing systems are weak on multi-turn legal consultation, topic shifts, and complex legal reasoning over extensive dialogue context.
+- **Kalra et al. (2024)** in *HyPA-RAG* argued that static RAG pipelines lack query-adaptive retrieval, causing them to struggle with noisy context and missing content when dealing with complex queries.
+- **Wu et al. (2025)** in *MedGraphRAG* showed that while Graph RAG methods improve multi-hop reasoning, they introduce massive latency and cost issues.
+
+*Synapse RAG Novelty*: To address this without the latency overhead of Graph RAG, Synapse RAG implements a lightweight `fan_out_retrieve` methodology evaluated by a custom Multi-Document Reasoning Benchmark (`scripts/evaluate_multidoc.py`). This ensures high citation diversity and synthesis accuracy when performing comparative analysis across multiple legal contracts.
+
+### 1.4 Paper Organization
 
 Section 2 formalizes the problem setting. Section 3 presents the complete Transformer encoder architecture. Section 4 details the bi-encoder for dense retrieval. Section 5 describes the cross-encoder for re-ranking. Section 6 covers the HNSW index structure. Section 7 discusses the knowledge distillation process. Section 8 presents our comprehensive experimental validation. Section 9 reports retrieval evaluation results. Section 10 discusses findings and limitations. Section 11 concludes.
 
