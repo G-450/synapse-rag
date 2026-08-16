@@ -181,6 +181,38 @@ Synapse RAG was built against the **LegalBench-RAG** corpus, a curated dataset f
 **Performance Metrics:**
 We evaluate retrieval success using Document Retrieval Match (DRM) and character-span Precision/Recall. By employing the Cross-Encoder re-ranker, the system achieves significant improvements in exact passage recall, establishing a robust baseline for legal domain LLM adoption.
 
+**Novelty & Advanced Evaluation (LLM-as-a-Judge):**
+Synapse RAG explicitly addresses two major gaps identified in 2024-2025 RAG literature (such as the inability to detect hallucinations end-to-end, and failures in multi-document reasoning highlighted by *Magesh et al.* and *Peng et al.*):
+
+<details>
+<summary><b>1. End-to-End Faithfulness Evaluation Architecture</b></summary>
+
+Addresses the evaluation gap noted by *Pipitone & Alami (2024)* and *Brown et al. (2025)* by testing whether the LLM's final generated answer is strictly supported by the retrieved citations without relying on outside knowledge.
+
+```mermaid
+flowchart LR
+    Dataset[(LegalBench)] --> Harness[Faithfulness Harness]
+    Harness <--> |Queries| RAG[Synapse API]
+    RAG --> |Answer + Context| Judge[LLM-as-a-Judge]
+    Judge --> |Strict 1/0 Scoring| Metrics[Hallucination Rate, Accuracy, Hit Rate]
+```
+</details>
+
+<details>
+<summary><b>2. Multi-Document Reasoning Architecture</b></summary>
+
+Addresses the relational reasoning gap noted by *Li et al. (2025)* and *Kalra et al. (2024)* by testing the system's lightweight `fan_out_retrieve` logic against complex queries requiring cross-contract synthesis.
+
+```mermaid
+flowchart LR
+    Queries[(Multi-Doc Queries)] --> Harness[Multi-Doc Harness]
+    Harness --> |Unscoped Query| FanOut[Fan-Out Retrieval]
+    FanOut <--> |Search ALL| Qdrant[(Qdrant)]
+    FanOut --> |Answer + Context| Judge[LLM-as-a-Judge]
+    Judge --> Metrics[Citation Diversity, Synthesis Score]
+```
+</details>
+
 ---
 
 ## 🚀 Core Features

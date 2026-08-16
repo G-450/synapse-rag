@@ -1,5 +1,13 @@
 # Synapse RAG: A Complete Theoretical Explanation
 
+> [!NOTE]
+> **V2 Architecture Update**: Since this document was originally drafted, the Synapse RAG system has been upgraded with several key features:
+> - **Vector Database Migration**: The system now utilizes **Qdrant** (`qdrant_client`) for vector storage and similarity search instead of pgvector, providing enhanced local performance and Python-native integration via LangChain.
+> - **Advanced User Interface**: A new Glassmorphism dark-mode UI built with Tailwind CSS v4 and Framer Motion.
+> - **Real-Time Streaming & Citations**: Utilizing the Vercel AI SDK Data Stream Protocol, the LLM (`llama-3.1-8b-instant` via Groq) now streams answers in real-time, accompanied by verifiable, interactive citation panels.
+> 
+> *The fundamental theoretical concepts regarding embeddings, HNSW, bi-encoders, and cross-encoders described below remain fully applicable to the new architecture.*
+
 ## How Every Process Works — From Raw Contracts to Grounded Legal Answers
 
 ---
@@ -744,6 +752,36 @@ The evaluation reveals both strengths and areas for improvement:
 - The DRM of 38% suggests that for some queries, the most relevant document is ranked below position 5. Increasing the retrieval pool or adding keyword-based hybrid search could help.
 - The precision of 20.4% indicates that chunks often contain more text than just the answer span. Finer-grained chunking strategies could improve precision.
 - The vocabulary gap between user queries (informal, short) and contract text (formal, verbose) is the primary challenge. Techniques like query expansion or Hypothetical Document Embeddings (HyDE) could bridge this gap.
+
+### 10.4 Advanced Evaluation Suites (LLM-as-a-Judge) <a name="104-advanced-eval"></a>
+
+Beyond basic precision and recall, Synapse RAG employs automated LLM-as-a-Judge scripts to address two major research gaps identified in recent literature (e.g., *Magesh et al., 2024*; *Peng et al., 2024*): the inability of standard metrics to capture end-to-end hallucination, and the failure of traditional RAG to handle multi-document reasoning.
+
+#### 10.4.1 Faithfulness Evaluation Architecture
+Addressing the "End-to-End Evaluation Gap" (noted by *Pipitone & Alami (2024)* and *Brown et al. (2025)*), `evaluate_faithfulness.py` forces an LLM to act as an impartial judge.
+
+```mermaid
+flowchart TD
+    A[LegalBench QA Pairs] --> B[Evaluate Harness]
+    B --> C{Synapse RAG Pipeline}
+    C --> |Answer + Context| D[LLM-as-a-Judge]
+    D --> |Does Context Support Answer?| E[Strict 1/0 Score]
+    E --> F[Hallucination Rate Metric]
+```
+If the system invents a detail not present in the citations, it fails the faithfulness check. This provides a strict, automated **Hallucination Rate**.
+
+#### 10.4.2 Multi-Document Benchmark Architecture
+Addressing the "Relational Reasoning Gap" (noted by *Li et al. (2025)* and *Kalra et al. (2024)*), `evaluate_multidoc.py` tests the system's ability to answer complex questions synthesizing information across multiple contracts.
+
+```mermaid
+flowchart TD
+    A[Multi-Contract Queries] --> B[Evaluate Harness]
+    B --> |fan_out_retrieve| C{Qdrant Vector DB}
+    C --> |Synthesized Response| D[LLM-as-a-Judge]
+    D --> E[Citation Diversity]
+    D --> F[Synthesis Accuracy]
+```
+By bypassing document-specific filtering, this measures **Citation Diversity** and **Synthesis Accuracy** via our novel `fan_out_retrieve` architecture.
 
 ---
 
