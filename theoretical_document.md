@@ -757,8 +757,31 @@ The evaluation reveals both strengths and areas for improvement:
 
 Beyond basic precision and recall, Synapse RAG employs automated LLM-as-a-Judge scripts to address two major research gaps identified in recent literature (e.g., *Magesh et al., 2024*; *Peng et al., 2024*): the inability of standard metrics to capture end-to-end hallucination, and the failure of traditional RAG to handle multi-document reasoning.
 
-1. **Faithfulness Evaluation** (`evaluate_faithfulness.py`): Addressing the "End-to-End Evaluation Gap" (noted by *Pipitone & Alami (2024)* and *Brown et al. (2025)*), an LLM acts as an impartial judge to score whether our final generated answer is completely supported by the retrieved citations. If the system invents a detail not present in the citations, it fails the faithfulness check. This provides a strict, automated **Hallucination Rate**.
-2. **Multi-Document Benchmark** (`evaluate_multidoc.py`): Addressing the "Relational Reasoning Gap" (noted by *Li et al. (2025)* and *Kalra et al. (2024)*), this script tests the system's ability to answer complex questions that require synthesizing information across multiple different contracts (e.g., comparing termination clauses between two NDAs), measuring **Citation Diversity** and **Synthesis Accuracy** via our novel `fan_out_retrieve` architecture.
+#### 10.4.1 Faithfulness Evaluation Architecture
+Addressing the "End-to-End Evaluation Gap" (noted by *Pipitone & Alami (2024)* and *Brown et al. (2025)*), `evaluate_faithfulness.py` forces an LLM to act as an impartial judge.
+
+```mermaid
+flowchart TD
+    A[LegalBench QA Pairs] --> B[Evaluate Harness]
+    B --> C{Synapse RAG Pipeline}
+    C --> |Answer + Context| D[LLM-as-a-Judge]
+    D --> |Does Context Support Answer?| E[Strict 1/0 Score]
+    E --> F[Hallucination Rate Metric]
+```
+If the system invents a detail not present in the citations, it fails the faithfulness check. This provides a strict, automated **Hallucination Rate**.
+
+#### 10.4.2 Multi-Document Benchmark Architecture
+Addressing the "Relational Reasoning Gap" (noted by *Li et al. (2025)* and *Kalra et al. (2024)*), `evaluate_multidoc.py` tests the system's ability to answer complex questions synthesizing information across multiple contracts.
+
+```mermaid
+flowchart TD
+    A[Multi-Contract Queries] --> B[Evaluate Harness]
+    B --> |fan_out_retrieve| C{Qdrant Vector DB}
+    C --> |Synthesized Response| D[LLM-as-a-Judge]
+    D --> E[Citation Diversity]
+    D --> F[Synthesis Accuracy]
+```
+By bypassing document-specific filtering, this measures **Citation Diversity** and **Synthesis Accuracy** via our novel `fan_out_retrieve` architecture.
 
 ---
 

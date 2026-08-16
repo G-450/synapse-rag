@@ -848,14 +848,62 @@ The precision-recall gap (Precision: 20.4% vs Recall: 60.3%) is explained by the
 
 ### 9.6 LLM-as-a-Judge Faithfulness & Multi-Document Evaluation
 
-To address key research gaps in standard RAG literature, Synapse RAG incorporates two automated evaluation harnesses utilizing an "LLM-as-a-Judge" methodology:
+To address key research gaps in standard RAG literature, Synapse RAG incorporates two automated evaluation harnesses utilizing an "LLM-as-a-Judge" methodology.
 
-1. **End-to-End Faithfulness Evaluation**: Measures whether the LLM's final answer is strictly supported by the retrieved text, eliminating hallucination. This suite (`scripts/evaluate_faithfulness.py`) captures:
-   - **Retrieval Hit Rate**: Presence of the ground truth document in citations.
-   - **Answer Accuracy**: Alignment with the LegalBench ground truth answer.
-   - **Faithfulness Score**: A strict binary score indicating if the generated answer relies exclusively on provided context without introducing parametric knowledge.
+#### 9.6.1 End-to-End Faithfulness Architecture
 
-2. **Multi-Document Reasoning Benchmark**: Standard LegalBench queries focus on single documents. To validate our `fan_out_retrieve` logic, the system is tested against complex synthesized queries (e.g., comparing clauses across multiple contracts). The multi-document suite (`scripts/evaluate_multidoc.py`) measures **Citation Diversity** and **Synthesis Accuracy**.
+This suite (`scripts/evaluate_faithfulness.py`) measures whether the LLM's final answer is strictly supported by the retrieved text, eliminating hallucination.
+
+```mermaid
+flowchart TD
+    Dataset[(LegalBench QA Dataset)] --> |1. Sample Queries| Harness[Faithfulness Harness]
+    Harness --> |2. POST /api/python/chat| API[FastAPI Backend]
+    API --> |3. RAG Pipeline| RAG[Retrieve & Generate]
+    RAG --> |4. Return Answer + Citations| Harness
+    
+    Harness --> Eval1[Retrieval Hit Rate Evaluator]
+    Harness --> Eval2[Answer Accuracy Evaluator]
+    Harness --> Eval3[Faithfulness LLM-as-a-Judge]
+    
+    Eval1 --> |Check if ground truth doc ID is in citations| Metric1[Hit Rate %]
+    Eval2 --> |Compare generated answer vs. ground truth answer| Metric2[Accuracy Score]
+    Eval3 --> |Prompt: Does the context completely support the answer?| Judge[Groq LLM]
+    Judge --> |Strict 1 or 0 binary output| Metric3[Hallucination Rate]
+    
+    Metric1 & Metric2 & Metric3 --> Report[Final Summary Report]
+```
+
+It captures:
+- **Retrieval Hit Rate**: Presence of the ground truth document in citations.
+- **Answer Accuracy**: Alignment with the LegalBench ground truth answer.
+- **Faithfulness Score**: A strict binary score indicating if the generated answer relies exclusively on provided context without introducing parametric knowledge.
+
+#### 9.6.2 Multi-Document Reasoning Architecture
+
+Standard LegalBench queries focus on single documents. To validate our `fan_out_retrieve` logic, the system is tested against complex synthesized queries (e.g., comparing clauses across multiple contracts) using the multi-document suite (`scripts/evaluate_multidoc.py`).
+
+```mermaid
+flowchart TD
+    TestSet[(Custom Multi-Doc Queries)] --> |1. Complex Query| Harness[Multi-Doc Harness]
+    Harness --> |2. Query without documentId| API[FastAPI Backend]
+    
+    subgraph Multi_Document_Retrieval [Multi-Document Fan-Out]
+        API --> |Broadcast Search| Qdrant[(Qdrant Vector DB)]
+        Qdrant --> |Retrieve across ALL docs| API
+    end
+    
+    API --> |3. Synthesized Answer + Citations| Harness
+    
+    Harness --> Eval1[Citation Diversity Evaluator]
+    Harness --> Eval2[Synthesis Accuracy Evaluator]
+    
+    Eval1 --> |Count unique document IDs in citations| Metric1[Diversity Score]
+    Eval2 --> |LLM-as-a-Judge: Did it correctly synthesize across sources?| Metric2[Synthesis Score]
+    
+    Metric1 & Metric2 --> Report[Benchmark Report]
+```
+
+This measures **Citation Diversity** and **Synthesis Accuracy**, directly addressing the relational reasoning gap identified by recent literature without the massive latency overhead introduced by full GraphRAG approaches.
 
 ---
 
