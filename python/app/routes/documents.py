@@ -3,12 +3,15 @@ Documents API route — GET /api/python/documents
 Fetches all unique documents from Qdrant and groups them by source corpus.
 """
 
+import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from pathlib import Path
 from qdrant_client import QdrantClient
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 class DocumentMetadata(BaseModel):
     id: str
@@ -102,5 +105,5 @@ def get_documents():
         )
         
     except Exception as e:
-        print(f"Error fetching documents from Qdrant: {e}")
-        return DocumentResponse(documents=[], grouped={})
+        logger.exception("Unable to fetch documents from Qdrant")
+        raise HTTPException(status_code=503, detail="Document index unavailable.") from e

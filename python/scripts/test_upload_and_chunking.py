@@ -90,10 +90,14 @@ class StructuralIngestionTests(unittest.TestCase):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.root = Path(self.temp_dir.name)
         self.original_get_embeddings = rag.get_embeddings
+        self.original_upload_get_vectorstore = upload_route.get_vectorstore
+        self.original_upload_get_qdrant_client = upload_route.get_qdrant_client
 
     def tearDown(self) -> None:
         rag._qdrant_client = None
         rag.get_embeddings = self.original_get_embeddings
+        upload_route.get_vectorstore = self.original_upload_get_vectorstore
+        upload_route.get_qdrant_client = self.original_upload_get_qdrant_client
         self.temp_dir.cleanup()
 
     def test_pdf_docx_and_txt_extraction(self) -> None:
@@ -198,6 +202,34 @@ class StructuralIngestionTests(unittest.TestCase):
         self.assertIn('"type": "text-delta"', stream)
         self.assertIn('"delta": "Streamed answer"', stream)
         self.assertTrue(stream.endswith("data: [DONE]\n\n"))
+
+    def test_failed_batch_rolls_back_all_uploaded_chunks(self) -> None:
+        rag._qdrant_client = QdrantClient(":memory:")
+        rag.get_embeddings = lambda: KeywordEmbeddings()
+        real_store = rag.get_vectorstore()
+        _, children = ParentChildSplitter(child_tokens=8, child_overlap=2).split(
+            CONTRACT, "rollback-document", "rollback.txt"
+        )
+
+        class FailAfterFirstBatch:
+            calls = 0
+
+            def add_documents(self, documents, ids):
+                self.calls += 1
+                if self.calls > 1:
+                    raise RuntimeError("simulated embedding failure")
+                return real_store.add_documents(documents=documents, ids=ids)
+
+        upload_route.get_vectorstore = lambda: FailAfterFirstBatch()
+        upload_route.get_qdrant_client = lambda: rag._qdrant_client
+
+        with self.assertRaisesRegex(RuntimeError, "simulated embedding failure"):
+            upload_route.index_children(children, batch_size=2)
+
+        records, _ = rag._qdrant_client.scroll(
+            collection_name="synapse_rag", limit=100, with_payload=True, with_vectors=False
+        )
+        self.assertEqual(records, [])
 
 
 if __name__ == "__main__":

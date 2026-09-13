@@ -1,18 +1,21 @@
 """Native contract upload and structural ingestion endpoint."""
 
 from pathlib import Path
+import logging
 import re
 import uuid
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from langchain_core.documents import Document
+from qdrant_client.http import models
 
 from app.chunking import ParentChildSplitter
 from app.parsers.base import DocumentExtractionError, extract_document
-from app.rag import get_vectorstore
+from app.rag import get_qdrant_client, get_vectorstore
 
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md"}
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 UPLOAD_DIR = Path(__file__).resolve().parents[3] / "data" / "uploads"
@@ -24,21 +27,35 @@ def _safe_filename(filename: str) -> str:
 
 
 def index_children(children, source_corpus: str = "user-upload", batch_size: int = 64) -> int:
-    """Embed and insert child chunks in bounded batches."""
+    """Embed and atomically insert child chunks in bounded batches."""
     vectorstore = get_vectorstore()
+    inserted_ids: list[str] = []
     inserted = 0
-    for start in range(0, len(children), batch_size):
-        batch = children[start:start + batch_size]
-        documents = [
-            Document(
-                id=child.id,
-                page_content=child.content,
-                metadata=child.metadata(source_corpus=source_corpus),
-            )
-            for child in batch
-        ]
-        vectorstore.add_documents(documents=documents, ids=[child.id for child in batch])
-        inserted += len(documents)
+    try:
+        for start in range(0, len(children), batch_size):
+            batch = children[start:start + batch_size]
+            documents = [
+                Document(
+                    id=child.id,
+                    page_content=child.content,
+                    metadata=child.metadata(source_corpus=source_corpus),
+                )
+                for child in batch
+            ]
+            vectorstore.add_documents(documents=documents, ids=[child.id for child in batch])
+            inserted += len(documents)
+            inserted_ids.extend(child.id for child in batch)
+    except Exception:
+        if inserted_ids:
+            try:
+                get_qdrant_client().delete(
+                    collection_name="synapse_rag",
+                    points_selector=models.PointIdsList(points=inserted_ids),
+                    wait=True,
+                )
+            except Exception:
+                logger.exception("Failed to roll back a partial contract ingestion")
+        raise
     return inserted
 
 
@@ -74,7 +91,8 @@ async def upload_contract(file: UploadFile = File(...)):
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except Exception as exc:
         destination.unlink(missing_ok=True)
-        raise HTTPException(status_code=500, detail=f"Contract ingestion failed: {exc}") from exc
+        logger.exception("Contract ingestion failed for %s", original_name)
+        raise HTTPException(status_code=500, detail="Contract ingestion failed.") from exc
     finally:
         await file.close()
 
