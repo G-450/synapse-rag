@@ -6,6 +6,7 @@ import { Send, Bot, User, Loader2, BookOpen, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Citation } from './citation-panel';
+import { normalizeAssistantMarkdown } from '@/lib/markdown';
 
 interface ChatProps {
   documentId: string | null;
@@ -274,7 +275,7 @@ export default function Chat({
                     td: ({ children }) => <td className="border-b px-3 py-2 align-top last:border-b-0" style={{ borderColor: 'var(--border)' }}>{children}</td>,
                   }}
                 >
-                  {getMessageText(m)}
+                  {normalizeAssistantMarkdown(getMessageText(m))}
                 </ReactMarkdown>
               )}
             </div>
