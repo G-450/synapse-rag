@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { Send, Bot, User, Loader2, BookOpen, Sparkles } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { Citation } from './citation-panel';
 
 interface ChatProps {
@@ -228,7 +230,53 @@ export default function Chat({
                     }
               }
             >
-              <div className="whitespace-pre-wrap">{getMessageText(m)}</div>
+              {m.role === 'user' ? (
+                <div className="whitespace-pre-wrap">{getMessageText(m)}</div>
+              ) : (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    h1: ({ children }) => <h1 className="mb-3 mt-5 text-xl font-semibold first:mt-0">{children}</h1>,
+                    h2: ({ children }) => <h2 className="mb-2 mt-5 text-lg font-semibold first:mt-0">{children}</h2>,
+                    h3: ({ children }) => <h3 className="mb-2 mt-4 text-base font-semibold first:mt-0">{children}</h3>,
+                    p: ({ children }) => <p className="my-2 first:mt-0 last:mb-0">{children}</p>,
+                    ul: ({ children }) => <ul className="my-2 list-disc space-y-1 pl-5">{children}</ul>,
+                    ol: ({ children }) => <ol className="my-2 list-decimal space-y-1 pl-5">{children}</ol>,
+                    li: ({ children }) => <li className="pl-1">{children}</li>,
+                    blockquote: ({ children }) => (
+                      <blockquote className="my-3 border-l-2 pl-3 italic" style={{ borderColor: 'var(--accent)', color: 'var(--foreground-muted)' }}>
+                        {children}
+                      </blockquote>
+                    ),
+                    hr: () => <hr className="my-4" style={{ borderColor: 'var(--border)' }} />,
+                    a: ({ children, href }) => (
+                      <a className="underline underline-offset-2" style={{ color: 'var(--accent)' }} href={href} target="_blank" rel="noreferrer">
+                        {children}
+                      </a>
+                    ),
+                    code: ({ children, className }) => {
+                      const isBlock = Boolean(className);
+                      return (
+                        <code
+                          className={isBlock ? `${className} block overflow-x-auto p-3 text-xs` : 'rounded px-1 py-0.5 text-xs'}
+                          style={{ background: 'var(--background)', border: '1px solid var(--border)' }}
+                        >
+                          {children}
+                        </code>
+                      );
+                    },
+                    table: ({ children }) => (
+                      <div className="my-3 overflow-x-auto rounded-lg border" style={{ borderColor: 'var(--border)' }}>
+                        <table className="w-full border-collapse text-left text-xs">{children}</table>
+                      </div>
+                    ),
+                    th: ({ children }) => <th className="border-b px-3 py-2 font-semibold" style={{ borderColor: 'var(--border)', background: 'var(--background)' }}>{children}</th>,
+                    td: ({ children }) => <td className="border-b px-3 py-2 align-top last:border-b-0" style={{ borderColor: 'var(--border)' }}>{children}</td>,
+                  }}
+                >
+                  {getMessageText(m)}
+                </ReactMarkdown>
+              )}
             </div>
 
             {m.role === 'user' && (
