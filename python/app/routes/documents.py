@@ -13,8 +13,10 @@ router = APIRouter()
 class DocumentMetadata(BaseModel):
     id: str
     filename: str
+    title: str
     source_corpus: str
     chunk_count: int
+    section_count: int = 0
 
 
 class DocumentResponse(BaseModel):
@@ -61,11 +63,15 @@ def get_documents():
                     docs_map[doc_id] = {
                         "id": doc_id,
                         "filename": metadata.get("filename", "Unknown"),
+                        "title": metadata.get("title") or Path(metadata.get("filename", "Unknown")).stem,
                         "source_corpus": metadata.get("source_corpus", "Unknown"),
-                        "chunk_count": 0
+                        "chunk_count": 0,
+                        "parent_ids": set(),
                     }
                 
                 docs_map[doc_id]["chunk_count"] += 1
+                if metadata.get("parent_id"):
+                    docs_map[doc_id]["parent_ids"].add(metadata["parent_id"])
                 
             if next_page_offset is None:
                 break
@@ -73,7 +79,11 @@ def get_documents():
             
         # Group by source_corpus
         corpora = {}
-        for doc in docs_map.values():
+        normalized_docs = []
+        for raw_doc in docs_map.values():
+            parent_ids = raw_doc.pop("parent_ids")
+            doc = {**raw_doc, "section_count": len(parent_ids)}
+            normalized_docs.append(doc)
             corpus = doc["source_corpus"]
             if corpus not in corpora:
                 corpora[corpus] = []
@@ -83,7 +93,7 @@ def get_documents():
         for corpus, docs in corpora.items():
             docs.sort(key=lambda d: d.filename)
             
-        all_docs = list(docs_map.values())
+        all_docs = normalized_docs
         all_docs.sort(key=lambda d: d["filename"])
             
         return DocumentResponse(
