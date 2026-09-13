@@ -12,6 +12,8 @@ interface ChatProps {
   onToggleCitations: () => void;
 }
 
+type RetrievedChunk = Omit<Citation, 'chunk_id'> & { id: string };
+
 export default function Chat({
   documentId,
   documentName,
@@ -34,15 +36,22 @@ export default function Chat({
               limit: 5,
             }),
           });
-          const data = await res.json();
+          const data = (await res.json()) as { chunks?: RetrievedChunk[] };
           if (data.chunks) {
             onCitationsReceived(
-              data.chunks.map((c: any) => ({
+              data.chunks.map((c) => ({
                 chunk_id: c.id,
                 document_id: c.document_id,
                 filename: c.filename || '',
                 content: c.content,
                 similarity: c.similarity,
+                parent_id: c.parent_id || '',
+                parent_header: c.parent_header || '',
+                parent_content: c.parent_content || '',
+                section_number: c.section_number || '',
+                section_title: c.section_title || '',
+                start_char: c.start_char,
+                end_char: c.end_char,
               }))
             );
           }

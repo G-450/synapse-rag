@@ -25,12 +25,12 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  const handleSelectDocument = (docId: string | null) => {
+  const handleSelectDocument = (docId: string | null, documentName?: string) => {
     setSelectedDocId(docId);
     if (docId) {
       const doc = documents.find((d) => d.id === docId);
       setSelectedDocName(
-        doc?.title || doc?.filename?.replace('.txt', '') || null
+        documentName || doc?.title || doc?.filename?.replace(/\.[^.]+$/, '') || null
       );
     } else {
       setSelectedDocName(null);

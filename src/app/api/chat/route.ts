@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     status: upstream.status,
     headers: {
       'Content-Type': upstream.headers.get('Content-Type') ?? 'text/plain; charset=utf-8',
-      'X-Vercel-AI-Data-Stream': upstream.headers.get('X-Vercel-AI-Data-Stream') ?? 'v1',
+      'X-Vercel-AI-UI-Message-Stream': upstream.headers.get('X-Vercel-AI-UI-Message-Stream') ?? 'v1',
       'Cache-Control': 'no-cache',
     },
   });
