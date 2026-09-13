@@ -91,7 +91,7 @@ graph TD
 1. **Query Routing**: The user issues a query in either *Single-Document Mode* or *Multi-Document Fan-Out Mode*.
 2. **First Stage (Bi-Encoder)**: The query is tokenized via WordPiece and embedded into a 384-dimensional space. The Qdrant engine uses an HNSW index to rapidly retrieve the top $K$ nearest chunks via Cosine Similarity.
 3. **Second Stage (Cross-Encoder)**: The retrieved candidates and the original query are concatenated and fed into the Cross-Encoder. The model applies joint attention to output highly accurate relevance logits, re-ranking the chunks to extract the absolute best context.
-4. **Generation**: The highest-ranked chunks are injected into a strict system prompt and routed to `llama-3.1-8b-instant` via the Groq API. The response is streamed back to the Next.js frontend with verifiable character-span citations.
+4. **Parent Expansion & Generation**: Each high-scoring child expands to its complete legal parent clause. Duplicate parents are removed, the prompt is capped by `MAX_PARENT_CLAUSES`, and the configured Groq model generates a grounded answer with character-span citations.
 
 ---
 
@@ -220,6 +220,8 @@ flowchart LR
 - **Multi-Document Fan-Out Retrieval**: Perform comparative analysis across your entire contract repository. The system retrieves and synthesizes information independently per document before final aggregation.
 - **Single-Document Deep Dive**: Scope the vector space exclusively to a single selected contract for highly targeted QA.
 - **Verifiable Citations**: Total transparency. The LLM's responses include direct UI links to the exact source chunks, backed by the cross-encoder's relevance confidence score.
+- **Native Contract Uploads**: Upload selectable-text PDF, DOCX, TXT, and Markdown contracts directly from the document sidebar. Files are parsed and embedded in bounded batches.
+- **Structural Parent-Child Retrieval**: Legal articles, sections, recitals, definitions, schedules, and exhibits form full parent clauses. Dense child vectors include structural breadcrumbs for precise retrieval, while the LLM receives each full parent only once.
 - **Glassmorphism Dark UI**: A premium, highly responsive user interface built with Tailwind CSS v4 and Framer Motion, delivering real-time streaming tokens with zero latency.
 
 ---
@@ -238,7 +240,7 @@ flowchart LR
 - **Vector Database**: Qdrant (Local)
 - **Embeddings Pipeline**: `sentence-transformers`, LangChain
 - **Models**: `all-MiniLM-L6-v2` (Bi-Encoder), `ms-marco-MiniLM-L-6-v2` (Cross-Encoder)
-- **LLM**: Groq API (`llama-3.1-8b-instant`)
+- **LLM**: Groq API (`GROQ_MODEL`, with configurable fallbacks)
 
 ---
 
@@ -270,6 +272,8 @@ DATABASE_URL="your_neon_postgres_connection_string"
 
 # Python Backend Configuration
 GROQ_API_KEY="your_groq_api_key_here"
+GROQ_MODEL="openai/gpt-oss-20b"
+MAX_PARENT_CLAUSES=6
 ```
 
 Initialize the Prisma schema:
@@ -318,6 +322,14 @@ To populate the database with the LegalBench-RAG corpus:
 npm run ingest
 ```
 *(Or use the Python equivalent scripts provided in `python/scripts/`)*
+
+To ingest a custom contract, start both servers and choose **Upload Contract** in the sidebar. Raw uploads are stored in `data/uploads/`; only their contextual child chunks are embedded in Qdrant. Scanned/image-only PDFs return a clear error because OCR is not yet supported.
+
+Run the isolated ingestion verification suite with:
+
+```bash
+python/venv/Scripts/python.exe python/scripts/test_upload_and_chunking.py
+```
 
 ---
 
