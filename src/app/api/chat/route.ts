@@ -9,7 +9,6 @@ const PYTHON_BACKEND = process.env.PYTHON_BACKEND_URL ?? 'http://localhost:8000'
 
 export async function POST(req: Request) {
   const body = await req.text();
-  console.log("NEXTJS SENDING BODY:", body);
 
   const upstream = await fetch(`${PYTHON_BACKEND}/api/python/chat`, {
     method: 'POST',

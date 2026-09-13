@@ -41,6 +41,7 @@ export default function DocumentSidebar({
   const [documents, setDocuments] = useState<Document[]>([]);
   const [grouped, setGrouped] = useState<Record<string, Document[]>>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [search, setSearch] = useState('');
   const [showUpload, setShowUpload] = useState(false);
   const [expandedCorpora, setExpandedCorpora] = useState<Set<string>>(
@@ -49,14 +50,18 @@ export default function DocumentSidebar({
 
   useEffect(() => {
     fetch('/api/documents')
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || data.error || 'Unable to load contracts');
+        return data;
+      })
       .then((data) => {
         setDocuments(data.documents || []);
         setGrouped(data.grouped || {});
         // Expand all corpora by default
         setExpandedCorpora(new Set(Object.keys(data.grouped || {})));
       })
-      .catch(console.error)
+      .catch((error) => setLoadError(error instanceof Error ? error.message : 'Unable to load contracts'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -203,6 +208,11 @@ export default function DocumentSidebar({
           </div>
         ) : (
           <div className="space-y-1 stagger-children">
+            {loadError && (
+              <p className="px-2 py-3 text-xs" style={{ color: 'var(--error)' }} role="alert">
+                {loadError}
+              </p>
+            )}
             {Object.entries(filteredGrouped).map(([corpus, docs]) => (
               <div key={corpus}>
                 {/* Corpus header */}

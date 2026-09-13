@@ -15,8 +15,6 @@ interface ChatProps {
   onToggleCitations: () => void;
 }
 
-type RetrievedChunk = Omit<Citation, 'chunk_id'> & { id: string };
-
 export default function Chat({
   documentId,
   documentName,
@@ -24,52 +22,24 @@ export default function Chat({
   onToggleCitations,
 }: ChatProps) {
   const { messages, sendMessage, status } = useChat({
-    // @ts-expect-error - body is not in UseChatOptions type but is passed to fetch
-    body: documentId ? { documentId } : undefined,
-    onFinish: async () => {
-      // Fetch citations after response completes
-      if (latestQuery.current) {
-        try {
-          const res = await fetch('/api/retrieve', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: latestQuery.current,
-              documentId,
-              limit: 5,
-            }),
-          });
-          const data = (await res.json()) as { chunks?: RetrievedChunk[] };
-          if (data.chunks) {
-            onCitationsReceived(
-              data.chunks.map((c) => ({
-                chunk_id: c.id,
-                document_id: c.document_id,
-                filename: c.filename || '',
-                content: c.content,
-                similarity: c.similarity,
-                parent_id: c.parent_id || '',
-                parent_header: c.parent_header || '',
-                parent_content: c.parent_content || '',
-                section_number: c.section_number || '',
-                section_title: c.section_title || '',
-                start_char: c.start_char,
-                end_char: c.end_char,
-              }))
-            );
-          }
-        } catch {
-          // Silently fail citation fetch
-        }
+    onData: (part) => {
+      if (part.type === 'data-citations' && Array.isArray(part.data)) {
+        onCitationsReceived(part.data as Citation[]);
       }
     },
   });
 
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const latestQuery = useRef<string>('');
-
   const isStreaming = status === 'streaming' || status === 'submitted';
+
+  const sendChatMessage = (text: string) => {
+    onCitationsReceived([]);
+    void sendMessage(
+      { text },
+      documentId ? { body: { documentId } } : undefined
+    );
+  };
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -79,8 +49,7 @@ export default function Chat({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || isStreaming) return;
-    latestQuery.current = inputValue;
-    sendMessage({ text: inputValue });
+    sendChatMessage(inputValue);
     setInputValue('');
   };
 
@@ -184,8 +153,7 @@ export default function Chat({
                 <button
                   key={q}
                   onClick={() => {
-                    latestQuery.current = q;
-                    sendMessage({ text: q });
+                    sendChatMessage(q);
                   }}
                   className="px-3 py-2.5 rounded-lg text-xs text-left transition-all glass-card hover:border-opacity-30"
                   style={{ color: 'var(--foreground-muted)' }}
