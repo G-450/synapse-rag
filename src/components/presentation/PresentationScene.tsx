@@ -3,9 +3,8 @@
 import { motion } from "framer-motion";
 import {
   User, Brain, Database, Search, Cpu, FileText,
-  Layers, Sparkles, ArrowDown, Zap, BarChart3, CheckCircle2,
-  MessageSquare, GitBranch, ScanSearch, BookOpen, Binary,
-  Gauge, Target, Shield, ArrowRight, Network, Workflow,
+  Layers, Sparkles, ArrowDown, Zap, BarChart3,
+  MessageSquare, ScanSearch, Binary, ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 
