@@ -1,9 +1,10 @@
 """
 Chat API route — POST /api/python/chat
-Conversational RAG with stateless AI SDK Data Stream Protocol.
+Conversational RAG with the stateless AI SDK v7 UI-message stream protocol.
 """
 
 import json
+import uuid
 from typing import Any
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
@@ -59,18 +60,12 @@ def _extract_query(messages: list[Message]) -> str:
 
 
 async def _ai_sdk_stream(langchain_stream, citations: list[dict]):
-    """
-    Generator that converts a LangChain astream into the
-    AI SDK Data Stream Protocol expected by useChat.
-
-    Protocol:
-      0:"<escaped text>"  — text chunk
-      2:[{...}]           — data array (custom data, citations go here)
-      d:{...}             — finish delimiter
-    """
-    first_chunk_sent = False
-    citations_sent = False
-    citations_payload = json.dumps(citations, default=str)
+    """Convert LangChain chunks to the AI SDK v7 SSE UI-message protocol."""
+    message_id = str(uuid.uuid4())
+    text_id = str(uuid.uuid4())
+    yield f"data: {json.dumps({'type': 'start', 'messageId': message_id})}\n\n"
+    yield f"data: {json.dumps({'type': 'text-start', 'id': text_id})}\n\n"
+    yield f"data: {json.dumps({'type': 'data-citations', 'data': citations, 'transient': True}, default=str)}\n\n"
 
     async for chunk in langchain_stream:
         # chunk is an AIMessageChunk or string
@@ -81,21 +76,11 @@ async def _ai_sdk_stream(langchain_stream, citations: list[dict]):
             token = chunk
 
         if token:
-            encoded = json.dumps(token)
-            yield f"0:{encoded}\n"
+            yield f"data: {json.dumps({'type': 'text-delta', 'id': text_id, 'delta': token})}\n\n"
 
-            # Send citations as a data event right after the first text token
-            if not first_chunk_sent:
-                first_chunk_sent = True
-                yield f"2:[{{\"citations\":{citations_payload}}}]\n"
-                citations_sent = True
-
-    # If LLM returned nothing at all, still emit citations so sources show
-    if not citations_sent:
-        yield f"2:[{{\"citations\":{citations_payload}}}]\n"
-
-    # Finish delimiter
-    yield 'd:{"finishReason":"stop","usage":{}}\n'
+    yield f"data: {json.dumps({'type': 'text-end', 'id': text_id})}\n\n"
+    yield f"data: {json.dumps({'type': 'finish', 'finishReason': 'stop'})}\n\n"
+    yield "data: [DONE]\n\n"
 
 
 @router.post("/chat")
@@ -107,7 +92,7 @@ async def chat(body: ChatRequest):
     # Scoped retrieval vs multi-document fan-out retrieval
     citations: list[dict] = []
     if body.documentId:
-        chunks = retrieve_chunks(user_query, document_id=body.documentId, limit=5)
+        chunks = retrieve_chunks(user_query, document_id=body.documentId, limit=5, rerank=True)
         context_text = format_context(chunks)
         citations = [
             {
@@ -116,6 +101,13 @@ async def chat(body: ChatRequest):
                 "filename": c.get("filename", ""),
                 "content": c["content"],
                 "similarity": c.get("similarity", 0),
+                "parent_id": c.get("parent_id", ""),
+                "parent_header": c.get("parent_header", ""),
+                "parent_content": c.get("parent_content", ""),
+                "section_number": c.get("section_number", ""),
+                "section_title": c.get("section_title", ""),
+                "start_char": c.get("start_char"),
+                "end_char": c.get("end_char"),
             }
             for c in chunks
         ]
@@ -129,6 +121,13 @@ async def chat(body: ChatRequest):
                 "filename": group["filename"],
                 "content": c["content"],
                 "similarity": c.get("similarity", 0),
+                "parent_id": c.get("parent_id", ""),
+                "parent_header": c.get("parent_header", ""),
+                "parent_content": c.get("parent_content", ""),
+                "section_number": c.get("section_number", ""),
+                "section_title": c.get("section_title", ""),
+                "start_char": c.get("start_char"),
+                "end_char": c.get("end_char"),
             }
             for group in doc_groups
             for c in group["chunks"]
@@ -167,9 +166,9 @@ async def chat(body: ChatRequest):
 
     return StreamingResponse(
         _ai_sdk_stream(langchain_stream, citations),
-        media_type="text/plain; charset=utf-8",
+        media_type="text/event-stream",
         headers={
-            "X-Vercel-AI-Data-Stream": "v1",
+            "X-Vercel-AI-UI-Message-Stream": "v1",
             "Cache-Control": "no-cache",
         },
     )

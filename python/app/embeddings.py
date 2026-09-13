@@ -3,11 +3,14 @@ LangChain Embeddings for Synapse RAG.
 Uses HuggingFaceEmbeddings for local sentence-transformers generation.
 """
 
+from functools import lru_cache
+
 from langchain_huggingface import HuggingFaceEmbeddings
 
-# Singleton instance of the embedding model
-embeddings_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-
+@lru_cache(maxsize=1)
 def get_embeddings():
-    """Returns the LangChain embeddings instance."""
-    return embeddings_model
+    """Lazily load and reuse the 384-dimensional embedding model."""
+    return HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        encode_kwargs={"batch_size": 64, "normalize_embeddings": True},
+    )
