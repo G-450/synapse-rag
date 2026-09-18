@@ -46,9 +46,9 @@ def main():
 
     print(f"[✓] Retrieved & Reranked {len(chunks_rerank)} chunks in {ms_rerank}ms.")
     for i, c in enumerate(chunks_rerank, 1):
-        score = c.get("cross_score", 0)
+        score = c.get("similarity", 0)
         preview = c["content"][:50]
-        print(f"  - Chunk {i}: {score:.4f} cross_score | {preview}...")
+        print(f"  - Chunk {i}: {score:.4f} reranked similarity | {preview}...")
 
 
 if __name__ == "__main__":

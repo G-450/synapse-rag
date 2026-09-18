@@ -8,8 +8,9 @@ import {
   ChevronRight,
   Layers,
   Database,
-  Loader2,
+  Upload,
 } from 'lucide-react';
+import UploadModal, { type UploadResult } from './upload-modal';
 
 interface Document {
   id: string;
@@ -21,7 +22,7 @@ interface Document {
 
 interface DocumentSidebarProps {
   selectedDocId: string | null;
-  onSelectDocument: (docId: string | null) => void;
+  onSelectDocument: (docId: string | null, documentName?: string) => void;
 }
 
 const CORPUS_LABELS: Record<string, string> = {
@@ -30,14 +31,7 @@ const CORPUS_LABELS: Record<string, string> = {
   contractnli: 'ContractNLI',
   privacy_qa: 'PrivacyQA',
   'legalbench-rag': 'LegalBench',
-};
-
-const CORPUS_DESCRIPTIONS: Record<string, string> = {
-  cuad: 'Commercial contracts',
-  maud: 'Merger agreements',
-  contractnli: 'Non-disclosure agreements',
-  privacy_qa: 'Privacy policies',
-  'legalbench-rag': 'Legal benchmark',
+  'user-upload': 'User Uploads',
 };
 
 export default function DocumentSidebar({
@@ -47,21 +41,27 @@ export default function DocumentSidebar({
   const [documents, setDocuments] = useState<Document[]>([]);
   const [grouped, setGrouped] = useState<Record<string, Document[]>>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [search, setSearch] = useState('');
+  const [showUpload, setShowUpload] = useState(false);
   const [expandedCorpora, setExpandedCorpora] = useState<Set<string>>(
     new Set()
   );
 
   useEffect(() => {
     fetch('/api/documents')
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || data.error || 'Unable to load contracts');
+        return data;
+      })
       .then((data) => {
         setDocuments(data.documents || []);
         setGrouped(data.grouped || {});
         // Expand all corpora by default
         setExpandedCorpora(new Set(Object.keys(data.grouped || {})));
       })
-      .catch(console.error)
+      .catch((error) => setLoadError(error instanceof Error ? error.message : 'Unable to load contracts'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -72,6 +72,23 @@ export default function DocumentSidebar({
       else next.add(corpus);
       return next;
     });
+  };
+
+  const handleUploaded = (result: UploadResult) => {
+    const document: Document = {
+      id: result.document_id,
+      filename: result.filename,
+      title: result.filename.replace(/\.[^.]+$/, ''),
+      source_corpus: 'user-upload',
+      chunk_count: result.chunks_created,
+    };
+    setDocuments((current) => [...current.filter((item) => item.id !== document.id), document]);
+    setGrouped((current) => ({
+      ...current,
+      'user-upload': [...(current['user-upload'] || []).filter((item) => item.id !== document.id), document],
+    }));
+    setExpandedCorpora((current) => new Set([...current, 'user-upload']));
+    onSelectDocument(document.id, document.title);
   };
 
   const filteredGrouped = Object.entries(grouped).reduce(
@@ -140,6 +157,13 @@ export default function DocumentSidebar({
             }}
           />
         </div>
+        <button
+          onClick={() => setShowUpload(true)}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all"
+          style={{ background: 'var(--accent)', color: '#fff' }}
+        >
+          <Upload size={14} /> Upload Contract
+        </button>
       </div>
 
       {/* All Documents Button */}
@@ -184,6 +208,11 @@ export default function DocumentSidebar({
           </div>
         ) : (
           <div className="space-y-1 stagger-children">
+            {loadError && (
+              <p className="px-2 py-3 text-xs" style={{ color: 'var(--error)' }} role="alert">
+                {loadError}
+              </p>
+            )}
             {Object.entries(filteredGrouped).map(([corpus, docs]) => (
               <div key={corpus}>
                 {/* Corpus header */}
@@ -211,7 +240,7 @@ export default function DocumentSidebar({
                     {docs.map((doc) => (
                       <button
                         key={doc.id}
-                        onClick={() => onSelectDocument(doc.id)}
+                        onClick={() => onSelectDocument(doc.id, doc.title || doc.filename)}
                         className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all group text-left"
                         style={{
                           background:
@@ -246,6 +275,7 @@ export default function DocumentSidebar({
           </div>
         )}
       </div>
+      <UploadModal isOpen={showUpload} onClose={() => setShowUpload(false)} onUploaded={handleUploaded} />
     </div>
   );
 }

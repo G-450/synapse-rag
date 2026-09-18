@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from app.routes import chat, documents, retrieve
+from app.routes import chat, documents, retrieve, upload
 
 # Load .env from the project root (one level above python/)
 load_dotenv(dotenv_path="../.env")
@@ -40,6 +40,7 @@ app.add_middleware(
 app.include_router(chat.router, prefix="/api/python")
 app.include_router(documents.router, prefix="/api/python")
 app.include_router(retrieve.router, prefix="/api/python")
+app.include_router(upload.router, prefix="/api/python")
 
 
 @app.get("/health")

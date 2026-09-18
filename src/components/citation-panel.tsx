@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, X, FileText, BarChart3 } from 'lucide-react';
+import { BookOpen, X, FileText, BarChart3, ChevronDown } from 'lucide-react';
 
 export interface Citation {
   chunk_id: string;
@@ -8,6 +8,13 @@ export interface Citation {
   filename: string;
   content: string;
   similarity: number;
+  parent_id?: string;
+  parent_header?: string;
+  parent_content?: string;
+  section_number?: string;
+  section_title?: string;
+  start_char?: number;
+  end_char?: number;
 }
 
 interface CitationPanelProps {
@@ -121,6 +128,11 @@ export default function CitationPanel({
               </div>
 
               {/* Citation Text */}
+              {(citation.section_number || citation.parent_header) && (
+                <span className="mb-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+                  {citation.section_number ? `Section ${citation.section_number}${citation.section_title ? `: ${citation.section_title}` : ''}` : citation.parent_header}
+                </span>
+              )}
               <p
                 className="text-xs leading-relaxed"
                 style={{
@@ -131,8 +143,16 @@ export default function CitationPanel({
                   overflow: 'hidden',
                 }}
               >
-                &ldquo;{citation.content}&rdquo;
+                <mark className="rounded px-0.5" style={{ background: 'var(--accent-glow)', color: 'inherit' }}>&ldquo;{citation.content}&rdquo;</mark>
               </p>
+              {citation.parent_content && citation.parent_content !== citation.content && (
+                <details className="mt-3 border-t pt-2" style={{ borderColor: 'var(--border)' }}>
+                  <summary className="flex cursor-pointer list-none items-center gap-1 text-[11px] font-medium" style={{ color: 'var(--accent)' }}>
+                    <ChevronDown size={12} /> View Full Parent Clause
+                  </summary>
+                  <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>{citation.parent_content}</p>
+                </details>
+              )}
             </div>
           ))
         )}

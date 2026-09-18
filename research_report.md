@@ -931,11 +931,17 @@ This measures **Citation Diversity** and **Synthesis Accuracy**, directly addres
 
 1. **Hybrid retrieval**: Combine dense bi-encoder retrieval with sparse BM25 scoring using Reciprocal Rank Fusion (RRF) to capture both semantic and lexical relevance signals.
 2. **Legal domain fine-tuning**: Fine-tune the bi-encoder on legal contract pairs using contrastive learning with legal-specific training data from LegalBench-RAG.
-3. **Adaptive chunking**: Replace fixed-size chunking with semantic chunking that splits documents at paragraph or clause boundaries, reducing cross-span fragmentation.
+3. **Layout-aware parsing and OCR**: Extend structural parsing to scanned contracts and complex multi-column or tabular layouts.
 4. **Cross-encoder training**: Fine-tune the cross-encoder on legal passage ranking tasks to improve re-ranking accuracy for domain-specific queries.
 5. **Larger embedding models**: Evaluate E5-large, BGE-large, and OpenAI embedding models to establish a comprehensive baseline comparison.
 
 ---
+
+### 10.4 Phase 4: Structural and Semantic Ingestion
+
+The production system now accepts PDF, DOCX, TXT, and Markdown contracts through a native upload pipeline. A rule-based hierarchy parser detects Articles, Sections, Recitals, Definitions, Schedules, Exhibits, Annexes, and numbered clauses. Each cohesive clause becomes a parent unit (bounded at approximately 1,200 tokens); overlapping 150–250-token child windows carry a breadcrumb containing the filename and legal path before embedding.
+
+Qdrant indexes only the dense child representations, with payload fields linking every child to its `parent_id`, full `parent_content`, structural heading, section attribution, source corpus, and exact character span. Retrieval first searches and cross-encoder-reranks these focused children. Prompt construction then expands them to their complete parent clauses, deduplicates repeated parents, and enforces a configurable clause cap. This resolves the earlier precision/context trade-off: small vectors improve retrieval specificity without depriving the generator of the operative clause surrounding a match.
 
 ## 11. Conclusion
 

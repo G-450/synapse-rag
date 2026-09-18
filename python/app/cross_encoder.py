@@ -3,15 +3,12 @@ LangChain Document Compressor for Cross-Encoder reranking.
 Wraps the sentence-transformers CrossEncoder into a LangChain BaseDocumentCompressor.
 """
 
+from functools import lru_cache
 from typing import Sequence
 from langchain_core.documents import Document
 from langchain_core.callbacks.manager import Callbacks
 from langchain_core.documents.compressor import BaseDocumentCompressor
 from sentence_transformers import CrossEncoder
-
-# Singleton instance of the reranker model
-_cross_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
-
 
 class CrossEncoderReranker(BaseDocumentCompressor):
     """
@@ -33,7 +30,7 @@ class CrossEncoderReranker(BaseDocumentCompressor):
         pairs = [[query, doc.page_content] for doc in documents]
         
         # Predict scores
-        scores = _cross_encoder.predict(pairs)
+        scores = _get_cross_encoder().predict(pairs)
         
         import math
         
@@ -57,3 +54,9 @@ class CrossEncoderReranker(BaseDocumentCompressor):
 def get_reranker(top_n: int = 5):
     """Returns a configured CrossEncoderReranker."""
     return CrossEncoderReranker(top_n=top_n)
+
+
+@lru_cache(maxsize=1)
+def _get_cross_encoder() -> CrossEncoder:
+    """Load the reranker only when reranking is requested."""
+    return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")

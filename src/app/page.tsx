@@ -25,12 +25,14 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  const handleSelectDocument = (docId: string | null) => {
+  const handleSelectDocument = (docId: string | null, documentName?: string) => {
     setSelectedDocId(docId);
+    setCitations([]);
+    setShowCitations(false);
     if (docId) {
       const doc = documents.find((d) => d.id === docId);
       setSelectedDocName(
-        doc?.title || doc?.filename?.replace('.txt', '') || null
+        documentName || doc?.title || doc?.filename?.replace(/\.[^.]+$/, '') || null
       );
     } else {
       setSelectedDocName(null);
@@ -77,6 +79,7 @@ export default function Home() {
       {/* Center — Chat */}
       <div className="flex-1 min-w-0">
         <Chat
+          key={selectedDocId ?? 'all-documents'}
           documentId={selectedDocId}
           documentName={selectedDocName}
           onCitationsReceived={handleCitationsReceived}

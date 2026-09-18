@@ -152,14 +152,15 @@ Each entry in the JSON file looks conceptually like this:
 - **text**: The question text
 - **metadata**: Contains the query, the expected answer, the source corpus file, and an array of snippets with exact file paths and character-span positions
 
-### 4.2 Document Storage in PostgreSQL <a name="42-document-storage"></a>
+### 4.2 Document Storage in Qdrant <a name="42-document-storage"></a>
 
-Each unique contract file mentioned in the dataset is registered as a **Document** record in a PostgreSQL database. The database schema (defined using Prisma ORM) stores:
+Each contract is represented by child vector points in Qdrant. Every point stores a 384-dimensional vector plus rich payload metadata:
 
-- **Document**: The contract file — its filename, a human-readable title, the source corpus it came from (CUAD, MAUD, etc.), and the creation timestamp.
-- **Chunk**: A piece of the document — the actual text content, a vector embedding (384 numbers), the character start and end positions within the original document, and a foreign key linking it back to its parent Document.
+- **Document provenance**: document ID, filename, and source corpus (`legalbench-rag` or `user-upload`).
+- **Hierarchy**: parent ID, Article/Section path, section title, and chunk type.
+- **Evidence**: contextual child content, full parent-clause content, and exact character offsets.
 
-The relationship is hierarchical: one Document has many Chunks. When a Document is deleted, all its Chunks are automatically deleted as well (cascade delete).
+The relationship is hierarchical: one document has many parent clauses and each parent has one or more searchable children.
 
 ### 4.3 Text Chunking <a name="43-text-chunking"></a>
 
@@ -169,11 +170,11 @@ Legal contracts are typically long documents — often hundreds or thousands of 
 
 **The chunking strategy used in Synapse RAG**:
 
-In our ingestion pipeline, each unique answer snippet from the LegalBench-RAG dataset is treated as an individual chunk. This means each chunk corresponds to a specific passage that a legal expert identified as the answer to a question. This approach ensures that each chunk contains a semantically coherent legal concept.
+LegalBench answer snippets remain supported as legacy chunks. Uploaded contracts use contextual parent-child chunking: a complete legal clause is the parent (normally 500–1,200 tokens), while overlapping 150–250-token children provide high-density retrieval targets. Each child begins with a breadcrumb such as `[Document: NDA.docx | Article IV | Section 4.2: Required Disclosure]` before embedding.
 
 Each chunk is stored with:
-- The raw text content
-- Its parent document ID
+- The contextual child text and complete parent clause
+- Its document ID and parent ID
 - A 384-dimensional vector embedding (computed in the next step)
 - Character offset positions
 
@@ -905,7 +906,7 @@ The user reads the answer and can cross-reference it with the citations in the s
 
 ### Current Limitations
 
-1. **Fixed-size chunking**: The current ingestion pipeline does not perform intelligent, semantics-aware chunking. Clause boundaries are not detected, which can split coherent legal provisions across chunks.
+1. **Scanned PDF support**: Image-only PDFs require OCR and are currently rejected with an explicit error.
 
 2. **No query expansion**: Short user queries may not contain enough vocabulary to match verbose contract language. The system relies entirely on the embedding model's ability to bridge vocabulary gaps.
 
@@ -917,7 +918,7 @@ The user reads the answer and can cross-reference it with the citations in the s
 
 ### Future Directions
 
-1. **Semantic Chunking**: Splitting documents at clause boundaries, paragraph breaks, or section headers to ensure each chunk contains a complete, coherent legal concept.
+1. **Layout-aware OCR**: Extracting scanned pages, tables, signatures, and multi-column provisions while retaining reliable reading order.
 
 2. **Hypothetical Document Embeddings (HyDE)**: Having the LLM generate a hypothetical answer before searching, and using that hypothetical answer's embedding for retrieval. This bridges the vocabulary gap between short queries and verbose contracts.
 
