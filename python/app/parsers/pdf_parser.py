@@ -7,7 +7,10 @@ from pathlib import Path
 from pypdf import PdfReader
 
 from app.parsers.base import DocumentExtractionError, ExtractedDocument
-
+from app.parsers.ocr_parser import OcrPdfParser
+from app.parsers.table_extractor import PdfTableExtractor
+from pdf2image import convert_from_path
+import pytesseract
 
 class PdfParser:
     def parse(self, path: Path) -> ExtractedDocument:
@@ -18,13 +21,29 @@ class PdfParser:
             raise DocumentExtractionError(f"Unable to read PDF: {exc}") from exc
 
         if not any(page.strip() for page in pages):
-            raise DocumentExtractionError(
-                "No extractable text found in PDF. Scanned images are not yet supported."
-            )
+            return OcrPdfParser().parse(path)
 
         repeated_margins = self._repeated_margin_lines(pages)
-        cleaned = [self._clean_page(page, repeated_margins) for page in pages]
-        text = "\n\n".join(page for page in cleaned if page)
+        
+        final_pages = []
+        for i, page in enumerate(pages):
+            if page.strip():
+                final_pages.append(self._clean_page(page, repeated_margins))
+            else:
+                # This page has no text - OCR just this page
+                img = convert_from_path(str(path), dpi=300,
+                                        first_page=i+1, last_page=i+1)[0]
+                ocr_text = pytesseract.image_to_string(img, lang="eng").strip()
+                final_pages.append(ocr_text)
+
+        tables_by_page = PdfTableExtractor().extract_tables(path)
+        
+        for i in range(len(final_pages)):
+            if i in tables_by_page:
+                tables_md = "\n\n".join(tables_by_page[i])
+                final_pages[i] = f"{final_pages[i]}\n\n{tables_md}".strip()
+
+        text = "\n\n".join(page for page in final_pages if page)
         return ExtractedDocument(text=text, metadata={"format": "pdf", "page_count": len(pages)})
 
     @staticmethod

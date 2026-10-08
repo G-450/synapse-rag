@@ -249,6 +249,8 @@ flowchart LR
 ### Prerequisites
 - Node.js (v20+)
 - Python (v3.10+)
+- Tesseract OCR (must be installed and in PATH)
+- Poppler (must be installed and in PATH)
 - Groq API Key (for LLM inference)
 - Neon Database URL (for Prisma)
 
