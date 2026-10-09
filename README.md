@@ -220,7 +220,9 @@ flowchart LR
 - **Multi-Document Fan-Out Retrieval**: Perform comparative analysis across your entire contract repository. The system retrieves and synthesizes information independently per document before final aggregation.
 - **Single-Document Deep Dive**: Scope the vector space exclusively to a single selected contract for highly targeted QA.
 - **Verifiable Citations**: Total transparency. The LLM's responses include direct UI links to the exact source chunks, backed by the cross-encoder's relevance confidence score.
-- **Native Contract Uploads**: Upload selectable-text PDF, DOCX, TXT, and Markdown contracts directly from the document sidebar. Files are parsed and embedded in bounded batches.
+- **Native Contract Uploads**: Upload PDF, DOCX, TXT, and Markdown contracts directly from the document sidebar. Files are parsed and embedded in bounded batches.
+- **Scanned & Mixed PDF Support**: Image-only PDFs are read with Tesseract OCR, one page at a time. In mixed PDFs, selectable-text pages are extracted directly and only the scanned pages are OCR'd.
+- **Table-Aware PDF Parsing**: Tables are detected with pdfplumber and indexed once as Markdown tables, so row and column structure survives into retrieval instead of being flattened into loose cell text.
 - **Structural Parent-Child Retrieval**: Legal articles, sections, recitals, definitions, schedules, and exhibits form full parent clauses. Dense child vectors include structural breadcrumbs for precise retrieval, while the LLM receives each full parent only once.
 - **Glassmorphism Dark UI**: A premium, highly responsive user interface built with Tailwind CSS v4 and Framer Motion, delivering real-time streaming tokens with zero latency.
 
@@ -240,6 +242,7 @@ flowchart LR
 - **Vector Database**: Qdrant (Local)
 - **Embeddings Pipeline**: `sentence-transformers`, LangChain
 - **Models**: `all-MiniLM-L6-v2` (Bi-Encoder), `ms-marco-MiniLM-L-6-v2` (Cross-Encoder)
+- **Document Parsing**: `pdfplumber` (PDF text and tables), Tesseract OCR via `pytesseract` and `pdf2image`/Poppler (scanned pages), `python-docx`
 - **LLM**: Groq API (`GROQ_MODEL`, with configurable fallbacks)
 
 ---
@@ -249,8 +252,8 @@ flowchart LR
 ### Prerequisites
 - Node.js (v20+)
 - Python (v3.10+)
-- Tesseract OCR (must be installed and in PATH)
-- Poppler (must be installed and in PATH)
+- Tesseract OCR, on PATH (for scanned PDFs; Windows: [UB Mannheim build](https://github.com/UB-Mannheim/tesseract/wiki), macOS: `brew install tesseract`, Linux: `apt install tesseract-ocr`)
+- Poppler, on PATH (renders PDF pages for OCR; macOS: `brew install poppler`, Linux: `apt install poppler-utils`)
 - Groq API Key (for LLM inference)
 - Neon Database URL (for Prisma)
 
@@ -325,12 +328,14 @@ npm run ingest
 ```
 *(Or use the Python equivalent scripts provided in `python/scripts/`)*
 
-To ingest a custom contract, start both servers and choose **Upload Contract** in the sidebar. Raw uploads are stored in `data/uploads/`; only their contextual child chunks are embedded in Qdrant. Scanned/image-only PDFs return a clear error because OCR is not yet supported.
+To ingest a custom contract, start both servers and choose **Upload Contract** in the sidebar. Raw uploads are stored in `data/uploads/`; only their contextual child chunks are embedded in Qdrant. Scanned and mixed PDFs are OCR'd automatically. If Tesseract or Poppler is missing, the upload fails with a clear message instead of a server error.
 
-Run the isolated ingestion verification suite with:
+Run the parser unit tests and the isolated ingestion verification suite with:
 
 ```bash
-python/venv/Scripts/python.exe python/scripts/test_upload_and_chunking.py
+cd python
+python -m pytest tests/ -v
+python scripts/test_upload_and_chunking.py
 ```
 
 ---
@@ -340,7 +345,7 @@ python/venv/Scripts/python.exe python/scripts/test_upload_and_chunking.py
 Synapse RAG demonstrates that general-purpose LLMs can be safely applied to high-stakes legal environments when constrained by a rigorous, mathematically sound retrieval pipeline. Future iterations will focus on:
 1. **Domain-Adaptive Pretraining (DAPT)**: Fine-tuning the bi-encoder on a massive corpus of unlabelled legal contracts.
 2. **ColBERT Implementation**: Exploring late-interaction architectures to bridge the gap between bi-encoder speed and cross-encoder accuracy.
-3. **Multi-Modal Document Parsing**: Integrating layout-aware models to handle complex tables and signatures in native PDFs.
+3. **Layout-Aware Document Understanding**: OCR, mixed-page PDFs, and table extraction are in place. The next step is a layout model (e.g. LayoutLMv3 or Donut) for multi-column reading order, complex merged-cell tables, and signature blocks.
 
 ---
 <div align="center">
