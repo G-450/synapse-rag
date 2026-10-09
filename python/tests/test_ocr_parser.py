@@ -64,6 +64,30 @@ def test_post_process_leaves_other_numbers_alone():
 
     assert OcrPdfParser._post_process(text) == text
 
+def test_post_process_restores_article_stroke_from_section_numbers():
+    text = (
+        "ARTICLE Il\nCONFIDENTIALITY\nSection 2.1 Duty.\n\n"
+        "ARTICLE Il\nEXCLUSIONS\nSection 3.1 Standard Exclusions.\n\n"
+        "ARTICLE VII - REMEDIES\n8.1 Injunctive relief.\n\n"
+        "obligations under Article Il shall survive"
+    )
+
+    result = OcrPdfParser._post_process(text)
+
+    assert "ARTICLE II\nCONFIDENTIALITY" in result
+    assert "ARTICLE III\nEXCLUSIONS" in result
+    assert "ARTICLE VIII - REMEDIES" in result
+    assert "under Article II shall" in result
+
+def test_post_process_keeps_article_without_matching_evidence():
+    text = (
+        "ARTICLE II\nNo numbered sections here.\n\n"
+        "ARTICLE VI\nSection 4.1 Numbered differently on purpose.\n\n"
+        "ARTICLE IX\nSection 2.1 Restarted numbering."
+    )
+
+    assert OcrPdfParser._post_process(text) == text
+
 def test_post_process_rejoins_wrapped_lines():
     text = "Section 2.1 The Receiving Party agrees to pro-\ntect the information of the\nDisclosing Party.\nSection 2.2 Next."
 
