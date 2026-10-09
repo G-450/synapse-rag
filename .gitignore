@@ -111,3 +111,12 @@ skills-lock.json
 # ========================================
 /literature_survey/
 /scripts/download_papers.py
+
+# ========================================
+# Local test fixtures and manual API probes
+# ========================================
+/test_contracts/
+/scripts/generate_nda_contracts.py
+/scripts/generate_test_contracts.py
+/test_chat.py
+/test_groq.py
