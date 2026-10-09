@@ -143,7 +143,7 @@ class StructuralIngestionTests(unittest.TestCase):
             tesseract_installed = True
         except Exception:
             tesseract_installed = False
-            
+
         if tesseract_installed:
             with self.assertRaisesRegex(DocumentExtractionError, "(?i)(OCR could not extract|OCR failed)"):
                 extract_document(blank_pdf)

@@ -32,13 +32,11 @@ class PdfParser:
                             return True
 
                         p = page.filter(not_in_table)
-                        
-                        # Extract table Markdown directly without reopening the PDF
-                        tables_data = page.extract_tables()
-                        if tables_data:
-                            tables_md = PdfTableExtractor().convert_tables(tables_data)
-                            if tables_md:
-                                tables_by_page[i] = tables_md
+
+                        # Reuse the detected tables instead of running detection again
+                        tables_md = PdfTableExtractor().convert_tables([t.extract() for t in tables])
+                        if tables_md:
+                            tables_by_page[i] = tables_md
                     else:
                         p = page
 
@@ -81,9 +79,10 @@ class PdfParser:
         candidates: Counter[str] = Counter()
         for page in pages:
             lines = [line.strip() for line in page.splitlines() if line.strip()]
-            for line in lines[:2] + lines[-2:]:
-                if len(line) <= 160:
-                    candidates[self._normalized_margin(line)] += 1
+            # Count each candidate once per page; on short pages the head and tail
+            # slices overlap and would otherwise make one line look repeated.
+            margins = {self._normalized_margin(line) for line in lines[:2] + lines[-2:] if len(line) <= 160}
+            candidates.update(margins)
         threshold = max(2, (len(pages) + 1) // 2)
         return {line for line, count in candidates.items() if count >= threshold}
 

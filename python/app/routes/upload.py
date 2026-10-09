@@ -6,6 +6,7 @@ import re
 import uuid
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from langchain_core.documents import Document
 from qdrant_client.http import models
 
@@ -78,7 +79,8 @@ async def upload_contract(file: UploadFile = File(...)):
                     raise HTTPException(status_code=413, detail="File exceeds the 25 MB upload limit.")
                 output.write(chunk)
 
-        extracted = extract_document(destination)
+        # OCR can take minutes; keep it off the event loop.
+        extracted = await run_in_threadpool(extract_document, destination)
         _, children = ParentChildSplitter().split(extracted.text, document_id, original_name)
         if not children:
             raise DocumentExtractionError("No indexable contract text was found.")
