@@ -334,6 +334,7 @@ Run the parser unit tests and the isolated ingestion verification suite with:
 
 ```bash
 cd python
+pip install -r requirements-dev.txt   # once; adds pytest on top of requirements.txt
 python -m pytest tests/ -v
 python scripts/test_upload_and_chunking.py
 ```
