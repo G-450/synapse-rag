@@ -8,6 +8,10 @@ from pdf2image import convert_from_path, pdfinfo_from_path
 
 from app.parsers.base import DocumentExtractionError, ExtractedDocument
 
+# Tesseract often reads the "I" in Roman numerals as "|", "l" or "i" (ARTICLE II -> ARTICLE Il).
+# Only the numeral right after "Article" is touched, so clause numbers elsewhere stay as read.
+ARTICLE_NUMERAL_RE = re.compile(r"\b((?i:article)\s+)([IVXLCDM|l1i]*[|li][IVXLCDM|l1i]*)(?=[\s.,:;)-]|$)")
+
 
 class OcrPdfParser:
     """Extracts text from scanned PDFs using Tesseract OCR."""
@@ -64,4 +68,10 @@ class OcrPdfParser:
         text = re.sub(r'[ \t]+', ' ', text)
         # Normalize line breaks
         text = re.sub(r'\n{3,}', '\n\n', text)
+        # Rejoin hyphenated words and soft-wrapped lines, as PdfParser does for text pages
+        text = re.sub(r"(?<=\w)-\n(?=[a-z])", "", text)
+        text = re.sub(r"(?<![.:;!?\n])\n(?=[a-z(\[])", " ", text)
+        text = ARTICLE_NUMERAL_RE.sub(
+            lambda m: m.group(1) + re.sub(r"[|l1i]", "I", m.group(2)), text
+        )
         return text.strip()
