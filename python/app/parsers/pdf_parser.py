@@ -1,50 +1,77 @@
-"""Selectable-text PDF extraction with conservative margin cleanup."""
+"""Selectable-text PDF extraction with conservative margin cleanup, OCR fallback, and structured table extraction."""
 
 import re
 from collections import Counter
 from pathlib import Path
 
-from pypdf import PdfReader
+import pdfplumber
 
 from app.parsers.base import DocumentExtractionError, ExtractedDocument
 from app.parsers.ocr_parser import OcrPdfParser
 from app.parsers.table_extractor import PdfTableExtractor
-from pdf2image import convert_from_path
-import pytesseract
+
 
 class PdfParser:
     def parse(self, path: Path) -> ExtractedDocument:
+        tables_by_page = {}
         try:
-            reader = PdfReader(str(path))
-            pages = [(page.extract_text() or "").replace("\r\n", "\n") for page in reader.pages]
+            with pdfplumber.open(str(path)) as pdf:
+                pages_text = []
+                for i, page in enumerate(pdf.pages):
+                    tables = page.find_tables()
+                    if tables:
+                        bboxes = [t.bbox for t in tables]
+
+                        def not_in_table(obj, bboxes=bboxes):
+                            if obj.get("object_type") == "char":
+                                x_mid = (obj.get("x0", 0) + obj.get("x1", 0)) / 2
+                                y_mid = (obj.get("top", 0) + obj.get("bottom", 0)) / 2
+                                for bx0, btop, bx1, bbottom in bboxes:
+                                    if bx0 <= x_mid <= bx1 and btop <= y_mid <= bbottom:
+                                        return False
+                            return True
+
+                        p = page.filter(not_in_table)
+                        
+                        # Extract table Markdown directly without reopening the PDF
+                        tables_data = page.extract_tables()
+                        if tables_data:
+                            tables_md = PdfTableExtractor().convert_tables(tables_data)
+                            if tables_md:
+                                tables_by_page[i] = tables_md
+                    else:
+                        p = page
+
+                    text = p.extract_text() or ""
+                    pages_text.append(text.replace("\r\n", "\n"))
         except Exception as exc:
             raise DocumentExtractionError(f"Unable to read PDF: {exc}") from exc
 
-        if not any(page.strip() for page in pages):
+        if not any(page.strip() for page in pages_text):
             return OcrPdfParser().parse(path)
 
-        repeated_margins = self._repeated_margin_lines(pages)
-        
+        repeated_margins = self._repeated_margin_lines(pages_text)
+
         final_pages = []
-        for i, page in enumerate(pages):
+        has_ocr = False
+        for i, page in enumerate(pages_text):
             if page.strip():
                 final_pages.append(self._clean_page(page, repeated_margins))
             else:
-                # This page has no text - OCR just this page
-                img = convert_from_path(str(path), dpi=300,
-                                        first_page=i+1, last_page=i+1)[0]
-                ocr_text = pytesseract.image_to_string(img, lang="eng").strip()
+                has_ocr = True
+                ocr_text = OcrPdfParser().parse_page(path, i + 1)
                 final_pages.append(ocr_text)
 
-        tables_by_page = PdfTableExtractor().extract_tables(path)
-        
         for i in range(len(final_pages)):
             if i in tables_by_page:
                 tables_md = "\n\n".join(tables_by_page[i])
                 final_pages[i] = f"{final_pages[i]}\n\n{tables_md}".strip()
 
         text = "\n\n".join(page for page in final_pages if page)
-        return ExtractedDocument(text=text, metadata={"format": "pdf", "page_count": len(pages)})
+        metadata = {"format": "pdf", "page_count": len(pages_text)}
+        if has_ocr:
+            metadata["ocr"] = True
+        return ExtractedDocument(text=text, metadata=metadata)
 
     @staticmethod
     def _normalized_margin(line: str) -> str:
