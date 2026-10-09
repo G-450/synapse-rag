@@ -135,8 +135,21 @@ class StructuralIngestionTests(unittest.TestCase):
         writer.add_blank_page(width=612, height=792)
         with blank_pdf.open("wb") as target:
             writer.write(target)
-        with self.assertRaisesRegex(DocumentExtractionError, "Scanned images are not yet supported"):
-            extract_document(blank_pdf)
+
+        try:
+            import pytesseract
+            # Check if tesseract is actually installed on the system
+            pytesseract.get_tesseract_version()
+            tesseract_installed = True
+        except Exception:
+            tesseract_installed = False
+            
+        if tesseract_installed:
+            with self.assertRaisesRegex(DocumentExtractionError, "(?i)(OCR could not extract|OCR failed)"):
+                extract_document(blank_pdf)
+        else:
+            with self.assertRaisesRegex(DocumentExtractionError, "(?i)(OCR failed: Tesseract not found|Unable to convert)"):
+                extract_document(blank_pdf)
 
     def test_hierarchy_parent_child_integrity(self) -> None:
         sections = LegalHierarchyParser().parse(CONTRACT)
