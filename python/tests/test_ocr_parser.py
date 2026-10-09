@@ -42,3 +42,32 @@ def test_ocr_parser_conversion_error():
 
         with pytest.raises(DocumentExtractionError, match="Unable to convert PDF page 1 to images"):
             parser.parse(Path("dummy.pdf"))
+
+def test_post_process_repairs_misread_article_numerals():
+    text = (
+        "ARTICLE |\nDEFINITIONS\n\nARTICLE Il\nCONFIDENTIALITY\n\nARTICLE ViiI\nWARRANTIES\n\n"
+        "obligations under Article Il shall survive"
+    )
+
+    result = OcrPdfParser._post_process(text)
+
+    assert result.startswith("ARTICLE I\nDEFINITIONS")
+    assert "ARTICLE II\nCONFIDENTIALITY" in result
+    assert "ARTICLE VIII\nWARRANTIES" in result
+    assert "under Article II shall" in result
+
+def test_post_process_leaves_other_numbers_alone():
+    text = (
+        "ARTICLE XL\nARTICLE 1\nARTICLE IV\nSection 1A applies on the 1st day per Exhibit B1\n"
+        "Each article in this Agreement and the article lists"
+    )
+
+    assert OcrPdfParser._post_process(text) == text
+
+def test_post_process_rejoins_wrapped_lines():
+    text = "Section 2.1 The Receiving Party agrees to pro-\ntect the information of the\nDisclosing Party.\nSection 2.2 Next."
+
+    assert OcrPdfParser._post_process(text) == (
+        "Section 2.1 The Receiving Party agrees to protect the information of the\n"
+        "Disclosing Party.\nSection 2.2 Next."
+    )
