@@ -3,6 +3,7 @@ Core RAG retrieval logic for Synapse RAG (LangChain + Qdrant version).
 """
 
 import os
+import re
 import threading
 from pathlib import Path
 from dotenv import load_dotenv
@@ -82,6 +83,31 @@ def build_document_filter(document_ids: list[str] | None) -> models.Filter | Non
     )
 
 
+# A chunk whose text is only a clause heading ("Section 8.2. Effect of Termination.")
+# answers nothing on its own, and the index holds one per heading in the benchmark
+# corpora. Those stubs match heading-shaped questions better than the clauses that
+# actually contain the answer, so without this they fill every context slot and the
+# model is left with nothing to ground an answer in.
+MIN_CONTEXT_WORDS = max(1, int(os.getenv("MIN_CONTEXT_WORDS", "15")))
+
+_BREADCRUMB_RE = re.compile(r"^\[[^\]]*\]\s*")
+
+
+def has_substantive_text(text: str) -> bool:
+    """True when a chunk carries enough prose to support an answer."""
+    body = _BREADCRUMB_RE.sub("", (text or "").strip())
+    return len(body.split()) >= MIN_CONTEXT_WORDS
+
+
+def drop_heading_stubs(scored_docs: list) -> list:
+    """Keep only chunks with real clause text, unless that would leave nothing."""
+    substantive = [
+        pair for pair in scored_docs
+        if has_substantive_text(pair[0].metadata.get("child_content") or pair[0].page_content)
+    ]
+    return substantive or scored_docs
+
+
 def retrieve_chunks(
     query: str,
     document_id: str | None = None,
@@ -93,7 +119,9 @@ def retrieve_chunks(
     Retrieve the most relevant chunks using Qdrant similarity search.
     Optionally scoped to one or more documents and/or reranked with cross-encoder.
     """
-    fetch_limit = max(limit * 4, 20) if rerank else limit
+    # Over-fetch: heading stubs are dropped below, so the pool has to be deep
+    # enough to still hold `limit` real clauses once they are gone.
+    fetch_limit = max(limit * 8, 60) if rerank else max(limit * 4, 40)
     vectorstore = get_vectorstore()
 
     scope = list(document_ids) if document_ids else ([document_id] if document_id else [])
@@ -111,7 +139,7 @@ def retrieve_chunks(
     )
 
     documents = []
-    for doc, score in docs_with_scores:
+    for doc, score in drop_heading_stubs(docs_with_scores):
         doc.metadata["similarity"] = score
         documents.append(doc)
 
@@ -162,8 +190,9 @@ def fan_out_retrieve(
     document_filter = build_document_filter(document_ids)
     filter_kwargs = {"filter": document_filter} if document_filter is not None else {}
 
-    # Fetch a large pool so every document in scope gets a fair chance of surfacing
-    pool_size = max(30, top_docs * chunks_per_doc * 4)
+    # Fetch a large pool so every document in scope gets a fair chance of surfacing,
+    # with room to spare for the heading stubs dropped below.
+    pool_size = max(90, top_docs * chunks_per_doc * 12)
 
     docs_with_scores = vectorstore.similarity_search_with_score(
         query=query,
@@ -173,7 +202,7 @@ def fan_out_retrieve(
 
     # Group by document_id
     grouped = {}
-    for doc, score in docs_with_scores:
+    for doc, score in drop_heading_stubs(docs_with_scores):
         doc_id = doc.metadata.get("document_id")
         if not doc_id:
             continue

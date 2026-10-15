@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react';
 import {
   FileText,
   Search,
@@ -26,7 +26,13 @@ interface Document {
 
 interface DocumentSidebarProps {
   selectedDocIds: string[];
-  onSelectionChange: (docIds: string[], documentNames?: string[]) => void;
+  /** `wholeLibrary` lets the page query every contract unscoped, which is far
+   *  cheaper than filtering on an id list that covers the whole index anyway. */
+  onSelectionChange: (
+    docIds: string[],
+    documentNames?: string[],
+    wholeLibrary?: boolean
+  ) => void;
 }
 
 const CORPUS_LABELS: Record<string, string> = {
@@ -41,6 +47,100 @@ const CORPUS_LABELS: Record<string, string> = {
 const UPLOAD_CORPUS = 'user-upload';
 /** How long an armed delete waits for its confirming click before standing down. */
 const CONFIRM_TIMEOUT_MS = 5000;
+
+interface DocumentRowProps {
+  doc: Document;
+  isSelected: boolean;
+  isDeleting: boolean;
+  isPendingDelete: boolean;
+  deletable: boolean;
+  onToggle: (docId: string) => void;
+  onSelectOnly: (docId: string) => void;
+  onDelete: (docId: string) => void;
+}
+
+// The library runs to hundreds of contracts. Rendering every row again on each
+// click made a single checkbox feel sluggish, so a row only re-renders when its
+// own state changes — which needs the handlers below to keep their identity.
+const DocumentRow = memo(function DocumentRow({
+  doc,
+  isSelected,
+  isDeleting,
+  isPendingDelete,
+  deletable,
+  onToggle,
+  onSelectOnly,
+  onDelete,
+}: DocumentRowProps) {
+  const label = doc.title || doc.filename;
+  return (
+    <div
+      className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-all"
+      style={{
+        background: isSelected ? 'var(--accent-glow)' : 'transparent',
+        color: isSelected ? 'var(--accent-hover)' : 'var(--foreground-muted)',
+      }}
+    >
+      <button
+        onClick={() => onToggle(doc.id)}
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-all"
+        style={{
+          borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
+          background: isSelected ? 'var(--accent)' : 'transparent',
+        }}
+        aria-label={
+          isSelected
+            ? `Remove ${label} from the selection`
+            : `Add ${label} to the selection`
+        }
+        aria-pressed={isSelected}
+      >
+        {isSelected && <Check size={11} strokeWidth={3} color="#fff" />}
+      </button>
+      <button
+        onClick={() => onSelectOnly(doc.id)}
+        className="flex min-w-0 flex-1 items-center gap-2 text-left"
+        title={`${doc.filename} — click to query this contract only`}
+      >
+        <FileText
+          size={13}
+          className="flex-shrink-0 opacity-50 transition-opacity group-hover:opacity-100"
+        />
+        <span className="truncate">
+          {doc.title || doc.filename.replace('.txt', '')}
+        </span>
+        <span className="ml-auto flex-shrink-0 text-[10px] opacity-40">
+          {doc.chunk_count}
+        </span>
+      </button>
+      {deletable && (
+        <button
+          onClick={() => onDelete(doc.id)}
+          disabled={isDeleting}
+          className="flex-shrink-0 rounded p-1 opacity-0 transition-opacity group-hover:opacity-70 hover:opacity-100 focus:opacity-100 disabled:opacity-40"
+          style={{
+            color: 'var(--error)',
+            opacity: isPendingDelete ? 1 : undefined,
+          }}
+          title={
+            isPendingDelete
+              ? 'Click again to delete this upload'
+              : 'Delete this upload'
+          }
+          aria-label={`Delete ${label}`}
+        >
+          {isDeleting ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : isPendingDelete ? (
+            <Check size={12} strokeWidth={3} />
+          ) : (
+            <Trash2 size={12} />
+          )}
+        </button>
+      )}
+    </div>
+  );
+});
 
 export default function DocumentSidebar({
   selectedDocIds,
@@ -60,19 +160,47 @@ export default function DocumentSidebar({
   const [deleting, setDeleting] = useState<Set<string>>(new Set());
   const [deleteError, setDeleteError] = useState('');
 
-  const selected = new Set(selectedDocIds);
+  const selected = useMemo(() => new Set(selectedDocIds), [selectedDocIds]);
 
   const labelFor = (doc: Document) => doc.title || doc.filename.replace(/\.[^.]+$/, '');
 
+  // Selecting a whole corpus commits hundreds of ids at once, so the labels are
+  // looked up through a map. Scanning the library per id made that click crawl.
+  const labelsById = useMemo(
+    () => new Map(documents.map((doc) => [doc.id, labelFor(doc)])),
+    [documents]
+  );
+
+  // Everything the stable row handlers below need to read at click time, without
+  // taking a dependency on it — a changed dependency would re-render every row.
+  const live = useRef<{
+    documents: Document[];
+    labelsById: Map<string, string>;
+    selectedDocIds: string[];
+    pendingDeleteId: string | null;
+    onSelectionChange: DocumentSidebarProps['onSelectionChange'];
+    removeDocuments: (docIds: string[]) => unknown;
+  }>({
+    documents,
+    labelsById,
+    selectedDocIds,
+    pendingDeleteId,
+    onSelectionChange,
+    removeDocuments: () => {},
+  });
+
   /** Push a selection upward together with display labels for the chat header. */
-  const commitSelection = (docIds: string[], pool: Document[] = documents) =>
-    onSelectionChange(
+  const commitSelection = useCallback((docIds: string[], pool?: Document[]) => {
+    const current = live.current;
+    const labels = pool
+      ? new Map(pool.map((doc) => [doc.id, labelFor(doc)]))
+      : current.labelsById;
+    current.onSelectionChange(
       docIds,
-      docIds.map((id) => {
-        const doc = pool.find((item) => item.id === id);
-        return doc ? labelFor(doc) : 'Selected document';
-      })
+      docIds.map((id) => labels.get(id) || 'Selected document'),
+      docIds.length > 0 && docIds.length >= current.documents.length
     );
+  }, []);
 
   /** Pull the library straight from the index, so the tree mirrors what is stored. */
   const loadDocuments = async () => {
@@ -154,14 +282,20 @@ export default function DocumentSidebar({
   };
 
   /** Click a row: make it the only selection. Checkbox: add/remove from the selection. */
-  const selectOnly = (docId: string) => commitSelection([docId]);
+  const selectOnly = useCallback(
+    (docId: string) => commitSelection([docId]),
+    [commitSelection]
+  );
 
-  const toggleDocument = (docId: string) => {
-    const next = new Set(selected);
-    if (next.has(docId)) next.delete(docId);
-    else next.add(docId);
-    commitSelection([...next]);
-  };
+  const toggleDocument = useCallback(
+    (docId: string) => {
+      const next = new Set(live.current.selectedDocIds);
+      if (next.has(docId)) next.delete(docId);
+      else next.add(docId);
+      commitSelection([...next]);
+    },
+    [commitSelection]
+  );
 
   const toggleCorpusSelection = (docs: Document[]) => {
     const ids = docs.map((d) => d.id);
@@ -211,6 +345,25 @@ export default function DocumentSidebar({
     }
   };
 
+  // Refreshed after every render, so the stable handlers above always read the
+  // current library, selection and pending delete without depending on them.
+  useEffect(() => {
+    live.current = {
+      documents,
+      labelsById,
+      selectedDocIds,
+      pendingDeleteId,
+      onSelectionChange,
+      removeDocuments,
+    };
+  });
+
+  /** First click arms the confirmation, the second one deletes. */
+  const handleDeleteClick = useCallback((docId: string) => {
+    if (live.current.pendingDeleteId === docId) void live.current.removeDocuments([docId]);
+    else setPendingDeleteId(docId);
+  }, []);
+
   const filteredGrouped = Object.entries(grouped).reduce(
     (acc, [corpus, docs]) => {
       const filtered = docs.filter(
@@ -225,9 +378,16 @@ export default function DocumentSidebar({
   );
 
   const totalDocs = documents.length;
+  // The button is a toggle: it checks every contract, and clears them again.
+  // Either way the next question runs against the whole library.
+  const everythingSelected = totalDocs > 0 && selectedDocIds.length >= totalDocs;
+  const toggleAllDocuments = () =>
+    commitSelection(everythingSelected ? [] : documents.map((doc) => doc.id));
   const totalChunks = documents.reduce((sum, d) => sum + d.chunk_count, 0);
   const uploadCount = (grouped[UPLOAD_CORPUS] || []).length;
   const selectedCount = selectedDocIds.length;
+  // No selection and every contract selected both query the whole library.
+  const queryingEverything = selectedCount === 0 || everythingSelected;
   const clearingUploads = (grouped[UPLOAD_CORPUS] || []).some((doc) =>
     deleting.has(doc.id)
   );
@@ -294,19 +454,22 @@ export default function DocumentSidebar({
       {/* All Documents Button */}
       <div className="px-3 py-2">
         <button
-          onClick={() => commitSelection([])}
+          onClick={toggleAllDocuments}
+          aria-pressed={everythingSelected}
+          title={
+            everythingSelected
+              ? 'Deselect every contract'
+              : 'Select every contract'
+          }
           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
           style={{
-            background:
-              selectedCount === 0 ? 'var(--accent-glow)' : 'transparent',
-            color:
-              selectedCount === 0
-                ? 'var(--accent-hover)'
-                : 'var(--foreground-muted)',
-            border:
-              selectedCount === 0
-                ? '1px solid var(--accent)'
-                : '1px solid transparent',
+            background: queryingEverything ? 'var(--accent-glow)' : 'transparent',
+            color: queryingEverything
+              ? 'var(--accent-hover)'
+              : 'var(--foreground-muted)',
+            border: queryingEverything
+              ? '1px solid var(--accent)'
+              : '1px solid transparent',
           }}
         >
           <Layers size={16} />
@@ -449,92 +612,19 @@ export default function DocumentSidebar({
                   {/* Documents under this corpus */}
                   {expandedCorpora.has(corpus) && (
                     <div className="ml-4 space-y-0.5">
-                      {docs.map((doc) => {
-                        const isSelected = selected.has(doc.id);
-                        const isDeleting = deleting.has(doc.id);
-                        return (
-                          <div
-                            key={doc.id}
-                            className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-all"
-                            style={{
-                              background: isSelected
-                                ? 'var(--accent-glow)'
-                                : 'transparent',
-                              color: isSelected
-                                ? 'var(--accent-hover)'
-                                : 'var(--foreground-muted)',
-                            }}
-                          >
-                            <button
-                              onClick={() => toggleDocument(doc.id)}
-                              className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-all"
-                              style={{
-                                borderColor: isSelected
-                                  ? 'var(--accent)'
-                                  : 'var(--border)',
-                                background: isSelected
-                                  ? 'var(--accent)'
-                                  : 'transparent',
-                              }}
-                              aria-label={
-                                isSelected
-                                  ? `Remove ${doc.title || doc.filename} from the selection`
-                                  : `Add ${doc.title || doc.filename} to the selection`
-                              }
-                              aria-pressed={isSelected}
-                            >
-                              {isSelected && (
-                                <Check size={11} strokeWidth={3} color="#fff" />
-                              )}
-                            </button>
-                            <button
-                              onClick={() => selectOnly(doc.id)}
-                              className="flex min-w-0 flex-1 items-center gap-2 text-left"
-                              title={`${doc.filename} — click to query this contract only`}
-                            >
-                              <FileText
-                                size={13}
-                                className="flex-shrink-0 opacity-50 transition-opacity group-hover:opacity-100"
-                              />
-                              <span className="truncate">
-                                {doc.title || doc.filename.replace('.txt', '')}
-                              </span>
-                              <span className="ml-auto flex-shrink-0 text-[10px] opacity-40">
-                                {doc.chunk_count}
-                              </span>
-                            </button>
-                            {corpus === UPLOAD_CORPUS && (
-                              <button
-                                onClick={() =>
-                                  pendingDeleteId === doc.id
-                                    ? removeDocuments([doc.id])
-                                    : setPendingDeleteId(doc.id)
-                                }
-                                disabled={isDeleting}
-                                className="flex-shrink-0 rounded p-1 opacity-0 transition-opacity group-hover:opacity-70 hover:opacity-100 focus:opacity-100 disabled:opacity-40"
-                                style={{
-                                  color: 'var(--error)',
-                                  opacity: pendingDeleteId === doc.id ? 1 : undefined,
-                                }}
-                                title={
-                                  pendingDeleteId === doc.id
-                                    ? 'Click again to delete this upload'
-                                    : 'Delete this upload'
-                                }
-                                aria-label={`Delete ${doc.title || doc.filename}`}
-                              >
-                                {isDeleting ? (
-                                  <Loader2 size={12} className="animate-spin" />
-                                ) : pendingDeleteId === doc.id ? (
-                                  <Check size={12} strokeWidth={3} />
-                                ) : (
-                                  <Trash2 size={12} />
-                                )}
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
+                      {docs.map((doc) => (
+                        <DocumentRow
+                          key={doc.id}
+                          doc={doc}
+                          isSelected={selected.has(doc.id)}
+                          isDeleting={deleting.has(doc.id)}
+                          isPendingDelete={pendingDeleteId === doc.id}
+                          deletable={corpus === UPLOAD_CORPUS}
+                          onToggle={toggleDocument}
+                          onSelectOnly={selectOnly}
+                          onDelete={handleDeleteClick}
+                        />
+                      ))}
                     </div>
                   )}
                 </div>
