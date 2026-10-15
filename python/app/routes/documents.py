@@ -148,10 +148,33 @@ def _collect_document_corpora(client: QdrantClient, document_ids: set[str]) -> d
     return corpora
 
 
-def _count_chunks(client: QdrantClient, document_ids: list[str]) -> int:
-    from app.rag import build_document_filter
+def _deletion_filter(document_ids: list[str]) -> models.Filter | None:
+    """
+    Match chunks by document_id under either payload shape.
 
-    document_filter = build_document_filter(document_ids)
+    langchain-qdrant nests metadata under "metadata", but chunks written by the
+    ingestion scripts (and by older versions) keep it flat on the payload. A
+    filter that only knows one shape silently leaves the other half behind, so
+    the document comes straight back in the library after a "successful" delete.
+    """
+    scoped = [doc_id for doc_id in document_ids if doc_id]
+    if not scoped:
+        return None
+    match = (
+        models.MatchValue(value=scoped[0])
+        if len(scoped) == 1
+        else models.MatchAny(any=scoped)
+    )
+    return models.Filter(
+        should=[
+            models.FieldCondition(key="metadata.document_id", match=match),
+            models.FieldCondition(key="document_id", match=match),
+        ]
+    )
+
+
+def _count_chunks(client: QdrantClient, document_ids: list[str]) -> int:
+    document_filter = _deletion_filter(document_ids)
     if document_filter is None:
         return 0
     return client.count(
@@ -180,7 +203,7 @@ def delete_documents(body: DeleteDocumentsRequest):
     and the stored original file is deleted. Pass documentIds to delete a specific
     set, or corpus="user-upload" to clear every upload at once.
     """
-    from app.rag import build_document_filter, get_qdrant_client
+    from app.rag import get_qdrant_client
 
     requested = list(dict.fromkeys(doc_id for doc_id in body.documentIds if doc_id))
     if not requested and not body.corpus:
@@ -201,14 +224,11 @@ def delete_documents(body: DeleteDocumentsRequest):
             )
             corpora.update({doc.id: body.corpus for doc in index.grouped.get(body.corpus, [])})
 
-        unknown = [doc_id for doc_id in requested if doc_id not in corpora]
-        if unknown:
-            raise HTTPException(
-                status_code=404,
-                detail=f"No indexed document found for {unknown[0]}.",
-            )
-
-        protected = [doc_id for doc_id in requested if corpora[doc_id] not in DELETABLE_CORPORA]
+        protected = [
+            doc_id
+            for doc_id in requested
+            if doc_id in corpora and corpora[doc_id] not in DELETABLE_CORPORA
+        ]
         if protected:
             raise HTTPException(
                 status_code=403,
@@ -221,12 +241,28 @@ def delete_documents(body: DeleteDocumentsRequest):
         if not requested:
             return DeleteDocumentsResponse(deleted=[], chunks_removed=0)
 
+        # A document the index no longer knows is already in the state the caller
+        # asked for. Reporting 404 would strand its row in the library forever,
+        # because every retry would fail the same way.
         chunks_removed = _count_chunks(client, requested)
-        client.delete(
-            collection_name=COLLECTION_NAME,
-            points_selector=models.FilterSelector(filter=build_document_filter(requested)),
-            wait=True,
-        )
+        if chunks_removed:
+            client.delete(
+                collection_name=COLLECTION_NAME,
+                points_selector=models.FilterSelector(filter=_deletion_filter(requested)),
+                wait=True,
+            )
+            left_behind = _count_chunks(client, requested)
+            if left_behind:
+                logger.error(
+                    "Delete left %s chunks behind for %s", left_behind, requested
+                )
+                raise HTTPException(
+                    status_code=500,
+                    detail=(
+                        f"{left_behind} chunks could not be removed from the index. "
+                        "The contract is still searchable."
+                    ),
+                )
         _remove_upload_files(requested)
         return DeleteDocumentsResponse(deleted=requested, chunks_removed=chunks_removed)
 

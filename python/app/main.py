@@ -2,7 +2,7 @@
 Synapse RAG — FastAPI Application Entry Point
 
 Run with:
-    uvicorn app.main:app --reload --port 8000
+    uvicorn app.main:app --reload --port 8001
 
 The Next.js frontend (localhost:3000) proxies RAG API calls to this service.
 """
