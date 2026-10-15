@@ -3,6 +3,7 @@ Core RAG retrieval logic for Synapse RAG (LangChain + Qdrant version).
 """
 
 import os
+import threading
 from pathlib import Path
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
@@ -21,13 +22,20 @@ load_dotenv()
 
 # Global instance of QdrantClient to avoid RocksDB lock conflicts
 _qdrant_client = None
+# FastAPI runs the sync route handlers in a threadpool, so concurrent requests can
+# reach get_qdrant_client() at the same time. Without this lock each of them sees an
+# empty _qdrant_client and opens its own embedded client, and every one after the
+# first fails because the storage folder is already locked on disk.
+_qdrant_client_lock = threading.Lock()
 
 
 def get_qdrant_client():
     global _qdrant_client
     if _qdrant_client is None:
-        qdrant_dir = Path(__file__).parent.parent / "qdrant_db"
-        _qdrant_client = QdrantClient(path=str(qdrant_dir))
+        with _qdrant_client_lock:
+            if _qdrant_client is None:
+                qdrant_dir = Path(__file__).parent.parent / "qdrant_db"
+                _qdrant_client = QdrantClient(path=str(qdrant_dir))
     return _qdrant_client
 
 
