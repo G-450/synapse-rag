@@ -98,24 +98,28 @@ export default function DocumentSidebar({
     });
   };
 
-  const handleUploaded = (result: UploadResult) => {
-    const document: Document = {
+  const handleUploaded = (results: UploadResult[]) => {
+    if (results.length === 0) return;
+    const uploaded: Document[] = results.map((result) => ({
       id: result.document_id,
       filename: result.filename,
       title: result.filename.replace(/\.[^.]+$/, ''),
       source_corpus: UPLOAD_CORPUS,
       chunk_count: result.chunks_created,
-    };
-    setDocuments((current) => [...current.filter((item) => item.id !== document.id), document]);
+    }));
+    const ids = new Set(uploaded.map((doc) => doc.id));
+
+    setDocuments((current) => [...current.filter((item) => !ids.has(item.id)), ...uploaded]);
     setGrouped((current) => ({
       ...current,
       [UPLOAD_CORPUS]: [
-        ...(current[UPLOAD_CORPUS] || []).filter((item) => item.id !== document.id),
-        document,
+        ...(current[UPLOAD_CORPUS] || []).filter((item) => !ids.has(item.id)),
+        ...uploaded,
       ],
     }));
     setExpandedCorpora((current) => new Set([...current, UPLOAD_CORPUS]));
-    commitSelection([document.id], [document]);
+    // Query what was just uploaded, as a set.
+    commitSelection(uploaded.map((doc) => doc.id), uploaded);
   };
 
   /** Click a row: make it the only selection. Checkbox: add/remove from the selection. */
@@ -136,14 +140,16 @@ export default function DocumentSidebar({
     commitSelection([...next]);
   };
 
-  const removeDocuments = async (docIds: string[], corpus?: string) => {
+  /** Deletes exactly the ids handed in, so what is on screen is what goes. */
+  const removeDocuments = async (docIds: string[]) => {
+    if (docIds.length === 0) return;
     setDeleteError('');
     setDeleting((current) => new Set([...current, ...docIds]));
     try {
       const response = await fetch('/api/documents', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ documentIds: docIds, corpus: corpus ?? null }),
+        body: JSON.stringify({ documentIds: docIds }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.detail || result.error || 'Delete failed');
@@ -380,10 +386,7 @@ export default function DocumentSidebar({
                       <button
                         onClick={() =>
                           confirmClearUploads
-                            ? removeDocuments(
-                                (grouped[UPLOAD_CORPUS] || []).map((doc) => doc.id),
-                                UPLOAD_CORPUS
-                              )
+                            ? removeDocuments(docs.map((doc) => doc.id))
                             : setConfirmClearUploads(true)
                         }
                         onBlur={() => setConfirmClearUploads(false)}
@@ -393,14 +396,18 @@ export default function DocumentSidebar({
                           color: 'var(--error)',
                           opacity: confirmClearUploads ? 1 : 0.6,
                         }}
-                        title="Remove every uploaded contract from the index"
+                        title={
+                          docs.length === uploadCount
+                            ? `Remove all ${uploadCount} uploaded contracts from the index`
+                            : `Remove the ${docs.length} uploaded contracts matching this search`
+                        }
                       >
                         {clearingUploads ? (
                           <Loader2 size={12} className="animate-spin" />
                         ) : confirmClearUploads ? (
-                          'Confirm?'
+                          `Delete ${docs.length}?`
                         ) : (
-                          'Clear all'
+                          `Clear ${docs.length === uploadCount ? 'all' : `these ${docs.length}`}`
                         )}
                       </button>
                     )}
