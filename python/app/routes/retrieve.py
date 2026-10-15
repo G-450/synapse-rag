@@ -15,6 +15,7 @@ router = APIRouter()
 class RetrieveRequest(BaseModel):
     query: str
     documentId: str | None = None
+    documentIds: list[str] | None = None
     limit: int = 5
     rerank: bool = True
 
@@ -27,6 +28,7 @@ def retrieve(body: RetrieveRequest):
     chunks = retrieve_chunks(
         query=body.query,
         document_id=body.documentId,
+        document_ids=body.documentIds,
         limit=body.limit,
         rerank=body.rerank,
     )

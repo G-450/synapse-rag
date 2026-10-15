@@ -32,6 +32,14 @@ class Message(BaseModel):
 class ChatRequest(BaseModel):
     messages: list[Message]
     documentId: str | None = None
+    documentIds: list[str] | None = None
+
+    def scoped_document_ids(self) -> list[str]:
+        """Selected documents, de-duplicated; empty means the whole corpus."""
+        raw = self.documentIds if self.documentIds is not None else []
+        if self.documentId:
+            raw = [*raw, self.documentId]
+        return list(dict.fromkeys(doc_id for doc_id in raw if doc_id))
 
 
 def _extract_message_content(m: Message) -> str:
@@ -89,10 +97,11 @@ async def chat(body: ChatRequest):
     if not user_query:
         raise HTTPException(status_code=400, detail="Query is empty")
 
-    # Scoped retrieval vs multi-document fan-out retrieval
+    # Single-document retrieval vs fan-out across a selection (or the whole corpus)
+    selected_ids = body.scoped_document_ids()
     citations: list[dict] = []
-    if body.documentId:
-        chunks = retrieve_chunks(user_query, document_id=body.documentId, limit=5, rerank=True)
+    if len(selected_ids) == 1:
+        chunks = retrieve_chunks(user_query, document_id=selected_ids[0], limit=5, rerank=True)
         context_text = format_context(chunks)
         citations = [
             {
@@ -112,7 +121,14 @@ async def chat(body: ChatRequest):
             for c in chunks
         ]
     else:
-        doc_groups = fan_out_retrieve(user_query, top_docs=3, chunks_per_doc=3)
+        # Every selected contract deserves a slot; unscoped mode keeps the top 3.
+        top_docs = min(len(selected_ids), 6) if selected_ids else 3
+        doc_groups = fan_out_retrieve(
+            user_query,
+            top_docs=top_docs,
+            chunks_per_doc=3,
+            document_ids=selected_ids or None,
+        )
         context_text = format_fan_out_context(doc_groups)
         citations = [
             {

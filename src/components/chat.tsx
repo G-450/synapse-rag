@@ -9,15 +9,15 @@ import type { Citation } from './citation-panel';
 import { normalizeAssistantMarkdown } from '@/lib/markdown';
 
 interface ChatProps {
-  documentId: string | null;
-  documentName: string | null;
+  documentIds: string[];
+  documentNames: string[];
   onCitationsReceived: (citations: Citation[]) => void;
   onToggleCitations: () => void;
 }
 
 export default function Chat({
-  documentId,
-  documentName,
+  documentIds,
+  documentNames,
   onCitationsReceived,
   onToggleCitations,
 }: ChatProps) {
@@ -37,7 +37,7 @@ export default function Chat({
     onCitationsReceived([]);
     void sendMessage(
       { text },
-      documentId ? { body: { documentId } } : undefined
+      documentIds.length > 0 ? { body: { documentIds } } : undefined
     );
   };
 
@@ -62,9 +62,18 @@ export default function Chat({
       .join('');
   };
 
-  const modeLabel = documentId
-    ? `Querying: ${documentName || 'Selected Document'}`
-    : 'Multi-document mode (all contracts)';
+  const selectionCount = documentIds.length;
+  const selectionSummary =
+    selectionCount === 1
+      ? documentNames[0] || 'Selected document'
+      : documentNames.filter(Boolean).join(', ');
+
+  const modeLabel =
+    selectionCount === 0
+      ? 'Multi-document mode (all contracts)'
+      : selectionCount === 1
+        ? `Querying: ${selectionSummary}`
+        : `Querying ${selectionCount} selected contracts`;
 
   return (
     <div className="flex flex-col h-full">
@@ -91,6 +100,7 @@ export default function Chat({
               <p
                 className="text-xs"
                 style={{ color: 'var(--foreground-faint)' }}
+                title={selectionCount > 1 ? selectionSummary : undefined}
               >
                 {modeLabel}
               </p>
@@ -302,9 +312,11 @@ export default function Chat({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={
-              documentId
-                ? `Ask about ${documentName || 'this contract'}...`
-                : 'Ask across all contracts...'
+              selectionCount === 0
+                ? 'Ask across all contracts...'
+                : selectionCount === 1
+                  ? `Ask about ${selectionSummary}...`
+                  : `Ask across ${selectionCount} selected contracts...`
             }
             className="flex-1 px-4 py-3 rounded-xl text-sm transition-all focus:outline-none"
             style={{
