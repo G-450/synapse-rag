@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server';
 
-const PYTHON_BACKEND = process.env.PYTHON_BACKEND_URL ?? 'http://localhost:8000';
+const PYTHON_BACKEND = process.env.PYTHON_BACKEND_URL ?? 'http://localhost:8001';
 
 export async function GET() {
   try {

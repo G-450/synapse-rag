@@ -1,4 +1,4 @@
-const backend = process.env.PYTHON_BACKEND_URL ?? 'http://localhost:8000';
+const backend = process.env.PYTHON_BACKEND_URL ?? 'http://localhost:8001';
 
 export {};
 
