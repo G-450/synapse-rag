@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Chat from '@/components/chat';
 import DocumentSidebar from '@/components/document-sidebar';
 import CitationPanel from '@/components/citation-panel';
@@ -9,6 +9,9 @@ import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 export default function Home() {
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
+  // Selecting every contract is the same query as selecting none, and far
+  // cheaper to run unscoped than as a filter over every id in the index.
+  const [wholeLibrary, setWholeLibrary] = useState(false);
   const [selectedDocNames, setSelectedDocNames] = useState<string[]>([]);
   const [citations, setCitations] = useState<Citation[]>([]);
   const [showCitations, setShowCitations] = useState(false);
@@ -25,15 +28,29 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  const resolveName = (docId: string) => {
-    const doc = documents.find((d) => d.id === docId);
-    return doc?.title || doc?.filename?.replace(/\.[^.]+$/, '') || 'Selected document';
-  };
+  // A map, not a scan per id: a whole-corpus selection resolves hundreds at once.
+  const namesById = useMemo(
+    () =>
+      new Map(
+        documents.map((doc) => [
+          doc.id,
+          doc.title || doc.filename?.replace(/\.[^.]+$/, '') || 'Selected document',
+        ])
+      ),
+    [documents]
+  );
 
   // The sidebar knows about fresh uploads the initial fetch never saw, so prefer its labels.
-  const handleSelectionChange = (docIds: string[], names?: string[]) => {
+  const handleSelectionChange = (
+    docIds: string[],
+    names?: string[],
+    coversWholeLibrary?: boolean
+  ) => {
     setSelectedDocIds(docIds);
-    setSelectedDocNames(docIds.map((id, i) => names?.[i] || resolveName(id)));
+    setSelectedDocNames(
+      docIds.map((id, i) => names?.[i] || namesById.get(id) || 'Selected document')
+    );
+    setWholeLibrary(Boolean(coversWholeLibrary));
     setCitations([]);
     setShowCitations(false);
   };
@@ -78,9 +95,9 @@ export default function Home() {
       {/* Center — Chat */}
       <div className="flex-1 min-w-0">
         <Chat
-          key={selectedDocIds.join(',') || 'all-documents'}
-          documentIds={selectedDocIds}
-          documentNames={selectedDocNames}
+          key={(!wholeLibrary && selectedDocIds.join(',')) || 'all-documents'}
+          documentIds={wholeLibrary ? [] : selectedDocIds}
+          documentNames={wholeLibrary ? [] : selectedDocNames}
           onCitationsReceived={handleCitationsReceived}
           onToggleCitations={() => setShowCitations(!showCitations)}
         />
