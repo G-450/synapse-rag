@@ -59,29 +59,41 @@ def get_vectorstore() -> QdrantVectorStore:
 # Retrieval functions
 # ---------------------------------------------------------------------------
 
+def build_document_filter(document_ids: list[str] | None) -> models.Filter | None:
+    """Restrict a search to an explicit set of documents, or everything when empty."""
+    scoped = [doc_id for doc_id in (document_ids or []) if doc_id]
+    if not scoped:
+        return None
+    match = (
+        models.MatchValue(value=scoped[0])
+        if len(scoped) == 1
+        else models.MatchAny(any=scoped)
+    )
+    return models.Filter(
+        must=[models.FieldCondition(key="metadata.document_id", match=match)]
+    )
+
+
 def retrieve_chunks(
     query: str,
     document_id: str | None = None,
     limit: int = 5,
     rerank: bool = True,
+    document_ids: list[str] | None = None,
 ) -> list[dict]:
     """
     Retrieve the most relevant chunks using Qdrant similarity search.
-    Optionally scoped to a single document and/or reranked with cross-encoder.
+    Optionally scoped to one or more documents and/or reranked with cross-encoder.
     """
     fetch_limit = max(limit * 4, 20) if rerank else limit
     vectorstore = get_vectorstore()
 
+    scope = list(document_ids) if document_ids else ([document_id] if document_id else [])
+    document_filter = build_document_filter(scope)
+
     filter_kwargs = {}
-    if document_id:
-        filter_kwargs["filter"] = models.Filter(
-            must=[
-                models.FieldCondition(
-                    key="metadata.document_id",
-                    match=models.MatchValue(value=document_id),
-                )
-            ]
-        )
+    if document_filter is not None:
+        filter_kwargs["filter"] = document_filter
 
     # Perform similarity search with score
     docs_with_scores = vectorstore.similarity_search_with_score(
@@ -130,17 +142,25 @@ def fan_out_retrieve(
     query: str,
     top_docs: int = 3,
     chunks_per_doc: int = 3,
+    document_ids: list[str] | None = None,
 ) -> list[dict]:
     """
     Fan-out multi-document retrieval.
     Fetches a large pool of chunks, groups by document, and selects top docs/chunks.
+    When document_ids is given, the fan-out is restricted to that selection.
     """
     vectorstore = get_vectorstore()
 
-    # Fetch a large pool to ensure we hit multiple documents
+    document_filter = build_document_filter(document_ids)
+    filter_kwargs = {"filter": document_filter} if document_filter is not None else {}
+
+    # Fetch a large pool so every document in scope gets a fair chance of surfacing
+    pool_size = max(30, top_docs * chunks_per_doc * 4)
+
     docs_with_scores = vectorstore.similarity_search_with_score(
         query=query,
-        k=30
+        k=pool_size,
+        **filter_kwargs
     )
 
     # Group by document_id

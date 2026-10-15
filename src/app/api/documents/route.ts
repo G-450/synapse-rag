@@ -16,3 +16,19 @@ export async function GET() {
     return NextResponse.json({ error: 'Python backend unavailable' }, { status: 502 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.text();
+    const upstream = await fetch(`${PYTHON_BACKEND}/api/python/documents`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    });
+    const data = await upstream.json();
+    return NextResponse.json(data, { status: upstream.status });
+  } catch (error) {
+    console.error('[Documents Delete Proxy Error]', error);
+    return NextResponse.json({ error: 'Python backend unavailable' }, { status: 502 });
+  }
+}

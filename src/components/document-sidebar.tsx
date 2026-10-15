@@ -9,6 +9,10 @@ import {
   Layers,
   Database,
   Upload,
+  Check,
+  Trash2,
+  Loader2,
+  X,
 } from 'lucide-react';
 import UploadModal, { type UploadResult } from './upload-modal';
 
@@ -21,8 +25,8 @@ interface Document {
 }
 
 interface DocumentSidebarProps {
-  selectedDocId: string | null;
-  onSelectDocument: (docId: string | null, documentName?: string) => void;
+  selectedDocIds: string[];
+  onSelectionChange: (docIds: string[], documentNames?: string[]) => void;
 }
 
 const CORPUS_LABELS: Record<string, string> = {
@@ -34,9 +38,11 @@ const CORPUS_LABELS: Record<string, string> = {
   'user-upload': 'User Uploads',
 };
 
+const UPLOAD_CORPUS = 'user-upload';
+
 export default function DocumentSidebar({
-  selectedDocId,
-  onSelectDocument,
+  selectedDocIds,
+  onSelectionChange,
 }: DocumentSidebarProps) {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [grouped, setGrouped] = useState<Record<string, Document[]>>({});
@@ -47,6 +53,24 @@ export default function DocumentSidebar({
   const [expandedCorpora, setExpandedCorpora] = useState<Set<string>>(
     new Set()
   );
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [confirmClearUploads, setConfirmClearUploads] = useState(false);
+  const [deleting, setDeleting] = useState<Set<string>>(new Set());
+  const [deleteError, setDeleteError] = useState('');
+
+  const selected = new Set(selectedDocIds);
+
+  const labelFor = (doc: Document) => doc.title || doc.filename.replace(/\.[^.]+$/, '');
+
+  /** Push a selection upward together with display labels for the chat header. */
+  const commitSelection = (docIds: string[], pool: Document[] = documents) =>
+    onSelectionChange(
+      docIds,
+      docIds.map((id) => {
+        const doc = pool.find((item) => item.id === id);
+        return doc ? labelFor(doc) : 'Selected document';
+      })
+    );
 
   useEffect(() => {
     fetch('/api/documents')
@@ -79,16 +103,72 @@ export default function DocumentSidebar({
       id: result.document_id,
       filename: result.filename,
       title: result.filename.replace(/\.[^.]+$/, ''),
-      source_corpus: 'user-upload',
+      source_corpus: UPLOAD_CORPUS,
       chunk_count: result.chunks_created,
     };
     setDocuments((current) => [...current.filter((item) => item.id !== document.id), document]);
     setGrouped((current) => ({
       ...current,
-      'user-upload': [...(current['user-upload'] || []).filter((item) => item.id !== document.id), document],
+      [UPLOAD_CORPUS]: [
+        ...(current[UPLOAD_CORPUS] || []).filter((item) => item.id !== document.id),
+        document,
+      ],
     }));
-    setExpandedCorpora((current) => new Set([...current, 'user-upload']));
-    onSelectDocument(document.id, document.title);
+    setExpandedCorpora((current) => new Set([...current, UPLOAD_CORPUS]));
+    commitSelection([document.id], [document]);
+  };
+
+  /** Click a row: make it the only selection. Checkbox: add/remove from the selection. */
+  const selectOnly = (docId: string) => commitSelection([docId]);
+
+  const toggleDocument = (docId: string) => {
+    const next = new Set(selected);
+    if (next.has(docId)) next.delete(docId);
+    else next.add(docId);
+    commitSelection([...next]);
+  };
+
+  const toggleCorpusSelection = (docs: Document[]) => {
+    const ids = docs.map((d) => d.id);
+    const allSelected = ids.every((id) => selected.has(id));
+    const next = new Set(selected);
+    ids.forEach((id) => (allSelected ? next.delete(id) : next.add(id)));
+    commitSelection([...next]);
+  };
+
+  const removeDocuments = async (docIds: string[], corpus?: string) => {
+    setDeleteError('');
+    setDeleting((current) => new Set([...current, ...docIds]));
+    try {
+      const response = await fetch('/api/documents', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentIds: docIds, corpus: corpus ?? null }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.detail || result.error || 'Delete failed');
+
+      const removed = new Set<string>(result.deleted || docIds);
+      setDocuments((current) => current.filter((doc) => !removed.has(doc.id)));
+      setGrouped((current) =>
+        Object.entries(current).reduce((acc, [key, docs]) => {
+          const kept = docs.filter((doc) => !removed.has(doc.id));
+          if (kept.length > 0) acc[key] = kept;
+          return acc;
+        }, {} as Record<string, Document[]>)
+      );
+      commitSelection(selectedDocIds.filter((id) => !removed.has(id)));
+      setPendingDeleteId(null);
+      setConfirmClearUploads(false);
+    } catch (caught) {
+      setDeleteError(caught instanceof Error ? caught.message : 'Delete failed');
+    } finally {
+      setDeleting((current) => {
+        const next = new Set(current);
+        docIds.forEach((id) => next.delete(id));
+        return next;
+      });
+    }
   };
 
   const filteredGrouped = Object.entries(grouped).reduce(
@@ -106,6 +186,11 @@ export default function DocumentSidebar({
 
   const totalDocs = documents.length;
   const totalChunks = documents.reduce((sum, d) => sum + d.chunk_count, 0);
+  const uploadCount = (grouped[UPLOAD_CORPUS] || []).length;
+  const selectedCount = selectedDocIds.length;
+  const clearingUploads = (grouped[UPLOAD_CORPUS] || []).some((doc) =>
+    deleting.has(doc.id)
+  );
 
   return (
     <div className="h-full flex flex-col" style={{ background: 'var(--surface)' }}>
@@ -169,17 +254,17 @@ export default function DocumentSidebar({
       {/* All Documents Button */}
       <div className="px-3 py-2">
         <button
-          onClick={() => onSelectDocument(null)}
+          onClick={() => commitSelection([])}
           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
           style={{
             background:
-              selectedDocId === null ? 'var(--accent-glow)' : 'transparent',
+              selectedCount === 0 ? 'var(--accent-glow)' : 'transparent',
             color:
-              selectedDocId === null
+              selectedCount === 0
                 ? 'var(--accent-hover)'
                 : 'var(--foreground-muted)',
             border:
-              selectedDocId === null
+              selectedCount === 0
                 ? '1px solid var(--accent)'
                 : '1px solid transparent',
           }}
@@ -196,6 +281,38 @@ export default function DocumentSidebar({
             Multi
           </span>
         </button>
+
+        {/* Selection summary */}
+        {selectedCount > 0 && (
+          <div
+            className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2 text-xs"
+            style={{
+              background: 'var(--accent-soft)',
+              color: 'var(--accent)',
+            }}
+          >
+            <span className="font-semibold">
+              {selectedCount} document{selectedCount === 1 ? '' : 's'} selected
+            </span>
+            <button
+              onClick={() => commitSelection([])}
+              className="ml-auto flex items-center gap-1 font-medium transition-opacity hover:opacity-70"
+              title="Clear selection"
+            >
+              <X size={12} /> Clear
+            </button>
+          </div>
+        )}
+
+        {deleteError && (
+          <p
+            className="mt-2 px-1 text-xs"
+            style={{ color: 'var(--error)' }}
+            role="alert"
+          >
+            {deleteError}
+          </p>
+        )}
       </div>
 
       {/* Document Tree */}
@@ -213,65 +330,181 @@ export default function DocumentSidebar({
                 {loadError}
               </p>
             )}
-            {Object.entries(filteredGrouped).map(([corpus, docs]) => (
-              <div key={corpus}>
-                {/* Corpus header */}
-                <button
-                  onClick={() => toggleCorpus(corpus)}
-                  className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-xs font-semibold uppercase tracking-wider transition-colors hover:opacity-80"
-                  style={{ color: 'var(--foreground-faint)' }}
-                >
-                  {expandedCorpora.has(corpus) ? (
-                    <ChevronDown size={14} />
-                  ) : (
-                    <ChevronRight size={14} />
-                  )}
-                  <span
-                    className={`corpus-badge corpus-${corpus} px-1.5 py-0.5 rounded text-[10px] font-bold`}
-                  >
-                    {CORPUS_LABELS[corpus] || corpus}
-                  </span>
-                  <span className="ml-auto opacity-60">{docs.length}</span>
-                </button>
-
-                {/* Documents under this corpus */}
-                {expandedCorpora.has(corpus) && (
-                  <div className="ml-4 space-y-0.5">
-                    {docs.map((doc) => (
-                      <button
-                        key={doc.id}
-                        onClick={() => onSelectDocument(doc.id, doc.title || doc.filename)}
-                        className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all group text-left"
-                        style={{
-                          background:
-                            selectedDocId === doc.id
-                              ? 'var(--accent-glow)'
-                              : 'transparent',
-                          color:
-                            selectedDocId === doc.id
-                              ? 'var(--accent-hover)'
-                              : 'var(--foreground-muted)',
-                        }}
-                        title={doc.filename}
-                      >
-                        <FileText
-                          size={13}
-                          className="flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity"
-                        />
-                        <span className="truncate">
-                          {doc.title || doc.filename.replace('.txt', '')}
-                        </span>
+            {Object.entries(filteredGrouped).map(([corpus, docs]) => {
+              const allSelected = docs.every((doc) => selected.has(doc.id));
+              const someSelected = docs.some((doc) => selected.has(doc.id));
+              return (
+                <div key={corpus}>
+                  {/* Corpus header */}
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => toggleCorpusSelection(docs)}
+                      className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-all"
+                      style={{
+                        borderColor: someSelected ? 'var(--accent)' : 'var(--border)',
+                        background: allSelected ? 'var(--accent)' : 'transparent',
+                      }}
+                      aria-label={
+                        allSelected
+                          ? `Deselect all ${CORPUS_LABELS[corpus] || corpus} documents`
+                          : `Select all ${CORPUS_LABELS[corpus] || corpus} documents`
+                      }
+                    >
+                      {allSelected ? (
+                        <Check size={11} strokeWidth={3} color="#fff" />
+                      ) : someSelected ? (
                         <span
-                          className="ml-auto text-[10px] opacity-40 flex-shrink-0"
-                        >
-                          {doc.chunk_count}
-                        </span>
+                          className="h-0.5 w-2 rounded"
+                          style={{ background: 'var(--accent)' }}
+                        />
+                      ) : null}
+                    </button>
+                    <button
+                      onClick={() => toggleCorpus(corpus)}
+                      className="flex flex-1 items-center gap-2 px-1 py-2 rounded-md text-xs font-semibold uppercase tracking-wider transition-colors hover:opacity-80"
+                      style={{ color: 'var(--foreground-faint)' }}
+                    >
+                      {expandedCorpora.has(corpus) ? (
+                        <ChevronDown size={14} />
+                      ) : (
+                        <ChevronRight size={14} />
+                      )}
+                      <span
+                        className={`corpus-badge corpus-${corpus} px-1.5 py-0.5 rounded text-[10px] font-bold`}
+                      >
+                        {CORPUS_LABELS[corpus] || corpus}
+                      </span>
+                      <span className="ml-auto opacity-60">{docs.length}</span>
+                    </button>
+                    {corpus === UPLOAD_CORPUS && uploadCount > 0 && (
+                      <button
+                        onClick={() =>
+                          confirmClearUploads
+                            ? removeDocuments(
+                                (grouped[UPLOAD_CORPUS] || []).map((doc) => doc.id),
+                                UPLOAD_CORPUS
+                              )
+                            : setConfirmClearUploads(true)
+                        }
+                        onBlur={() => setConfirmClearUploads(false)}
+                        disabled={clearingUploads}
+                        className="flex-shrink-0 rounded px-1.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-opacity hover:opacity-100 disabled:opacity-40"
+                        style={{
+                          color: 'var(--error)',
+                          opacity: confirmClearUploads ? 1 : 0.6,
+                        }}
+                        title="Remove every uploaded contract from the index"
+                      >
+                        {clearingUploads ? (
+                          <Loader2 size={12} className="animate-spin" />
+                        ) : confirmClearUploads ? (
+                          'Confirm?'
+                        ) : (
+                          'Clear all'
+                        )}
                       </button>
-                    ))}
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {/* Documents under this corpus */}
+                  {expandedCorpora.has(corpus) && (
+                    <div className="ml-4 space-y-0.5">
+                      {docs.map((doc) => {
+                        const isSelected = selected.has(doc.id);
+                        const isDeleting = deleting.has(doc.id);
+                        return (
+                          <div
+                            key={doc.id}
+                            className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-all"
+                            style={{
+                              background: isSelected
+                                ? 'var(--accent-glow)'
+                                : 'transparent',
+                              color: isSelected
+                                ? 'var(--accent-hover)'
+                                : 'var(--foreground-muted)',
+                            }}
+                          >
+                            <button
+                              onClick={() => toggleDocument(doc.id)}
+                              className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-all"
+                              style={{
+                                borderColor: isSelected
+                                  ? 'var(--accent)'
+                                  : 'var(--border)',
+                                background: isSelected
+                                  ? 'var(--accent)'
+                                  : 'transparent',
+                              }}
+                              aria-label={
+                                isSelected
+                                  ? `Remove ${doc.title || doc.filename} from the selection`
+                                  : `Add ${doc.title || doc.filename} to the selection`
+                              }
+                              aria-pressed={isSelected}
+                            >
+                              {isSelected && (
+                                <Check size={11} strokeWidth={3} color="#fff" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => selectOnly(doc.id)}
+                              className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                              title={`${doc.filename} — click to query this contract only`}
+                            >
+                              <FileText
+                                size={13}
+                                className="flex-shrink-0 opacity-50 transition-opacity group-hover:opacity-100"
+                              />
+                              <span className="truncate">
+                                {doc.title || doc.filename.replace('.txt', '')}
+                              </span>
+                              <span className="ml-auto flex-shrink-0 text-[10px] opacity-40">
+                                {doc.chunk_count}
+                              </span>
+                            </button>
+                            {corpus === UPLOAD_CORPUS && (
+                              <button
+                                onClick={() =>
+                                  pendingDeleteId === doc.id
+                                    ? removeDocuments([doc.id])
+                                    : setPendingDeleteId(doc.id)
+                                }
+                                onBlur={() =>
+                                  setPendingDeleteId((current) =>
+                                    current === doc.id ? null : current
+                                  )
+                                }
+                                disabled={isDeleting}
+                                className="flex-shrink-0 rounded p-1 opacity-0 transition-opacity group-hover:opacity-70 hover:opacity-100 focus:opacity-100 disabled:opacity-40"
+                                style={{
+                                  color: 'var(--error)',
+                                  opacity: pendingDeleteId === doc.id ? 1 : undefined,
+                                }}
+                                title={
+                                  pendingDeleteId === doc.id
+                                    ? 'Click again to delete this upload'
+                                    : 'Delete this upload'
+                                }
+                                aria-label={`Delete ${doc.title || doc.filename}`}
+                              >
+                                {isDeleting ? (
+                                  <Loader2 size={12} className="animate-spin" />
+                                ) : pendingDeleteId === doc.id ? (
+                                  <Check size={12} strokeWidth={3} />
+                                ) : (
+                                  <Trash2 size={12} />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

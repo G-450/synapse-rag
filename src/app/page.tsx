@@ -8,8 +8,8 @@ import type { Citation } from '@/components/citation-panel';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 export default function Home() {
-  const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
-  const [selectedDocName, setSelectedDocName] = useState<string | null>(null);
+  const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
+  const [selectedDocNames, setSelectedDocNames] = useState<string[]>([]);
   const [citations, setCitations] = useState<Citation[]>([]);
   const [showCitations, setShowCitations] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -25,18 +25,17 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  const handleSelectDocument = (docId: string | null, documentName?: string) => {
-    setSelectedDocId(docId);
+  const resolveName = (docId: string) => {
+    const doc = documents.find((d) => d.id === docId);
+    return doc?.title || doc?.filename?.replace(/\.[^.]+$/, '') || 'Selected document';
+  };
+
+  // The sidebar knows about fresh uploads the initial fetch never saw, so prefer its labels.
+  const handleSelectionChange = (docIds: string[], names?: string[]) => {
+    setSelectedDocIds(docIds);
+    setSelectedDocNames(docIds.map((id, i) => names?.[i] || resolveName(id)));
     setCitations([]);
     setShowCitations(false);
-    if (docId) {
-      const doc = documents.find((d) => d.id === docId);
-      setSelectedDocName(
-        documentName || doc?.title || doc?.filename?.replace(/\.[^.]+$/, '') || null
-      );
-    } else {
-      setSelectedDocName(null);
-    }
   };
 
   const handleCitationsReceived = (newCitations: Citation[]) => {
@@ -71,17 +70,17 @@ export default function Home() {
         style={{ borderColor: 'var(--border)' }}
       >
         <DocumentSidebar
-          selectedDocId={selectedDocId}
-          onSelectDocument={handleSelectDocument}
+          selectedDocIds={selectedDocIds}
+          onSelectionChange={handleSelectionChange}
         />
       </div>
 
       {/* Center — Chat */}
       <div className="flex-1 min-w-0">
         <Chat
-          key={selectedDocId ?? 'all-documents'}
-          documentId={selectedDocId}
-          documentName={selectedDocName}
+          key={selectedDocIds.join(',') || 'all-documents'}
+          documentIds={selectedDocIds}
+          documentNames={selectedDocNames}
           onCitationsReceived={handleCitationsReceived}
           onToggleCitations={() => setShowCitations(!showCitations)}
         />
