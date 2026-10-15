@@ -120,3 +120,8 @@ skills-lock.json
 /scripts/generate_test_contracts.py
 /test_chat.py
 /test_groq.py
+
+# ========================================
+# Generated Project Report (local only)
+# ========================================
+/project_report/
