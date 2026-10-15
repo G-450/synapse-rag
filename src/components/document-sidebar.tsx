@@ -39,6 +39,8 @@ const CORPUS_LABELS: Record<string, string> = {
 };
 
 const UPLOAD_CORPUS = 'user-upload';
+/** How long an armed delete waits for its confirming click before standing down. */
+const CONFIRM_TIMEOUT_MS = 5000;
 
 export default function DocumentSidebar({
   selectedDocIds,
@@ -72,22 +74,51 @@ export default function DocumentSidebar({
       })
     );
 
+  /** Pull the library straight from the index, so the tree mirrors what is stored. */
+  const loadDocuments = async () => {
+    const res = await fetch('/api/documents', { cache: 'no-store' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || data.error || 'Unable to load contracts');
+    setDocuments(data.documents || []);
+    setGrouped(data.grouped || {});
+    return data as { documents: Document[]; grouped: Record<string, Document[]> };
+  };
+
   useEffect(() => {
-    fetch('/api/documents')
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || data.error || 'Unable to load contracts');
-        return data;
-      })
-      .then((data) => {
-        setDocuments(data.documents || []);
-        setGrouped(data.grouped || {});
+    let cancelled = false;
+    void (async () => {
+      try {
+        const data = await loadDocuments();
         // Expand all corpora by default
-        setExpandedCorpora(new Set(Object.keys(data.grouped || {})));
-      })
-      .catch((error) => setLoadError(error instanceof Error ? error.message : 'Unable to load contracts'))
-      .finally(() => setLoading(false));
+        if (!cancelled) setExpandedCorpora(new Set(Object.keys(data.grouped || {})));
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError(error instanceof Error ? error.message : 'Unable to load contracts');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  // Arming a delete used to be cancelled by the button's own onBlur, so the
+  // confirming click only survived while the button kept focus. Browsers that
+  // do not focus a button on mousedown disarmed it on every second click, and
+  // the contract could never be deleted. Time the confirmation out instead.
+  useEffect(() => {
+    if (!pendingDeleteId) return;
+    const timer = setTimeout(() => setPendingDeleteId(null), CONFIRM_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [pendingDeleteId]);
+
+  useEffect(() => {
+    if (!confirmClearUploads) return;
+    const timer = setTimeout(() => setConfirmClearUploads(false), CONFIRM_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [confirmClearUploads]);
 
   const toggleCorpus = (corpus: string) => {
     setExpandedCorpora((prev) => {
@@ -166,6 +197,9 @@ export default function DocumentSidebar({
       commitSelection(selectedDocIds.filter((id) => !removed.has(id)));
       setPendingDeleteId(null);
       setConfirmClearUploads(false);
+      // Re-read the index: a row that survives the delete has to stay visible
+      // rather than vanish locally and reappear on the next page load.
+      await loadDocuments().catch(() => {});
     } catch (caught) {
       setDeleteError(caught instanceof Error ? caught.message : 'Delete failed');
     } finally {
@@ -389,7 +423,6 @@ export default function DocumentSidebar({
                             ? removeDocuments(docs.map((doc) => doc.id))
                             : setConfirmClearUploads(true)
                         }
-                        onBlur={() => setConfirmClearUploads(false)}
                         disabled={clearingUploads}
                         className="flex-shrink-0 rounded px-1.5 py-1 text-[10px] font-bold uppercase tracking-wider transition-opacity hover:opacity-100 disabled:opacity-40"
                         style={{
@@ -476,11 +509,6 @@ export default function DocumentSidebar({
                                   pendingDeleteId === doc.id
                                     ? removeDocuments([doc.id])
                                     : setPendingDeleteId(doc.id)
-                                }
-                                onBlur={() =>
-                                  setPendingDeleteId((current) =>
-                                    current === doc.id ? null : current
-                                  )
                                 }
                                 disabled={isDeleting}
                                 className="flex-shrink-0 rounded p-1 opacity-0 transition-opacity group-hover:opacity-70 hover:opacity-100 focus:opacity-100 disabled:opacity-40"
