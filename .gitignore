@@ -122,6 +122,12 @@ skills-lock.json
 /test_groq.py
 
 # ========================================
-# Generated Project Report (local only)
+# Generated reports (local only)
 # ========================================
-/project_report/
+/report
+
+# ========================================
+# Throwaway eval databases
+# ========================================
+/python/qdrant_db_eval/
+/python/qdrant_db_eval2/
