@@ -1,0 +1,109 @@
+{
+  "timestamp": "2026-10-15T17:31:48.931833",
+  "platform": "Python 3.12.10",
+  "total_duration_ms": 9356,
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "tests": [
+    {
+      "name": "Bi-Encoder Architecture (all-MiniLM-L6-v2)",
+      "passed": true,
+      "details": {
+        "dimensions": 384,
+        "is_normalized": true,
+        "magnitude": 1.0,
+        "value_range": [
+          -0.16354899108409882,
+          0.1616765260696411
+        ],
+        "mean_value": 0.0003801442525192313,
+        "has_negative_values": true,
+        "model_config": {
+          "num_layers": 6,
+          "hidden_size": 384,
+          "num_attention_heads": 12,
+          "intermediate_size": 1536,
+          "max_position_embeddings": 512,
+          "vocab_size": 30522,
+          "pooling": "mean",
+          "normalization": "L2"
+        }
+      },
+      "duration_ms": 5040
+    },
+    {
+      "name": "Semantic Similarity Validation",
+      "passed": true,
+      "details": {
+        "test_pairs": 4,
+        "note": "Scores logged for manual review"
+      },
+      "duration_ms": 71
+    },
+    {
+      "name": "Pooling Strategy Comparison",
+      "passed": true,
+      "details": {
+        "mean_pooling_magnitude": 1.00000005155152,
+        "cls_pooling_magnitude": 0.9999999398390955,
+        "cosine_similarity_mean_vs_cls": 0.37563633431659244,
+        "production_strategy": "mean"
+      },
+      "duration_ms": 15
+    },
+    {
+      "name": "Cross-Encoder Architecture (ms-marco-MiniLM-L-6-v2)",
+      "passed": true,
+      "details": {
+        "relevant_score": 4.597385406494141,
+        "irrelevant_score": -11.21853256225586,
+        "correctly_ranked": true
+      },
+      "duration_ms": 2825
+    },
+    {
+      "name": "Cross-Encoder Re-Ranking Effectiveness",
+      "passed": true,
+      "details": {
+        "num_passages": 5,
+        "top_ranked_was_relevant": true
+      },
+      "duration_ms": 21
+    },
+    {
+      "name": "WordPiece Tokenization Analysis",
+      "passed": true,
+      "details": {
+        "tokenizer_type": "WordPiece",
+        "vocab_size": 30522,
+        "samples_tested": 5
+      },
+      "duration_ms": 1338
+    },
+    {
+      "name": "Embedding Space Geometry",
+      "passed": true,
+      "details": {
+        "legal_intra_cluster_sim": 0.17354381011266792,
+        "non_legal_intra_cluster_sim": 0.020614568920185167,
+        "inter_cluster_sim": -0.02126768315793015,
+        "cluster_separation": 0.19481149327059807,
+        "centroid_magnitude": 0.3782699704170227
+      },
+      "duration_ms": 28
+    },
+    {
+      "name": "Multi-Head Self-Attention Contextual Test",
+      "passed": true,
+      "details": {
+        "bank_financial_vs_river": 0.2558031627124915,
+        "court_legal_vs_tennis": 0.20569164790624783,
+        "bank_financial_vs_court_legal": 0.15674632436300767
+      },
+      "duration_ms": 12
+    }
+  ]
+}

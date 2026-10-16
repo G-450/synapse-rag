@@ -1,0 +1,137 @@
+C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\scripts\test_dl_architectures.py:465: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  print(f"  Timestamp: {datetime.utcnow().isoformat()}")
+
+██████████████████████████████████████████████████████████████████████
+  SYNAPSE RAG — DEEP LEARNING ARCHITECTURE VALIDATION SUITE
+██████████████████████████████████████████████████████████████████████
+  Timestamp: 2026-10-15T17:31:39.574821
+  Platform: Python 3.12.10
+
+══════════════════════════════════════════════════════════════════════
+  TEST 1: Bi-Encoder Architecture — sentence-transformers/all-MiniLM-L6-v2
+══════════════════════════════════════════════════════════════════════
+  │ Model: sentence-transformers/all-MiniLM-L6-v2
+  │ Architecture: BERT-base (distilled to 6 layers)
+  │ Hidden Size: 384
+  │ Attention Heads: 12
+  │ Feed-Forward Dim: 1536 (4 × hidden_size)
+  │ Max Sequence Length: 256 tokens
+  │ Vocabulary Size: 30,522 (WordPiece)
+  │ ---
+  │ Output Dimensions: 384
+  │ L2 Norm (magnitude): 1.000000
+  │ Is Unit-Normalized: True
+  │ Has Negative Values: True
+  │ Value Range: [-0.163549, 0.161677]
+  │ Mean Value: 0.000380
+  │ Pooling Strategy: Mean Pooling
+  └─ ✅ PASSED (5040ms)
+
+══════════════════════════════════════════════════════════════════════
+  TEST 2: Semantic Similarity — Cosine Distance Validation
+══════════════════════════════════════════════════════════════════════
+  │ SIMILAR (paraphrase): cosine_sim = 0.7318
+  │ DISSIMILAR (unrelated): cosine_sim = -0.0335
+  │ SIMILAR (legal synonym): cosine_sim = 0.5111
+  │ SIMILAR (domain-specific): cosine_sim = 0.4693
+  └─ ✅ PASSED (71ms)
+
+══════════════════════════════════════════════════════════════════════
+  TEST 3: Pooling Strategy Comparison — Mean vs CLS Token
+══════════════════════════════════════════════════════════════════════
+  │ Mean Pooling Vector Magnitude: 1.000000
+  │ CLS Token Vector Magnitude: 1.000000
+  │ Cosine Similarity (Mean vs CLS): 0.3756
+  │ Divergence: 0.6244
+  │ → Mean pooling is used in production (better for sentence similarity)
+  └─ ✅ PASSED (15ms)
+
+══════════════════════════════════════════════════════════════════════
+  TEST 4: Cross-Encoder Architecture — cross-encoder/ms-marco-MiniLM-L-6-v2
+══════════════════════════════════════════════════════════════════════
+  │ Model: cross-encoder/ms-marco-MiniLM-L-6-v2 (MS MARCO trained)
+  │ Architecture: BERT-base (distilled to 6 layers)
+  │ Hidden Size: 384
+  │ Attention Heads: 12
+  │ Feed-Forward Dim: 1536
+  │ Classification Head: Linear(384 → 1)
+  │ ---
+  │ Relevant Document Score: 4.5974
+  │ Irrelevant Document Score: -11.2185
+  │ Score Delta: 15.8159
+  │ Correctly Ranked: YES ✓
+  └─ ✅ PASSED (2825ms)
+
+══════════════════════════════════════════════════════════════════════
+  TEST 5: Cross-Encoder Re-Ranking — Multi-Document Legal Passages
+══════════════════════════════════════════════════════════════════════
+  │ Re-Ranked Results:
+  │   Rank 1: score=8.4061 | "The Buyer may terminate this Agreement at any time prior to the Closin..."
+  │   Rank 2: score=3.8258 | "Termination rights include the right of the Buyer to withdraw if regul..."
+  │   Rank 3: score=3.6436 | "The Agreement may be terminated by mutual written consent of both part..."
+  │   Rank 4: score=-8.7853 | "All notices shall be sent to the addresses specified in Schedule A of ..."
+  │   Rank 5: score=-10.0151 | "The representations and warranties contained herein shall survive for ..."
+  └─ ✅ PASSED (21ms)
+
+══════════════════════════════════════════════════════════════════════
+  TEST 6: WordPiece Tokenization Analysis
+══════════════════════════════════════════════════════════════════════
+  │ Tokenizer: WordPiece (BERT-style)
+  │ Vocab Size: 30,522 tokens
+  │ Special Tokens: [CLS], [SEP], [PAD], [UNK], [MASK]
+  │ ---
+  │ "indemnification"
+  │   → 6 tokens (incl. [CLS]+[SEP])
+  │ "force majeure event"
+  │   → 7 tokens (incl. [CLS]+[SEP])
+  │ "The Seller hereby represents and warrants that..."
+  │   → 14 tokens (incl. [CLS]+[SEP])
+  │ "anti-competitive behavior under Section 7 of the Clayto..."
+  │   → 13 tokens (incl. [CLS]+[SEP])
+  │ "WHEREAS, the Company desires to engage the Consultant f..."
+  │   → 14 tokens (incl. [CLS]+[SEP])
+  └─ ✅ PASSED (1338ms)
+
+══════════════════════════════════════════════════════════════════════
+  TEST 7: Embedding Space Geometry — Isotropy & Cluster Analysis
+══════════════════════════════════════════════════════════════════════
+  │ Legal Intra-Cluster Similarity: 0.1735
+  │ Non-Legal Intra-Cluster Similarity: 0.0206
+  │ Inter-Cluster Similarity (Legal vs Non-Legal): -0.0213
+  │ Cluster Separation: 0.1948
+  │ → Higher intra-cluster + lower inter-cluster = better domain encoding
+  │ Centroid Magnitude (isotropy indicator): 0.3783
+  │ → Lower magnitude ≈ more isotropic (evenly distributed)
+  └─ ✅ PASSED (28ms)
+
+══════════════════════════════════════════════════════════════════════
+  TEST 8: Multi-Head Self-Attention — Contextual Token Sensitivity
+══════════════════════════════════════════════════════════════════════
+  │ Contextual Embedding Sensitivity Test:
+  │ (Same word, different context → different embeddings)
+  │ ---
+  │ "bank" (financial) vs "bank" (river): 0.2558
+  │ "court" (legal) vs "court" (tennis): 0.2057
+  │ "bank" (financial) vs "court" (legal): 0.1567
+  │ → Self-attention enables context-dependent representations
+  └─ ✅ PASSED (12ms)
+
+══════════════════════════════════════════════════════════════════════C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\scripts\test_dl_architectures.py:497: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp": datetime.utcnow().isoformat(),
+
+  VALIDATION SUMMARY
+══════════════════════════════════════════════════════════════════════
+  │ ✅ Test 1: Bi-Encoder Architecture (all-MiniLM-L6-v2) (5040ms)
+  │ ✅ Test 2: Semantic Similarity Validation (71ms)
+  │ ✅ Test 3: Pooling Strategy Comparison (15ms)
+  │ ✅ Test 4: Cross-Encoder Architecture (ms-marco-MiniLM-L-6-v2) (2825ms)
+  │ ✅ Test 5: Cross-Encoder Re-Ranking Effectiveness (21ms)
+  │ ✅ Test 6: WordPiece Tokenization Analysis (1338ms)
+  │ ✅ Test 7: Embedding Space Geometry (28ms)
+  │ ✅ Test 8: Multi-Head Self-Attention Contextual Test (12ms)
+
+  Total: 8 tests | ✅ 8 passed | ❌ 0 failed
+  Total Duration: 9.4s
+══════════════════════════════════════════════════════════════════════
+
+  Results saved to: C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\data\dl_architecture_test_results.json

@@ -1,0 +1,47 @@
+======================================================================
+  SYNAPSE RAG — FAITHFULNESS & ACCURACY EVALUATION
+  Samples: 50 | Scoped: True | Chunks: 8 | Rerank: False
+======================================================================
+[Warning] Could not build doc_id map from Qdrant: Storage folder C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.
+Traceback (most recent call last):
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\venv\Lib\site-packages\portalocker\portalocker.py", line 49, in lock
+    win32file.LockFileEx(os_fh, mode, 0, -0x10000, __overlapped)
+pywintypes.error: (33, 'LockFileEx', 'The process cannot access the file because another process has locked a portion of the file.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\venv\Lib\site-packages\qdrant_client\local\qdrant_local.py", line 122, in _load
+    portalocker.lock(
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\venv\Lib\site-packages\portalocker\portalocker.py", line 54, in lock
+    raise exceptions.AlreadyLocked(
+portalocker.exceptions.AlreadyLocked: (1, 'The process cannot access the file because another process has locked a portion of the file.')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\scripts\evaluate_faithfulness.py", line 358, in <module>
+    main()
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\scripts\evaluate_faithfulness.py", line 305, in main
+    res = evaluate_query(
+          ^^^^^^^^^^^^^^^
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\scripts\evaluate_faithfulness.py", line 168, in evaluate_query
+    chunks = retrieve_chunks(
+             ^^^^^^^^^^^^^^^^
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\app\rag.py", line 125, in retrieve_chunks
+    vectorstore = get_vectorstore()
+                  ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\app\rag.py", line 44, in get_vectorstore
+    client = get_qdrant_client()
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\app\rag.py", line 39, in get_qdrant_client
+    _qdrant_client = QdrantClient(path=str(qdrant_dir))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\venv\Lib\site-packages\qdrant_client\qdrant_client.py", line 127, in __init__
+    self._client = QdrantLocal(
+                   ^^^^^^^^^^^^
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\venv\Lib\site-packages\qdrant_client\local\qdrant_local.py", line 68, in __init__
+    self._load()
+  File "C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\venv\Lib\site-packages\qdrant_client\local\qdrant_local.py", line 127, in _load
+    raise RuntimeError(
+RuntimeError: Storage folder C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\python\qdrant_db is already accessed by another instance of Qdrant client. If you require concurrent access, use Qdrant server instead.

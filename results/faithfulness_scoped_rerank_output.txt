@@ -1,0 +1,65 @@
+======================================================================
+  SYNAPSE RAG — FAITHFULNESS & ACCURACY EVALUATION
+  Samples: 50 | Scoped: True | Chunks: 8 | Rerank: True
+======================================================================
+[1/50] QA: maud_208        | Hit: Y | Acc: Y | Faith: Y
+[2/50] QA: maud_1445       | Hit: Y | Acc: Y | Faith: Y
+[3/50] QA: maud_1121       | Hit: Y | Acc: Y | Faith: Y
+[4/50] QA: maud_1438       | Hit: Y | Acc: N | Faith: Y
+[5/50] QA: maud_1097       | Hit: Y | Acc: N | Faith: Y
+[6/50] QA: maud_632        | Hit: Y | Acc: N | Faith: Y
+[7/50] QA: maud_1102       | Hit: Y | Acc: Y | Faith: Y
+[8/50] QA: maud_394        | Hit: Y | Acc: N | Faith: Y
+[9/50] QA: maud_434        | Hit: Y | Acc: Y | Faith: Y
+[10/50] QA: maud_696        | Hit: Y | Acc: N | Faith: Y
+[11/50] QA: maud_951        | Hit: Y | Acc: Y | Faith: Y
+[12/50] QA: maud_1544       | Hit: Y | Acc: Y | Faith: Y
+[13/50] QA: maud_78         | Hit: Y | Acc: N | Faith: Y
+[14/50] QA: maud_389        | Hit: Y | Acc: Y | Faith: Y
+[15/50] QA: maud_1134       | Hit: Y | Acc: N | Faith: Y
+[16/50] QA: maud_411        | Hit: Y | Acc: Y | Faith: Y
+[17/50] QA: maud_703        | Hit: Y | Acc: N | Faith: Y
+[18/50] QA: maud_439        | Hit: Y | Acc: Y | Faith: Y
+[19/50] QA: maud_1656       | Hit: Y | Acc: Y | Faith: Y
+[20/50] QA: maud_443        | Hit: Y | Acc: N | Faith: Y
+[21/50] QA: maud_1379       | Hit: Y | Acc: Y | Faith: Y
+[22/50] QA: maud_926        | Hit: Y | Acc: Y | Faith: Y
+[23/50] QA: maud_213        | Hit: Y | Acc: N | Faith: Y
+[24/50] QA: maud_1670       | Hit: Y | Acc: Y | Faith: Y
+[25/50] QA: maud_1649       | Hit: Y | Acc: Y | Faith: Y
+[26/50] QA: maud_779        | Hit: Y | Acc: N | Faith: Y
+[27/50] QA: maud_631        | Hit: Y | Acc: Y | Faith: Y
+[28/50] QA: maud_211        | Hit: Y | Acc: Y | Faith: Y
+[29/50] QA: maud_1109       | Hit: Y | Acc: N | Faith: Y
+[30/50] QA: maud_1108       | Hit: Y | Acc: N | Faith: Y
+[31/50] QA: maud_1436       | Hit: Y | Acc: Y | Faith: Y
+[32/50] QA: maud_1417       | Hit: Y | Acc: Y | Faith: Y
+[33/50] QA: maud_707        | Hit: Y | Acc: Y | Faith: Y
+[34/50] QA: maud_601        | Hit: Y | Acc: N | Faith: Y
+[35/50] QA: maud_1265       | Hit: Y | Acc: Y | Faith: Y
+[36/50] QA: maud_1303       | Hit: Y | Acc: Y | Faith: Y
+[37/50] QA: maud_585        | Hit: Y | Acc: Y | Faith: Y
+[38/50] QA: maud_1539       | Hit: Y | Acc: Y | Faith: Y
+[39/50] QA: maud_970        | Hit: Y | Acc: Y | Faith: Y
+[40/50] QA: maud_1217       | Hit: Y | Acc: N | Faith: Y
+[41/50] QA: maud_572        | Hit: Y | Acc: Y | Faith: Y
+[42/50] QA: maud_713        | Hit: Y | Acc: Y | Faith: Y
+[43/50] QA: maud_1463       | Hit: Y | Acc: Y | Faith: Y
+[44/50] QA: maud_776        | Hit: Y | Acc: Y | Faith: Y
+[45/50] QA: maud_1215       | Hit: Y | Acc: Y | Faith: Y
+[46/50] QA: maud_659        | Hit: Y | Acc: Y | Faith: Y
+[47/50] QA: maud_273        | Hit: Y | Acc: Y | Faith: Y
+[48/50] QA: maud_1371       | Hit: Y | Acc: Y | Faith: Y
+[49/50] QA: maud_1576       | Hit: Y | Acc: Y | Faith: Y
+[50/50] QA: maud_617        | Hit: Y | Acc: Y | Faith: Y
+
+======================================================================
+  EVALUATION SUMMARY RESULTS (50 Queries)
+======================================================================
+  Retrieval Hit Rate:  100.0% (50/50)
+  Answer Accuracy:      70.0% (35/50)
+  Faithfulness Score:  100.0% (50/50)
+  Hallucination Rate:    0.0% (0/50)
+======================================================================
+Saved results to: C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\data\eval_faithfulness_results.json
+
