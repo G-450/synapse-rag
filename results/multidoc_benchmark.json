@@ -1,0 +1,280 @@
+{
+  "metrics": {
+    "diversity_rate": 100.0,
+    "avg_docs": 3.0,
+    "synthesis_rate": 100.0,
+    "faithfulness": 100.0
+  },
+  "results": [
+    {
+      "id": "multidoc_01",
+      "query": "Compare the type of consideration offered in the acquisition agreements involving Novo Nordisk / Dicerna Pharmaceuticals and Cisco Systems / Acacia Communications. Are both cash-only deals?",
+      "description": "Cross-contract comparison of deal consideration structure across two M&A agreements",
+      "retrieved_documents": [
+        "Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt",
+        "Zix_Corporation_Open_Text_Corporation.txt",
+        "Eaton Vance Corp._Morgan Stanley.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_02",
+      "query": "Compare the termination fee provisions across the acquisition agreements for Acceleron Pharma / Merck and Alexion Pharmaceuticals / AstraZeneca. Which agreement specifies a higher termination fee?",
+      "description": "Cross-contract comparison of termination/break-up fee terms in M&A deals",
+      "retrieved_documents": [
+        "Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt",
+        "Core-Mark Holding Company, Inc._Performance Food Group Company.txt",
+        "ORBCOMM Inc._GI Partners.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_03",
+      "query": "How do the non-solicitation covenants differ between the Adamas Pharmaceuticals / Supernus Pharmaceuticals agreement and the American Renal Associates / IRC Superman Midco agreement?",
+      "description": "Comparison of restrictive covenant terms across two different M&A transactions",
+      "retrieved_documents": [
+        "VIRTUALSCOPICS,INC_11_12_2010-EX-10.1-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "WARNERCHILCOTTPLC_12_31_2003-EX-4.36-DEVELOPMENT AGREEMENT.txt",
+        "GreenStorm%20NDCSC.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_04",
+      "query": "Compare the representations and warranties regarding intellectual property in any two CUAD commercial contracts. What common provisions appear and what differs?",
+      "description": "Cross-contract IP warranty comparison in commercial agreements",
+      "retrieved_documents": [
+        "CERES,INC_01_25_2012-EX-10.20-Collaboration Agreement.txt",
+        "VERSOTECHNOLOGIESINC_12_28_2007-EX-99.3-INTELLECTUAL PROPERTY AGREEMENT.txt",
+        "MERITLIFEINSURANCECO_06_19_2020-EX-10.(XIV)-MASTER SERVICES AGREEMENT.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_05",
+      "query": "What are the confidentiality obligations in the Bosch Automotive NDA compared to the BCG Mutual NDA? Which is more restrictive?",
+      "description": "NDA comparison across two contractnli agreements",
+      "retrieved_documents": [
+        "GreenStorm%20NDCSC.txt",
+        "sample-nrel-bilateral-nda-template.txt",
+        "LiiON%20NDA%202-27-2015%20v1.0.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_06",
+      "query": "Compare the material adverse effect definitions in the Altabancorp / Glacier Bancorp and Bank of Commerce Holdings / Columbia Banking System merger agreements.",
+      "description": "MAE clause comparison across two banking M&A transactions",
+      "retrieved_documents": [
+        "Community Bankers Trust Corporation_United Bankshares, Inc..txt",
+        "Dime Community Bancshares, Inc._Bridge Bancorp, Inc..txt",
+        "Perspecta Inc._Veritas Capital.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_07",
+      "query": "How do the closing conditions differ between the At Home Group / Hellman & Friedman acquisition and the Anworth Mortgage / Ready Capital Corporation merger?",
+      "description": "Closing condition comparison across two structurally different M&A deals",
+      "retrieved_documents": [
+        "DSP_Group_Synaptics_Incorporated.txt",
+        "Alaska Communications Systems Group, Inc._Investment Group.txt",
+        "Premier Financial Bancorp, Inc._Peoples Bancorp Inc..txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_08",
+      "query": "Compare how privacy policies handle the collection of personal information across multiple privacy policy documents. What types of data are commonly collected?",
+      "description": "Multi-document privacy policy comparison from the privacy_qa sub-corpus",
+      "retrieved_documents": [
+        "NU%20Confidentiality%20Non-Disclosure%20%20Information%20Security%20Agreement%20Final%20....txt",
+        "WECC_Confidentiality_Agreement.txt",
+        "23andMe.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_09",
+      "query": "Compare the indemnification provisions in any two CUAD distributor or reseller agreements. Which party bears more indemnification risk?",
+      "description": "Indemnification clause comparison across commercial distribution agreements",
+      "retrieved_documents": [
+        "ENTRUSTINC_07_24_1998-EX-10.5-STRATEGIC ALLIANCE AGREEMENT.txt",
+        "BravatekSolutionsInc_20170418_8-K_EX-10.1_10205739_EX-10.1_Reseller Agreement.txt",
+        "FUSIONPHARMACEUTICALSINC_06_05_2020-EX-10.17-Supply Agreement - FUSION.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_10",
+      "query": "Across the Dicerna Pharmaceuticals / Novo Nordisk and Acceleron Pharma / Merck acquisition agreements, compare how each deal handles regulatory approval conditions for closing.",
+      "description": "Regulatory closing condition comparison across two pharma M&A deals",
+      "retrieved_documents": [
+        "Select_Bancorp_Inc_First_Bancorp.txt",
+        "Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt",
+        "Five Prime Therapeutics, Inc._Amgen Inc..txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_11",
+      "query": "Compare the non-disclosure terms in the AfriGIS NDA and the Aspiegel NDA. How do the durations and scope of confidentiality obligations differ?",
+      "description": "NDA scope and duration comparison",
+      "retrieved_documents": [
+        "SINTEC-UK-LTD-Non-disclosure-agreement-2017.txt",
+        "FNHA-2019RFP-02-NDA-form.txt",
+        "IPTK-CO-MutualNon-DisclosureAgreement.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "Error: Connection error.",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_12",
+      "query": "How do the governing law and dispute resolution provisions compare across the Alaska Communications / Investment Group and the Acacia Communications / Cisco Systems acquisition agreements?",
+      "description": "Governing law and jurisdiction comparison across M&A deals",
+      "retrieved_documents": [
+        "LEJUHOLDINGSLTD_03_12_2014-EX-10.34-INTERNET CHANNEL COOPERATION AGREEMENT.txt",
+        "Meridian Bancorp, Inc._Independent Bank Corp..txt",
+        "Sterling_Bancorp_Webster_Financial_Corporation.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_13",
+      "query": "Compare the limitation of liability clauses in any two CUAD service or consulting agreements. Are liability caps present in both?",
+      "description": "Liability cap comparison across commercial service agreements",
+      "retrieved_documents": [
+        "ADMA BioManufacturing, LLC -  Amendment #3 to Manufacturing Agreement .txt",
+        "DRIVENDELIVERIES,INC_05_22_2020-EX-10.4-CONSULTING AGREEMENT.txt",
+        "SUMMAFOURINC_06_19_1998-EX-10.3-SOFTWARE LICENSE AND MAINTENANCE AGREEMENT.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_14",
+      "query": "How do the data sharing and third-party disclosure provisions differ across two privacy policies? Under what circumstances is user data shared?",
+      "description": "Third-party data sharing comparison across privacy policies",
+      "retrieved_documents": [
+        "NU%20Confidentiality%20Non-Disclosure%20%20Information%20Security%20Agreement%20Final%20....txt",
+        "23andMe.txt",
+        "WECC_Confidentiality_Agreement.txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    },
+    {
+      "id": "multidoc_15",
+      "query": "Compare the deal protection mechanisms (no-shop, go-shop, or matching rights) in the Adamas Pharmaceuticals / Supernus and Alexion / AstraZeneca acquisition agreements.",
+      "description": "Deal protection mechanism comparison across two pharma M&A transactions",
+      "retrieved_documents": [
+        "Select_Bancorp_Inc_First_Bancorp.txt",
+        "Quaker Chemical Corporation - NON COMPETITION AND NON SOLICITATION AGREEMENT.txt",
+        "Five Prime Therapeutics, Inc._Amgen Inc..txt"
+      ],
+      "distinct_docs_count": 3,
+      "generated_answer": "",
+      "diversity_pass": true,
+      "synthesis_score": 1,
+      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness": 1,
+      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "hallucination": 0
+    }
+  ]
+}

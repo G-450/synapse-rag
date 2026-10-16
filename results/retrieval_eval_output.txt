@@ -1,0 +1,58 @@
+
+======================================================================
+  RETRIEVAL EVALUATION — BI-ENCODER ONLY
+  Samples: 200 | k=20 | seed=0
+======================================================================
+  [25/200] processed...
+  [50/200] processed...
+  [75/200] processed...
+  [100/200] processed...
+  [125/200] processed...
+  [150/200] processed...
+  [175/200] processed...
+  [200/200] processed...
+
+  Document-level:
+    Recall@1:   31.5%
+    Recall@5:   44.5%
+    Recall@20:  55.5%
+    MRR:       0.374
+  Snippet-level:
+    Recall@1:   13.0%
+    Recall@5:   23.5%
+    Recall@20:  35.0%
+    MRR:       0.182
+
+======================================================================
+  RETRIEVAL EVALUATION — BI-ENCODER + CROSS-ENCODER
+  Samples: 200 | k=20 | seed=0
+======================================================================
+  [25/200] processed...
+  [50/200] processed...
+  [75/200] processed...
+  [100/200] processed...
+  [125/200] processed...
+  [150/200] processed...
+  [175/200] processed...
+  [200/200] processed...
+
+  Document-level:
+    Recall@1:   45.0%
+    Recall@5:   50.0%
+    Recall@20:  59.0%
+    MRR:       0.477
+  Snippet-level:
+    Recall@1:   12.0%
+    Recall@5:   25.0%
+    Recall@20:  37.0%
+    MRR:       0.178
+
+======================================================================
+  RE-RANKING LIFT
+======================================================================
+  Doc Recall@1:   31.5% →  45.0%  (+13.5)
+  Doc MRR:       0.374 → 0.477  (+0.103)
+  Snip Recall@1:  13.0% →  12.0%  (-1.0)
+  Snip MRR:      0.182 → 0.178  (-0.004)
+
+  Saved to: C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\results\retrieval_metrics.json
