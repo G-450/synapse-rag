@@ -288,9 +288,31 @@ Respond strictly in valid JSON format:
         acc_reason = acc_data.get("reason", "")
 
     # 6. Metric 3: Faithfulness & Hallucination (LLM Judge against Context)
+    ref_app_score = None
+    ref_app_reason = ""
     if is_refusal:
-        faith_score = 1
-        faith_reason = "Model faithfully abstained from hallucinating when context was absent."
+        refusal_prompt = f"""You are an expert legal evaluation judge measuring FAITHFULNESS in a Retrieval-Augmented Generation (RAG) system.
+The model REFUSED to answer the user question based on the retrieved context.
+Your task is to determine whether that refusal was appropriate — i.e., does the retrieved context genuinely lack the necessary information to answer the question?
+
+USER QUESTION:
+{query}
+
+RETRIEVED CONTRACT CONTEXT:
+{context_text}
+
+EVALUATION RUBRIC:
+- Score 1 (Appropriate Refusal): The retrieved context does NOT contain enough information or the necessary clause to answer the question substantively. Refusing to answer was correct and faithful to the context.
+- Score 0 (Unwarranted Refusal): The retrieved context DOES contain the required legal information/clause to answer the question, but the model incorrectly refused.
+
+Respond strictly in valid JSON format:
+{{"score": 1, "reason": "Detailed 1-2 sentence explanation of why refusal was appropriate"}} or {{"score": 0, "reason": "Detailed 1-2 sentence explanation of why refusal was unwarranted"}}"""
+        faith_resp = call_llm_with_retry(judge_llm, [HumanMessage(content=refusal_prompt)])
+        faith_data = parse_judge_json(faith_resp)
+        ref_app_score = faith_data["score"]
+        ref_app_reason = faith_data.get("reason", "")
+        faith_score = ref_app_score
+        faith_reason = ref_app_reason
     else:
         faith_prompt = f"""You are an expert legal evaluation judge measuring FAITHFULNESS (grounding) in a Retrieval-Augmented Generation (RAG) system.
 
@@ -328,6 +350,8 @@ Respond strictly in valid JSON format:
         "faithfulness": faith_score,
         "faithfulness_reason": faith_reason,
         "hallucination": None if faith_score is None else 1 - faith_score,
+        "refusal_appropriate": ref_app_score,
+        "refusal_appropriate_reason": ref_app_reason,
     }
 
 
@@ -411,7 +435,12 @@ def main():
     print(f"  Answer Accuracy:     {fmt(acc_rate)} ({acc_pass}/{acc_n} scored)")
     print(f"  Faithfulness Score:  {fmt(faith_rate)} ({faith_pass}/{faith_n} scored)")
     print(f"  Hallucination Rate:  {fmt(halluc_rate)}")
-    print(f"  Explicit refusals:   {refusals}/{n} (scored as accuracy 0, faithfulness 1)")
+    print(f"  Explicit refusals:   {refusals}/{n} (scored as accuracy 0; refusal appropriateness judged)")
+    if refusals > 0:
+        ref_rate, ref_n, ref_pass, ref_unscored = rate("refusal_appropriate")
+        print(f"  Refusal Appropriate: {fmt(ref_rate)} ({ref_pass}/{ref_n} scored)")
+    else:
+        ref_rate, ref_n = None, 0
     print(f"  Generations failed:  {gen_failures}/{n} (not judged, excluded from rates)")
     print(f"  Judge calls unscored: accuracy {acc_unscored}/{n} | faithfulness {faith_unscored}/{n}")
     if acc_unscored or faith_unscored:
@@ -438,6 +467,8 @@ def main():
                     "faithfulness": None if faith_rate is None else round(faith_rate, 2),
                     "hallucination_rate": None if halluc_rate is None else round(halluc_rate, 2),
                     "refusal_rate": round((refusals / n) * 100, 2),
+                    "refusal_appropriate_rate": None if ref_rate is None else round(ref_rate, 2),
+                    "refusal_appropriate_scored_n": ref_n,
                     "accuracy_scored_n": acc_n,
                     "faithfulness_scored_n": faith_n,
                     "generation_failures": gen_failures,
