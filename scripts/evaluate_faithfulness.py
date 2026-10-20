@@ -259,6 +259,8 @@ INSTRUCTIONS:
             "faithfulness": None,
             "faithfulness_reason": reason,
             "hallucination": None,
+            "refusal_appropriate": None,
+            "refusal_appropriate_reason": "",
         }
     if is_refusal:
         acc_score = 0
@@ -288,9 +290,35 @@ Respond strictly in valid JSON format:
         acc_reason = acc_data.get("reason", "")
 
     # 6. Metric 3: Faithfulness & Hallucination (LLM Judge against Context)
+    ref_app_score = None
+    ref_app_reason = ""
     if is_refusal:
-        faith_score = 1
-        faith_reason = "Model faithfully abstained from hallucinating when context was absent."
+        refusal_prompt = f"""You are an expert legal evaluation judge measuring FAITHFULNESS in a Retrieval-Augmented Generation (RAG) system.
+The model REFUSED to answer the user question based on the retrieved context.
+Your task is to determine whether that refusal was appropriate — i.e., does the retrieved context genuinely lack the necessary information to answer the question?
+
+USER QUESTION:
+{query}
+
+RETRIEVED CONTRACT CONTEXT:
+{context_text}
+
+EVALUATION RUBRIC:
+- Score 1 (Appropriate Refusal): The retrieved context does NOT contain enough information or the necessary clause to answer the question substantively. Refusing to answer was correct and faithful to the context.
+- Score 0 (Unwarranted Refusal): The retrieved context DOES contain the required legal information/clause to answer the question, but the model incorrectly refused.
+
+Respond strictly in valid JSON format:
+{{"score": 1, "reason": "Detailed 1-2 sentence explanation of why refusal was appropriate"}} or {{"score": 0, "reason": "Detailed 1-2 sentence explanation of why refusal was unwarranted"}}"""
+        faith_resp = call_llm_with_retry(judge_llm, [HumanMessage(content=refusal_prompt)])
+        faith_data = parse_judge_json(faith_resp)
+        ref_app_score = faith_data["score"]
+        ref_app_reason = faith_data.get("reason", "")
+        # faithfulness / hallucination are defined only for affirmative answers that make
+        # factual claims; a refusal fabricates nothing, so it must not enter the grounding
+        # denominator. Keeping faith_score=None here lets the rate() helper filter refusals
+        # out by predicate (not by treating them as failed judge calls).
+        faith_score = None
+        faith_reason = ""
     else:
         faith_prompt = f"""You are an expert legal evaluation judge measuring FAITHFULNESS (grounding) in a Retrieval-Augmented Generation (RAG) system.
 
@@ -328,6 +356,8 @@ Respond strictly in valid JSON format:
         "faithfulness": faith_score,
         "faithfulness_reason": faith_reason,
         "hallucination": None if faith_score is None else 1 - faith_score,
+        "refusal_appropriate": ref_app_score,
+        "refusal_appropriate_reason": ref_app_reason,
     }
 
 
@@ -375,9 +405,14 @@ def main():
             print(f"[{i}/{len(dataset)}] QA: {res['id'][:15]:<15} | Hit: {h} | GENERATION FAILED")
             time.sleep(1.5)
             continue
-        a = {1: "Y", 0: "N", None: "?"}[res["accuracy"]]
-        f = {1: "Y", 0: "N", None: "?"}[res["faithfulness"]]
-        print(f"[{i}/{len(dataset)}] QA: {res['id'][:15]:<15} | Hit: {h} | Acc: {a} | Faith: {f}")
+        # "?" means the judge call failed; "-" means the metric does not apply to this item
+        # (faithfulness is undefined for a refusal, appropriateness for an affirmative answer).
+        verdict = {1: "Y", 0: "N", None: "?"}
+        a = verdict[res["accuracy"]]
+        f = "-" if res.get("refused") else verdict[res["faithfulness"]]
+        r = verdict[res["refusal_appropriate"]] if res.get("refused") else "-"
+        print(f"[{i}/{len(dataset)}] QA: {res['id'][:15]:<15} | Hit: {h} | Acc: {a} "
+              f"| Faith: {f} | RefOK: {r}")
         time.sleep(1.5)
 
     n = len(results)
@@ -385,20 +420,44 @@ def main():
         print("No evaluations completed.")
         return
 
-    def rate(key):
-        """Percentage over the items the judge actually scored, plus the number it did not."""
-        scored = [r[key] for r in results if r[key] is not None]
-        unscored = n - len(scored)
+    refusals = sum(1 for r in results if r.get("refused"))
+    gen_failures = sum(1 for r in results if r.get("generation_failed"))
+    n_affirmative = n - refusals - gen_failures
+
+    def rate(key, predicate=None):
+        """Percentage over items the judge actually scored that satisfy predicate.
+
+        predicate: optional callable(result) -> bool that restricts the denominator.
+        Items excluded by predicate are not counted as unscored — they are structurally
+        outside the metric's scope (e.g. refusals are outside faithfulness' scope).
+        Items included by predicate but with key=None are genuinely unscored judge calls.
+        """
+        pool = results if predicate is None else [r for r in results if predicate(r)]
+        pool_n = len(pool)
+        scored = [r[key] for r in pool if r[key] is not None]
+        unscored = pool_n - len(scored)
         pct = (sum(scored) / len(scored)) * 100 if scored else None
         return pct, len(scored), sum(scored), unscored
 
+    def is_judged(r):
+        """Generation never produced an answer, so no judge verdict is possible."""
+        return not r.get("generation_failed")
+
+    def is_affirmative(r):
+        return is_judged(r) and not r.get("refused")
+
+    def is_refusal_row(r):
+        return is_judged(r) and bool(r.get("refused"))
+
     hits = sum(r["retrieval_hit"] for r in results)
     hit_rate = (hits / n) * 100
-    acc_rate, acc_n, acc_pass, acc_unscored = rate("accuracy")
-    faith_rate, faith_n, faith_pass, faith_unscored = rate("faithfulness")
+    # accuracy covers refusals (scored 0) but not generation failures, which are reported
+    # on their own line rather than counted as unscored judge calls.
+    acc_rate, acc_n, acc_pass, acc_unscored = rate("accuracy", predicate=is_judged)
+    # faithfulness is defined only over affirmative answers — refusals are excluded by
+    # construction, not treated as missing judge calls.
+    faith_rate, faith_n, faith_pass, faith_unscored = rate("faithfulness", predicate=is_affirmative)
     halluc_rate = None if faith_rate is None else 100.0 - faith_rate
-    refusals = sum(1 for r in results if r.get("refused"))
-    gen_failures = sum(1 for r in results if r.get("generation_failed"))
 
     def fmt(pct):
         return "  n/a" if pct is None else f"{pct:5.1f}%"
@@ -409,11 +468,18 @@ def main():
     print("=" * 70)
     print(f"  Retrieval Hit Rate:  {hit_rate:5.1f}% ({hits}/{n})")
     print(f"  Answer Accuracy:     {fmt(acc_rate)} ({acc_pass}/{acc_n} scored)")
-    print(f"  Faithfulness Score:  {fmt(faith_rate)} ({faith_pass}/{faith_n} scored)")
-    print(f"  Hallucination Rate:  {fmt(halluc_rate)}")
-    print(f"  Explicit refusals:   {refusals}/{n} (scored as accuracy 0, faithfulness 1)")
+    print(f"  Faithfulness Score:  {fmt(faith_rate)} ({faith_pass}/{faith_n} scored, affirmative answers only)")
+    print(f"  Hallucination Rate:  {fmt(halluc_rate)}  (1 - faithfulness over affirmative answers)")
+    print(f"  Explicit refusals:   {refusals}/{n} (scored as accuracy 0; refusal appropriateness judged separately)")
+    if refusals > 0:
+        ref_rate, ref_n, ref_pass, _ = rate("refusal_appropriate", predicate=is_refusal_row)
+        print(f"  Refusal Appropriate: {fmt(ref_rate)} ({ref_pass}/{ref_n} scored)")
+    else:
+        ref_rate, ref_n = None, 0
     print(f"  Generations failed:  {gen_failures}/{n} (not judged, excluded from rates)")
-    print(f"  Judge calls unscored: accuracy {acc_unscored}/{n} | faithfulness {faith_unscored}/{n}")
+    n_judged = n - gen_failures
+    print(f"  Judge calls unscored: accuracy {acc_unscored}/{n_judged} "
+          f"| faithfulness {faith_unscored}/{n_affirmative}")
     if acc_unscored or faith_unscored:
         print("  WARNING: unscored calls are EXCLUDED from the rates above, not counted as passes.")
         print("  Check accuracy_reason/faithfulness_reason in the saved JSON for the cause; a daily")
@@ -438,8 +504,11 @@ def main():
                     "faithfulness": None if faith_rate is None else round(faith_rate, 2),
                     "hallucination_rate": None if halluc_rate is None else round(halluc_rate, 2),
                     "refusal_rate": round((refusals / n) * 100, 2),
+                    "refusal_appropriate_rate": None if ref_rate is None else round(ref_rate, 2),
+                    "refusal_appropriate_scored_n": ref_n,
                     "accuracy_scored_n": acc_n,
                     "faithfulness_scored_n": faith_n,
+                    "faithfulness_denominator": n_affirmative,
                     "generation_failures": gen_failures,
                     "judge_unscored_accuracy": acc_unscored,
                     "judge_unscored_faithfulness": faith_unscored,
