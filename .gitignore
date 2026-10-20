@@ -131,3 +131,8 @@ skills-lock.json
 # ========================================
 /python/qdrant_db_eval/
 /python/qdrant_db_eval2/
+
+# ========================================
+# Git Bash crash dumps
+# ========================================
+*.stackdump

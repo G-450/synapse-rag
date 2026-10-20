@@ -1,9 +1,20 @@
 {
+  "config": {
+    "judge_model": "openai/gpt-oss-120b",
+    "generator_model": "openai/gpt-oss-20b",
+    "n": 10,
+    "top_docs": 3,
+    "chunks_per_doc": 3
+  },
   "metrics": {
     "diversity_rate": 100.0,
     "avg_docs": 3.0,
-    "synthesis_rate": 100.0,
-    "faithfulness": 100.0
+    "synthesis_rate": 0.0,
+    "faithfulness": 100.0,
+    "synthesis_scored_n": 5,
+    "faithfulness_scored_n": 4,
+    "judge_unscored_synthesis": 5,
+    "judge_unscored_faithfulness": 6
   },
   "results": [
     {
@@ -17,12 +28,13 @@
       ],
       "distinct_docs_count": 3,
       "generated_answer": "",
+      "refused": false,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "synthesis_score": 0,
+      "synthesis_reason": "The generated answer is empty and does not address the comparison of consideration types in the Novo Nordisk/Dicerna and Cisco/Acacia agreements, nor does it synthesize information across multiple contracts.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "multidoc_02",
@@ -34,12 +46,13 @@
         "ORBCOMM Inc._GI Partners.txt"
       ],
       "distinct_docs_count": 3,
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "refused": true,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "synthesis_score": null,
+      "synthesis_reason": "empty judge response",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when excerpts were missing.",
       "hallucination": 0
     },
     {
@@ -53,12 +66,13 @@
       ],
       "distinct_docs_count": 3,
       "generated_answer": "",
+      "refused": false,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "synthesis_score": 0,
+      "synthesis_reason": "The answer provides no content and does not compare the non-solicitation covenants of the two specified agreements, nor does it reference any clauses from the retrieved documents.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "multidoc_04",
@@ -71,12 +85,13 @@
       ],
       "distinct_docs_count": 3,
       "generated_answer": "",
+      "refused": false,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "synthesis_score": null,
+      "synthesis_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "multidoc_05",
@@ -88,12 +103,13 @@
         "LiiON%20NDA%202-27-2015%20v1.0.txt"
       ],
       "distinct_docs_count": 3,
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following three documents:\n1.  **GreenStorm%20NDCSC.txt**\n2.  **sample-nrel-bilateral-nda-template.txt**\n3.  **LiiON%20NDA%202-27-2015%20v1.0.txt**\n\nThere are no excerpts provided for a \"Bosch Automotive NDA\" or a \"BCG Mutual NDA.\" Therefore, I cannot perform the requested comparative analysis between those specific agreements.",
+      "refused": true,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "synthesis_score": 0,
+      "synthesis_reason": "The answer does not compare or synthesize information from multiple contracts; it merely states that the relevant documents are missing and provides no comparative analysis.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when excerpts were missing.",
       "hallucination": 0
     },
     {
@@ -107,12 +123,13 @@
       ],
       "distinct_docs_count": 3,
       "generated_answer": "",
+      "refused": false,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "synthesis_score": null,
+      "synthesis_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "multidoc_07",
@@ -124,12 +141,13 @@
         "Premier Financial Bancorp, Inc._Peoples Bancorp Inc..txt"
       ],
       "distinct_docs_count": 3,
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "refused": true,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "synthesis_score": 0,
+      "synthesis_reason": "The answer does not perform any comparative synthesis; it merely states an inability to answer without referencing or contrasting the closing conditions from the two agreements.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when excerpts were missing.",
       "hallucination": 0
     },
     {
@@ -143,12 +161,13 @@
       ],
       "distinct_docs_count": 3,
       "generated_answer": "",
+      "refused": false,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "synthesis_score": null,
+      "synthesis_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "multidoc_09",
@@ -161,12 +180,13 @@
       ],
       "distinct_docs_count": 3,
       "generated_answer": "",
+      "refused": false,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "synthesis_score": 0,
+      "synthesis_reason": "The generated answer is empty and does not compare indemnification provisions from two contracts, nor does it attribute any clauses to specific agreements.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "multidoc_10",
@@ -178,102 +198,13 @@
         "Five Prime Therapeutics, Inc._Amgen Inc..txt"
       ],
       "distinct_docs_count": 3,
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following three documents:\n1.  **Select_Bancorp_Inc_First_Bancorp.txt**\n2.  **Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt**\n3.  **Five Prime Therapeutics, Inc._Amgen Inc..txt**\n\nThe specific contracts requested in your query\u2014**Dicerna Pharmaceuticals / Novo Nordisk** and **Acceleron Pharma / Merck**\u2014are **not present** in the provided context. Therefore, I cannot compare their regulatory approval conditions.\n\nFor reference, the only document in the provided excerpts that contains a clause regarding regulatory approvals is **Select_Bancorp_Inc_First_Bancorp.txt**, which states:\n> \"All Consents of, filings and registrations with, and notifications to, all Regulatory Authorities required for consummation of the Merger shall have been obtained or made and shall be in full force and effect and all waiting periods required by Law shall have expired.\"\n\nHowever, this does not address the specific deals you asked about.",
+      "refused": true,
       "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "synthesis_score": null,
+      "synthesis_reason": "empty judge response",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
-    },
-    {
-      "id": "multidoc_11",
-      "query": "Compare the non-disclosure terms in the AfriGIS NDA and the Aspiegel NDA. How do the durations and scope of confidentiality obligations differ?",
-      "description": "NDA scope and duration comparison",
-      "retrieved_documents": [
-        "SINTEC-UK-LTD-Non-disclosure-agreement-2017.txt",
-        "FNHA-2019RFP-02-NDA-form.txt",
-        "IPTK-CO-MutualNon-DisclosureAgreement.txt"
-      ],
-      "distinct_docs_count": 3,
-      "generated_answer": "Error: Connection error.",
-      "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
-    },
-    {
-      "id": "multidoc_12",
-      "query": "How do the governing law and dispute resolution provisions compare across the Alaska Communications / Investment Group and the Acacia Communications / Cisco Systems acquisition agreements?",
-      "description": "Governing law and jurisdiction comparison across M&A deals",
-      "retrieved_documents": [
-        "LEJUHOLDINGSLTD_03_12_2014-EX-10.34-INTERNET CHANNEL COOPERATION AGREEMENT.txt",
-        "Meridian Bancorp, Inc._Independent Bank Corp..txt",
-        "Sterling_Bancorp_Webster_Financial_Corporation.txt"
-      ],
-      "distinct_docs_count": 3,
-      "generated_answer": "",
-      "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
-    },
-    {
-      "id": "multidoc_13",
-      "query": "Compare the limitation of liability clauses in any two CUAD service or consulting agreements. Are liability caps present in both?",
-      "description": "Liability cap comparison across commercial service agreements",
-      "retrieved_documents": [
-        "ADMA BioManufacturing, LLC -  Amendment #3 to Manufacturing Agreement .txt",
-        "DRIVENDELIVERIES,INC_05_22_2020-EX-10.4-CONSULTING AGREEMENT.txt",
-        "SUMMAFOURINC_06_19_1998-EX-10.3-SOFTWARE LICENSE AND MAINTENANCE AGREEMENT.txt"
-      ],
-      "distinct_docs_count": 3,
-      "generated_answer": "",
-      "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
-    },
-    {
-      "id": "multidoc_14",
-      "query": "How do the data sharing and third-party disclosure provisions differ across two privacy policies? Under what circumstances is user data shared?",
-      "description": "Third-party data sharing comparison across privacy policies",
-      "retrieved_documents": [
-        "NU%20Confidentiality%20Non-Disclosure%20%20Information%20Security%20Agreement%20Final%20....txt",
-        "23andMe.txt",
-        "WECC_Confidentiality_Agreement.txt"
-      ],
-      "distinct_docs_count": 3,
-      "generated_answer": "",
-      "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
-    },
-    {
-      "id": "multidoc_15",
-      "query": "Compare the deal protection mechanisms (no-shop, go-shop, or matching rights) in the Adamas Pharmaceuticals / Supernus and Alexion / AstraZeneca acquisition agreements.",
-      "description": "Deal protection mechanism comparison across two pharma M&A transactions",
-      "retrieved_documents": [
-        "Select_Bancorp_Inc_First_Bancorp.txt",
-        "Quaker Chemical Corporation - NON COMPETITION AND NON SOLICITATION AGREEMENT.txt",
-        "Five Prime Therapeutics, Inc._Amgen Inc..txt"
-      ],
-      "distinct_docs_count": 3,
-      "generated_answer": "",
-      "diversity_pass": true,
-      "synthesis_score": 1,
-      "synthesis_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when excerpts were missing.",
       "hallucination": 0
     }
   ]

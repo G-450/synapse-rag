@@ -54,27 +54,44 @@ from app.rag import (
 )
 
 
+# The judge is deliberately a different, larger model than the generator (GROQ_MODEL), so that it is
+# not grading its own output. Override with JUDGE_MODEL when the default is retired.
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", "openai/gpt-oss-120b")
+
+
 def get_judge_llm() -> ChatGroq:
     """Returns a deterministic LLM for evaluation."""
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         raise ValueError("GROQ_API_KEY environment variable is required.")
     return ChatGroq(
-        model="llama-3.1-8b-instant",
+        model=JUDGE_MODEL,
         api_key=api_key,
         temperature=0.0,
-        max_tokens=512,
+        # The gpt-oss judges spend part of their completion budget on reasoning tokens before they
+        # emit the JSON verdict. At 512 tokens a long context could consume the whole budget and
+        # return empty content, which the aggregation then had to discard; low reasoning effort plus
+        # a slightly larger ceiling keeps the verdict inside the budget and the token spend down.
+        max_tokens=768,
+        model_kwargs={"reasoning_effort": "low"},
     )
 
 
 def call_llm_with_retry(llm, messages, retries: int = 5) -> str:
-    """Invoke LLM with exponential backoff for rate limits."""
+    """Invoke LLM with exponential backoff for rate limits.
+
+    Every failure path returns a string starting with "Error:" so that parse_judge_json records an
+    unscored verdict with a readable cause. Returning a bare empty string here used to make an
+    exhausted rate-limit budget look like an empty model response.
+    """
+    last_err = "retries exhausted"
     for attempt in range(retries):
         try:
             res = llm.invoke(messages)
             return res.content if hasattr(res, "content") else str(res)
         except Exception as e:
-            err_str = str(e).lower()
+            last_err = str(e)
+            err_str = last_err.lower()
             if "429" in err_str or "rate limit" in err_str:
                 wait_sec = 3 * (attempt + 1)
                 time.sleep(wait_sec)
@@ -82,7 +99,7 @@ def call_llm_with_retry(llm, messages, retries: int = 5) -> str:
                 return f"Error: {e}"
             else:
                 time.sleep(1.5)
-    return ""
+    return f"Error: {last_err}"
 
 
 def build_docid_map() -> dict[str, str]:
@@ -124,21 +141,37 @@ def build_docid_map() -> dict[str, str]:
 
 
 def parse_judge_json(content: str) -> dict:
-    """Safely extracts structured JSON from LLM judge responses."""
-    try:
-        cleaned = content.strip()
-        if "```json" in cleaned:
-            cleaned = cleaned.split("```json")[1].split("```")[0].strip()
-        elif "```" in cleaned:
-            cleaned = cleaned.split("```")[1].split("```")[0].strip()
+    """
+    Extracts a structured verdict from an LLM judge response.
 
-        match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-        if match:
-            return json.loads(match.group(0))
-        return json.loads(cleaned)
-    except Exception:
-        score = 1 if "1" in content and "0" not in content[:15] else 0
-        return {"score": score, "reason": content[:100]}
+    A failed or unparseable judge call returns score=None, which the aggregation below excludes
+    from the metrics and counts separately. It must never be coerced to a pass: silently scoring
+    transport errors as 1 is what invalidated the earlier runs of this benchmark.
+    """
+    if not content or content.startswith("Error:"):
+        return {"score": None, "reason": (content or "empty judge response")[:200]}
+
+    cleaned = content.strip()
+    if "```json" in cleaned:
+        cleaned = cleaned.split("```json")[1].split("```")[0].strip()
+    elif "```" in cleaned:
+        cleaned = cleaned.split("```")[1].split("```")[0].strip()
+
+    for candidate in (re.search(r"\{.*\}", cleaned, re.DOTALL), None):
+        try:
+            data = json.loads(candidate.group(0) if candidate else cleaned)
+            score = data.get("score")
+            if score in (0, 1, "0", "1"):
+                return {"score": int(score), "reason": str(data.get("reason", ""))[:300]}
+        except Exception:
+            continue
+
+    # No JSON, but an unambiguous bare verdict is still usable.
+    bare = re.fullmatch(r"\s*([01])\s*", cleaned)
+    if bare:
+        return {"score": int(bare.group(1)), "reason": "bare score, no JSON"}
+
+    return {"score": None, "reason": f"unparseable judge response: {cleaned[:160]}"}
 
 
 def evaluate_query(
@@ -202,7 +235,31 @@ INSTRUCTIONS:
         )
 
     # 5. Metric 2: Answer Accuracy (LLM Judge against Ground Truth)
-    is_refusal = "cannot answer this question based on the provided" in answer.lower()
+    # A generation that failed outright (rate limit, API error, no text) is not a wrong answer: it
+    # is a missing measurement. Judging it would score the error string itself, so the item is left
+    # unscored and counted separately.
+    gen_failed = answer.startswith("Error:") or not answer.strip()
+    is_refusal = (
+        not gen_failed
+        and "cannot answer this question based on the provided" in answer.lower()
+    )
+    if gen_failed:
+        reason = f"generation failed, not judged: {answer.strip()[:160] or 'empty response'}"
+        return {
+            "id": item.get("id", ""),
+            "query": query,
+            "expected_file": expected_clean,
+            "retrieved_files": retrieved_filenames,
+            "generated_answer": answer,
+            "retrieval_hit": hit,
+            "generation_failed": True,
+            "refused": False,
+            "accuracy": None,
+            "accuracy_reason": reason,
+            "faithfulness": None,
+            "faithfulness_reason": reason,
+            "hallucination": None,
+        }
     if is_refusal:
         acc_score = 0
         acc_reason = "Model refrained from answering because the required clause was absent from context."
@@ -227,7 +284,7 @@ Respond strictly in valid JSON format:
 {{"score": 1, "reason": "Detailed 1-2 sentence explanation of accuracy"}} or {{"score": 0, "reason": "Detailed 1-2 sentence explanation of inaccuracy"}}"""
         acc_resp = call_llm_with_retry(judge_llm, [HumanMessage(content=acc_prompt)])
         acc_data = parse_judge_json(acc_resp)
-        acc_score = 1 if int(acc_data.get("score", 0)) == 1 else 0
+        acc_score = acc_data["score"]
         acc_reason = acc_data.get("reason", "")
 
     # 6. Metric 3: Faithfulness & Hallucination (LLM Judge against Context)
@@ -254,7 +311,7 @@ Respond strictly in valid JSON format:
 {{"score": 1, "reason": "Detailed 1-2 sentence explanation of grounding"}} or {{"score": 0, "reason": "Detailed 1-2 sentence explanation of unsupported claims"}}"""
         faith_resp = call_llm_with_retry(judge_llm, [HumanMessage(content=faith_prompt)])
         faith_data = parse_judge_json(faith_resp)
-        faith_score = 1 if int(faith_data.get("score", 0)) == 1 else 0
+        faith_score = faith_data["score"]
         faith_reason = faith_data.get("reason", "")
 
     return {
@@ -264,11 +321,13 @@ Respond strictly in valid JSON format:
         "retrieved_files": retrieved_filenames,
         "generated_answer": answer,
         "retrieval_hit": hit,
+        "refused": is_refusal,
         "accuracy": acc_score,
+        "generation_failed": False,
         "accuracy_reason": acc_reason,
         "faithfulness": faith_score,
         "faithfulness_reason": faith_reason,
-        "hallucination": 1 - faith_score,
+        "hallucination": None if faith_score is None else 1 - faith_score,
     }
 
 
@@ -312,8 +371,12 @@ def main():
         )
         results.append(res)
         h = "Y" if res["retrieval_hit"] else "N"
-        a = "Y" if res["accuracy"] else "N"
-        f = "Y" if res["faithfulness"] else "N"
+        if res.get("generation_failed"):
+            print(f"[{i}/{len(dataset)}] QA: {res['id'][:15]:<15} | Hit: {h} | GENERATION FAILED")
+            time.sleep(1.5)
+            continue
+        a = {1: "Y", 0: "N", None: "?"}[res["accuracy"]]
+        f = {1: "Y", 0: "N", None: "?"}[res["faithfulness"]]
         print(f"[{i}/{len(dataset)}] QA: {res['id'][:15]:<15} | Hit: {h} | Acc: {a} | Faith: {f}")
         time.sleep(1.5)
 
@@ -322,29 +385,64 @@ def main():
         print("No evaluations completed.")
         return
 
-    hit_rate = (sum(r["retrieval_hit"] for r in results) / n) * 100
-    acc_rate = (sum(r["accuracy"] for r in results) / n) * 100
-    faith_rate = (sum(r["faithfulness"] for r in results) / n) * 100
-    halluc_rate = 100.0 - faith_rate
+    def rate(key):
+        """Percentage over the items the judge actually scored, plus the number it did not."""
+        scored = [r[key] for r in results if r[key] is not None]
+        unscored = n - len(scored)
+        pct = (sum(scored) / len(scored)) * 100 if scored else None
+        return pct, len(scored), sum(scored), unscored
+
+    hits = sum(r["retrieval_hit"] for r in results)
+    hit_rate = (hits / n) * 100
+    acc_rate, acc_n, acc_pass, acc_unscored = rate("accuracy")
+    faith_rate, faith_n, faith_pass, faith_unscored = rate("faithfulness")
+    halluc_rate = None if faith_rate is None else 100.0 - faith_rate
+    refusals = sum(1 for r in results if r.get("refused"))
+    gen_failures = sum(1 for r in results if r.get("generation_failed"))
+
+    def fmt(pct):
+        return "  n/a" if pct is None else f"{pct:5.1f}%"
 
     print("\n" + "=" * 70)
     print(f"  EVALUATION SUMMARY RESULTS ({n} Queries)")
+    print(f"  Judge model: {JUDGE_MODEL}")
     print("=" * 70)
-    print(f"  Retrieval Hit Rate:  {hit_rate:5.1f}% ({sum(r['retrieval_hit'] for r in results)}/{n})")
-    print(f"  Answer Accuracy:     {acc_rate:5.1f}% ({sum(r['accuracy'] for r in results)}/{n})")
-    print(f"  Faithfulness Score:  {faith_rate:5.1f}% ({sum(r['faithfulness'] for r in results)}/{n})")
-    print(f"  Hallucination Rate:  {halluc_rate:5.1f}% ({sum(r['hallucination'] for r in results)}/{n})")
+    print(f"  Retrieval Hit Rate:  {hit_rate:5.1f}% ({hits}/{n})")
+    print(f"  Answer Accuracy:     {fmt(acc_rate)} ({acc_pass}/{acc_n} scored)")
+    print(f"  Faithfulness Score:  {fmt(faith_rate)} ({faith_pass}/{faith_n} scored)")
+    print(f"  Hallucination Rate:  {fmt(halluc_rate)}")
+    print(f"  Explicit refusals:   {refusals}/{n} (scored as accuracy 0, faithfulness 1)")
+    print(f"  Generations failed:  {gen_failures}/{n} (not judged, excluded from rates)")
+    print(f"  Judge calls unscored: accuracy {acc_unscored}/{n} | faithfulness {faith_unscored}/{n}")
+    if acc_unscored or faith_unscored:
+        print("  WARNING: unscored calls are EXCLUDED from the rates above, not counted as passes.")
+        print("  Check accuracy_reason/faithfulness_reason in the saved JSON for the cause; a daily")
+        print("  Groq token limit (429 TPD) will silently shrink the sample these rates rest on.")
     print("=" * 70)
 
     out_file = root_dir / "data" / "eval_faithfulness_results.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(
             {
+                "config": {
+                    "judge_model": JUDGE_MODEL,
+                    "generator_model": os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"),
+                    "n": n,
+                    "scoped": scoped_mode,
+                    "rerank": args.rerank,
+                    "limit_chunks": args.limit_chunks,
+                },
                 "metrics": {
                     "hit_rate": round(hit_rate, 2),
-                    "accuracy": round(acc_rate, 2),
-                    "faithfulness": round(faith_rate, 2),
-                    "hallucination_rate": round(halluc_rate, 2),
+                    "accuracy": None if acc_rate is None else round(acc_rate, 2),
+                    "faithfulness": None if faith_rate is None else round(faith_rate, 2),
+                    "hallucination_rate": None if halluc_rate is None else round(halluc_rate, 2),
+                    "refusal_rate": round((refusals / n) * 100, 2),
+                    "accuracy_scored_n": acc_n,
+                    "faithfulness_scored_n": faith_n,
+                    "generation_failures": gen_failures,
+                    "judge_unscored_accuracy": acc_unscored,
+                    "judge_unscored_faithfulness": faith_unscored,
                 },
                 "results": results,
             },
