@@ -343,7 +343,10 @@ def get_llm(
             "Please configure it in your .env file."
         )
     configured = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
-    fallback_names = os.getenv("GROQ_FALLBACK_MODELS", "qwen/qwen3.6-27b,llama-3.1-8b-instant")
+    # Both former defaults (qwen/qwen3.6-27b, llama-3.1-8b-instant) have been decommissioned on Groq,
+    # which left the fallback chain dead: every fallback returned 404. Keep this list checked against
+    # the live catalogue (GET https://api.groq.com/openai/v1/models).
+    fallback_names = os.getenv("GROQ_FALLBACK_MODELS", "openai/gpt-oss-120b,qwen/qwen3.8-27b")
     model_names = list(dict.fromkeys([configured, *[m.strip() for m in fallback_names.split(",") if m.strip()]]))
 
     def create(model_name: str) -> ChatGroq:
