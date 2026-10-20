@@ -1,9 +1,22 @@
 {
+  "config": {
+    "judge_model": "openai/gpt-oss-120b",
+    "generator_model": "openai/gpt-oss-20b",
+    "n": 50,
+    "scoped": false,
+    "rerank": true,
+    "limit_chunks": 8
+  },
   "metrics": {
     "hit_rate": 26.0,
-    "accuracy": 90.0,
+    "accuracy": 0.0,
     "faithfulness": 100.0,
-    "hallucination_rate": 0.0
+    "hallucination_rate": 0.0,
+    "refusal_rate": 36.0,
+    "accuracy_scored_n": 35,
+    "faithfulness_scored_n": 18,
+    "judge_unscored_accuracy": 15,
+    "judge_unscored_faithfulness": 32
   },
   "results": [
     {
@@ -20,12 +33,13 @@
         "Sykes Enterprises, Incorporated_CREADEV.txt",
         "Adamas_Pharmaceuticals_Supernus_Pharmaceuticals.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts are from the following documents:\n1. *Leaf Group Ltd._Graham Holdings Company.txt*\n2. *Parsley Energy, Inc._Pioneer Natural Resources Company.txt*\n3. *Covanta_Holding_Corporation_EQT_Holdings_AB.txt*\n4. *W_R_Grace_Co_40_North_Management_LLC.txt*\n5. *Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt*\n6. *RealPage, Inc._Thoma Bravo, L.P..txt*\n\nNone of these excerpts correspond to the Acquisition Agreement between **Novo Nordisk A/S** and **Dicerna Pharmaceuticals, Inc.**, nor do they contain any information regarding the \"Type of Consideration\" for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -40,14 +54,15 @@
         "W_R_Grace_Co_40_North_Management_LLC.txt",
         "Tremont_Mortgage_Trust_RMR_Mortgage_Trust.txt",
         "Leaf Group Ltd._Graham Holdings Company.txt",
-        "DSP_Group_Synaptics_Incorporated.txt"
+        "Alaska Communications Systems Group, Inc._Investment Group.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following agreements:\n1. *Kadmon Holdings / Sanofi SA*\n2. *Luminex Corporation / DiaSorin S.p.A.*\n3. *Maxim Integrated Products, Inc. / Analog Devices, Inc.*\n4. *Soliton Inc / AbbVie Inc*\n5. *W.R. Grace Co / 40 North Management LLC*\n6. *Tremont Mortgage Trust / RMR Mortgage Trust*\n\nThere are no excerpts provided for the Merger Agreement between **Devon Energy Corporation** and **WPX Energy, Inc.** Therefore, I cannot provide the specific clause regarding the \"Compliance with Covenants\" closing condition for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -64,12 +79,13 @@
         "Parsley Energy, Inc._Pioneer Natural Resources Company.txt",
         "Eidos Therapeutics, Inc._BridgeBio Pharma, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions for \"Acquisition Proposal\" and \"Superior Proposal\" from various unrelated agreements (Goodrich Petroleum, Weingarten Realty, Domtar, Parsley Energy, Endurance International Group, and Nuance Communications). There are no excerpts provided from an agreement between \"Lake Holdings, LP\" and \"Pluralsight, Inc.\", nor is there any definition of \"Interveining Event\" in the supplied text.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -86,12 +102,13 @@
         "Endurance International Group Holdings, Inc._Clearlake Capital Group, L.P..txt",
         "Leaf Group Ltd._Graham Holdings Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from a Development Agreement between Revolution Medicines, Inc. and Sanofi, a Merger Agreement between MTS Systems Corporation and Amphenol Corporation, a Merger Agreement between Echo Global Logistics and The Jordan Company L.P., and a Merger Agreement between Chiasma, Inc. and Amryt Pharma plc. There are no excerpts provided for a Merger Agreement between Sanofi and Kadmon Holdings, Inc., nor any clauses regarding \"Fiduciary Termination Right Triggers\" for such an agreement.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -108,12 +125,13 @@
         "TIFFANY_&_CO._LVMH_MO\u00cbT_HENNESSY-LOUIS_VUITTON.txt",
         "Covanta_Holding_Corporation_EQT_Holdings_AB.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts from the agreement between **Weingarten Realty Investors** and **Kimco Realty Corporation** (specifically **Parent Clause 5**) only address the payment of the \"Company Termination Fee\" within 12 months of termination if the Company enters into or consummates an Acquisition Proposal. The excerpts do not contain the Specific Performance clause or any section referencing specific performance remedies.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -130,12 +148,13 @@
         "Nuance Communications, Inc._Microsoft Corporation.txt",
         "Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Superior Proposal\" for the following agreements:\n1.  Weingarten Realty Investors / Kimco Realty Corporation\n2.  ORBCOMM Inc. / GI Partners\n3.  Slack Technologies, Inc. / salesforce.com, inc.\n4.  TIFFANY & CO. / LVMH MO\u00cbT HENNESSY-LOUIS VUITTON\n5.  Endurance International Group Holdings, Inc. / Clearlake Capital Group, L.P.\n6.  U.S. Concrete, Inc. / Vulcan Materials Company\n\nThere is no excerpt provided for the Acquisition Agreement between **SANOFI** and **TRANSLATE BIO, INC.** Therefore, I cannot provide the specific definition for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -152,12 +171,13 @@
         "Altabancorp_Glacier Bancorp, Inc..txt",
         "Zix_Corporation_Open_Text_Corporation.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions for \"Acquisition Proposal\" and \"Intervening Event\" (or \"Company Intervening Event\") from the following specific agreements:\n1. *MGM Growth Properties LLC v. VICI Properties Inc.*\n2. *Goodrich Petroleum Corporation v. EnCap Investments L.P.*\n3. *Adamas Pharmaceuticals v. Supernus Pharmaceuticals*\n4. *The ExOne Company v. Desktop Metal*\n5. *Parsley Energy, Inc. v. Pioneer Natural Resources Company*\n6. *Eidos Therapeutics, Inc. v. BridgeBio Pharma, Inc.*\n\nNone of the provided excerpts correspond to the Acquisition Agreement between **Newport Holdings, LLC** and **The New Home Company Inc.** Therefore, the specific definition of \"Intervening Event\" for that transaction is not present in the source material.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -174,12 +194,13 @@
         "J_Alexander_s_Holdings_Inc_SPB_Hospitality_LLC.txt",
         "MTS Systems Corporation_Amphenol Corporation.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following agreements:\n1.  *Luminex Corporation / DiaSorin S.p.A.*\n2.  *Kadmon Holdings / Sanofi S.A.*\n3.  *Alaska Communications Systems Group, Inc. / Investment Group*\n4.  *RigNet, Inc. / Viasat, Inc.*\n5.  *Leaf Group Ltd. / Graham Holdings Company*\n6.  *Parsley Energy, Inc. / Pioneer Natural Resources Company*\n\nThere are no excerpts provided for an Acquisition Agreement between **Amgen Inc.** and **Five Prime Therapeutics, Inc.** Therefore, I cannot provide the specific clause or condition regarding \"Compliance with Covenants\" for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -198,6 +219,7 @@
       ],
       "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": false,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -218,12 +240,13 @@
         "Community Bankers Trust Corporation_United Bankshares, Inc..txt",
         "Chiasma, Inc._Amryt Pharma plc.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following agreements:\n1. *Goodrich Petroleum Corporation / EnCap Investments L.P.*\n2. *Echo Global Logistics / The Jordan Company L.P.*\n3. *U.S. Concrete, Inc. / Vulcan Materials Company*\n4. *American Renal Associates Holdings / IRC Superman Midco*\n5. *ORBCOMM Inc. / GI Partners*\n\nThere are no excerpts provided for a Merger Agreement between **\"Cincinnati Bell Inc.\"** and **\"RF Merger Sub Inc.\"** Therefore, I cannot determine if that specific agreement contains a tail provision for acquisition proposals.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -240,13 +263,14 @@
         "Mackinac Financial Corporation_Nicolet Bankshares, Inc..txt",
         "Alaska Communications Systems Group, Inc._Investment Group.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "**Yes**, the Merger Agreement between Sterling Bancorp and Webster Financial Corporation contains a \"Tail\" provision (specifically a termination fee triggered by a subsequent acquisition within a defined period).\n\nThis provision is located in **Section 8.2(b)(i)** of the *Sterling_Bancorp_Webster_Financial_Corporation.txt* document.\n\n### Analysis of the Tail Provision\n\nThe clause establishes a financial obligation for Sterling Bancorp to pay a fee to Webster Financial Corporation if specific conditions regarding a competing \"Acquisition Proposal\" are met within a 12-month period following the termination of the agreement.\n\n**Key Terms and Conditions (Quoted Verbatim):**\n\n1.  **Triggering Event (Communication of Proposal):**\n    The provision applies if, \"after the date of this Agreement and prior to the termination of this Agreement, a bona fide Acquisition Proposal shall have been communicated to or otherwise made known to the Board of Directors or senior management of Sterling or shall have made directly to the stockholders of Sterling generally or any person shall have publicly announced... an Acquisition Proposal.\"\n\n2.  **Termination Conditions:**\n    The fee is triggered only if, after the proposal is made, the Agreement is terminated under one of two specific scenarios:\n    *   \"(x) thereafter this Agreement is terminated by either Webster or Sterling pursuant to Section 8.1(c) without the Requisite Sterling Vote having been obtained (and all other conditions set forth in Sections 7.1 and 7.3 were satisfied or were capable of being satisfied prior to such termination)\"\n    *   \"(y) thereafter this Agreement is terminated by Webster pursuant to Section 8.1(d) as a result of a willful breach by Sterling\"\n\n3.  **The \"Tail\" Period (12 Months):**\n    Sterling must enter into a definitive agreement or consummate a transaction with respect to an Acquisition Proposal \"prior to the date that is **twelve (12) months** after the date of such termination.\"\n\n4.  **Financial Obligation (Termination Fee):**\n    If the above conditions are met, \"Sterling shall... pay Webster... a fee equal to **$185,000,000** (the \u201cTermination Fee\u201d).\"\n\n5.  **Modified Threshold for \"Acquisition Proposal\":**\n    The clause includes a specific modification to the definition of \"Acquisition Proposal\" for the purpose of this tail provision:\n    > \"provided, that for purposes of this Section 8.2(b)(i), all references in the definition of Acquisition Proposal to \u201c25%\u201d shall instead refer to \u201c**50%**\u201d.\"\n\n### Conclusion\nThe excerpt explicitly defines a tail period of **12 months** during which Sterling is liable for a **$185,000,000** termination fee if it consummates a competing acquisition proposal that meets the modified **50%** voting power threshold, following a termination of the Webster-Sterling agreement under the specified conditions.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1544",
@@ -262,13 +286,14 @@
         "American_Renal_Associates_Holdings_IRC_Superman_Midco.txt",
         "W_R_Grace_Co_40_North_Management_LLC.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between **ORBCOMM Inc.** and **GI Partners** (identified in the document header as `ORBCOMM Inc._GI Partners.txt`), the Ordinary Course of Business covenants are detailed in **Section 5.1(a)**.\n\n**Direct Answer:**\nUnder **Section 5.1(a)** of the Agreement, the Company (ORBCOMM Inc.) is covenanted to carry on its business in the Ordinary Course of Business pending the Merger, subject to specific exceptions.\n\n**Verbatim Contractual Language:**\n> \"From and after the date hereof and prior to the Effective Time or the earlier termination of this Agreement, except (i) with the prior written consent of Parent (which consent shall not be unreasonably withheld, delayed or conditioned), (ii) as required by applicable Law, (iii) as expressly contemplated by this Agreement or (iv) as otherwise set forth in Section 5.1 of the Company Disclosure Schedule, the Company shall, and shall cause its Subsidiaries to, carry on its business in all material respects in the Ordinary Course of Business and use commercially reasonable efforts to preserve its business organization intact and maintain existing relations with key customers, suppliers, partners, and other third parties with whom the Company and its Subsidiaries have significant business relationships.\"\n\n**Key Components of the Covenant:**\n1.  **Timeframe:** From the date of the agreement until the \"Effective Time\" or earlier termination.\n2.  **Standard of Performance:** The Company must carry on business \"in all material respects in the Ordinary Course of Business.\"\n3.  **Additional Efforts:** The Company must use \"commercially reasonable efforts\" to:\n    *   Preserve its business organization intact.\n    *   Maintain existing relations with key customers, suppliers, partners, and other third parties with significant business relationships.\n4.  **Exceptions/Carve-outs:** The covenant does not apply if the action is:\n    *   (i) With prior written consent of Parent (not unreasonably withheld, delayed, or conditioned);\n    *   (ii) Required by applicable Law;\n    *   (iii) Expressly contemplated by the Agreement; or\n    *   (iv) Set forth in Section 5.1 of the Company Disclosure Schedule.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_78",
@@ -286,11 +311,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not identify the Specific Performance clause or its section number, failing to match the ground truth.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_389",
@@ -308,11 +334,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide any of the covenant language, section reference, or definition found in the ground truth, thus failing to convey the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1134",
@@ -330,11 +357,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_411",
@@ -352,11 +380,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide any of the definition details from the ground truth, thus it fails to convey the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_703",
@@ -374,11 +403,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide the required representation and warranty text (3.8 Absence of Changes, stating no Material Adverse Effect since March 31, 2021), thus failing to convey the correct legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_439",
@@ -394,12 +424,13 @@
         "Covanta_Holding_Corporation_EQT_Holdings_AB.txt",
         "Leaf Group Ltd._Graham Holdings Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -416,13 +447,14 @@
         "Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt",
         "Parsley Energy, Inc._Pioneer Natural Resources Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between **Peoples Bancorp Inc.** (Parent) and **Premier Financial Bancorp, Inc.** (Target), the definition of \"Superior Proposal\" is as follows:\n\n**Definition of \"Superior Proposal\"**\n\nUnder the Premier Financial Bancorp, Inc. / Peoples Bancorp Inc. agreement, **\u201cSuperior Proposal\u201d** is defined as:\n\n> \u201cany bona fide written Acquisition Proposal on terms which the Premier Financial Board determines in good faith, after consultation with Premier Financial\u2019s outside legal counsel and independent financial advisors, and taking into account all the legal, financial, regulatory and other aspects of such Acquisition Proposal, including as to certainty and timing of consummation, would, if consummated, result in a transaction that is more favorable to the holders of Premier Financial Common Stock from a financial point of view than the terms of this Agreement (in each case, taking into account any revisions to this Agreement made or proposed by Peoples); provided that for purposes of the definition of \u2018Superior Proposal,\u2019 the references to \u201820% or more\u2019 in the definition of Acquisition Proposal or Acquisition Transaction shall be deemed to be references to \u201850% or more.\u2019\u201d\n\n**Key Elements of the Definition:**\n*   **Form:** Must be a \"bona fide written Acquisition Proposal.\"\n*   **Determination Standard:** The Premier Financial Board must determine in \"good faith\" that the proposal is \"more favorable to the holders of Premier Financial Common Stock from a financial point of view\" than the current Agreement.\n*   **Consultation Requirement:** The Board must consult with \"outside legal counsel and independent financial advisors.\"\n*   **Factors Considered:** The Board must take into account \"all the legal, financial, regulatory and other aspects of such Acquisition Proposal, including as to certainty and timing of consummation.\"\n*   **Adjustment for Revisions:** The determination must account for \"any revisions to this Agreement made or proposed by Peoples.\"\n*   **Threshold Modification:** For the purpose of this definition, the ownership threshold in the underlying definition of \"Acquisition Proposal\" or \"Acquisition Transaction\" is raised from \"20% or more\" to **\"50% or more.\"**",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_443",
@@ -438,13 +470,14 @@
         "People_s United Financial, Inc._M_T Bank Corporation.txt",
         "Sykes Enterprises, Incorporated_CREADEV.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 0,
-      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
-      "faithfulness": 1,
-      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1379",
@@ -462,11 +495,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not convey any of the required legal information, such as the specific covenants, section numbers, or conditions outlined in the ground truth.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_926",
@@ -484,11 +518,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_213",
@@ -506,11 +541,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide the definition of \"Intervening Event\" as required, thus failing to match the ground truth.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1670",
@@ -526,12 +562,13 @@
         "Core-Mark Holding Company, Inc._Performance Food Group Company.txt",
         "Hill_Rom_Holdings~Baxter_International_Inc.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -542,14 +579,15 @@
         "Waddell _ Reed Financial, Inc._Macquarie Group Limited.txt",
         "PNM Resources, Inc._Avangrid, Inc..txt",
         "Protective Insurance Corporation_The Progressive Corporation.txt",
-        "Prevail Therapeutics Inc._Eli Lilly and Company.txt",
         "Acceleron_Pharma_Inc_Merck_Co.txt",
+        "Prevail Therapeutics Inc._Eli Lilly and Company.txt",
         "Alaska Communications Systems Group, Inc._Investment Group.txt",
         "DSP_Group_Synaptics_Incorporated.txt",
         "Marlin Business Services Corp._HPS Investment Partners, LLC.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts only contain the introductory sentences for the \"Termination\" sections (Section 8.01 or 8.1) from various merger agreements, including the one between Alaska Communications Systems Group, Inc. and Investment Group (likely Project 8 MergerSub, Inc.). None of the excerpts contain the specific clause, definition, or covenant regarding \"Limitations on Antitrust Efforts.\"",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -572,11 +610,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide any information about the consideration type, failing to match the ground truth which specifies conversion of common stock into cash consideration.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_631",
@@ -594,11 +633,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_211",
@@ -616,11 +656,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1109",
@@ -636,12 +677,13 @@
         "W_R_Grace_Co_40_North_Management_LLC.txt",
         "Lydall, Inc._Clearlake Capital Group, L.P..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Knowledge\" for the following agreements:\n1.  *Foundation Building Materials, Inc._American Securities LLC*\n2.  *Columbia_Property_Pacific_Investment_Management*\n3.  *Coherent, Inc._II-VI Incorporated*\n4.  *IEC_Electronics_Corp_Lindsay_Goldberg_LLC*\n5.  *Forterra, Inc._Quikrete Holdings, Inc.*\n6.  *Slack Technologies, Inc._salesforce.com, inc.*\n\nThere is no excerpt provided for the Acquisition Agreement between **BridgeBio Pharma, Inc.** and **Eidos Therapeutics, Inc.** Therefore, I cannot provide the specific definition of \"Knowledge\" for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -660,11 +702,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not convey any of the required legal information, such as the condition that the Company must have performed its obligations in all material respects prior to the Closing Date.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1436",
@@ -682,11 +725,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide any definition of \"Superior Proposal,\" thus failing to convey the required legal information from the ground truth.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1417",
@@ -704,11 +748,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_707",
@@ -726,11 +771,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide any of the definition details from the ground truth, thus failing to convey the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_601",
@@ -746,12 +792,13 @@
         "Adamas_Pharmaceuticals_Supernus_Pharmaceuticals.txt",
         "Leaf Group Ltd._Graham Holdings Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -770,11 +817,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1303",
@@ -792,11 +840,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not convey any of the detailed provisions from the ground truth, such as Section 6.4, the fiduciary exception conditions, or the actions permitted, thus it fails to match the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_585",
@@ -812,13 +861,14 @@
         "Acacia_Communications_Cisco_Systems.txt",
         "Boingo Wireless, Inc._Digital Colony Partners, LP.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, specifically **Parent Clause 2** from the document *Mackinac Financial Corporation_Nicolet Bankshares, Inc..txt*, the definition of \"Superior Proposal\" is as follows:\n\n**Definition of \"Superior Proposal\"**\n\n\u201cSuperior Proposal\u201d means a bona fide written Acquisition Proposal which the Company Board concludes in good faith to be more favorable from a financial point of view to the Company shareholders than the Merger and the other transactions contemplated hereby, subject to the following conditions:\n\n1.  **Financial Advisor Consultation:** The determination is made \"(i) after receiving the advice of its financial advisors (which shall be Piper Sandler & Co., or any nationally recognized investment banking firm)\";\n2.  **Likelihood and Timing:** The Board must take into account \"(ii) after taking into account the likelihood and timing of consummation of the proposed transaction on the terms set forth therein (as compared to, and with due regard for, the terms herein)\"; and\n3.  **Comprehensive Assessment:** The Board must consider \"(iii) after taking into account all legal (with the advice of outside counsel), financial (including the financing terms of any such proposal), regulatory (including the advice of outside counsel regarding the potential for regulatory approval of any such proposal) and other aspects of such proposal and any other relevant factors permitted under applicable law.\"",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1539",
@@ -836,6 +886,7 @@
       ],
       "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": false,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -858,11 +909,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not identify the No-Shop Clause location (Section 7.3) or any of the relevant language, thus it fails to convey the correct legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1217",
@@ -880,11 +932,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide the definition of \"knowledge\" as stated in the ground truth, thus it fails to convey the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_572",
@@ -894,18 +947,19 @@
         "Raven Industries, Inc._CNH Industrial N.V..txt",
         "Protective Insurance Corporation_The Progressive Corporation.txt",
         "Leaf Group Ltd._Graham Holdings Company.txt",
+        "Navistar International Corporation_TRATON SE.txt",
         "Lydall, Inc._Clearlake Capital Group, L.P..txt",
         "Tribune Publishing Company_Alden Global Capital LLC.txt",
-        "Navistar International Corporation_TRATON SE.txt",
         "GenMark Diagnostics, Inc._Roche Holding Ltd.txt",
         "Adamas_Pharmaceuticals_Supernus_Pharmaceuticals.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains termination clauses from the following agreements:\n1. Raven Industries, Inc. and CNH Industrial N.V.\n2. Protective Insurance Corporation and The Progressive Corporation\n3. Leaf Group Ltd. and Graham Holdings Company\n4. Navistar International Corporation and TRATON SE\n5. Lydall, Inc. and Clearlake Capital Group, L.P.\n6. Tribune Publishing Company and Alden Global Capital LLC\n\nThere are no excerpts provided for a Merger Agreement between \"Nicolet Bankshares, Inc.\" and \"County Bancorp, Inc.\"",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -924,11 +978,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not convey any of the required limitation language from the ground truth, thus it fails to provide the correct legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1463",
@@ -937,8 +992,8 @@
       "retrieved_files": [
         "Leaf Group Ltd._Graham Holdings Company.txt",
         "TIFFANY_&_CO._LVMH_MO\u00cbT_HENNESSY-LOUIS_VUITTON.txt",
-        "Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt",
         "Luminex Corporation_DiaSorin S.p.A..txt",
+        "Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt",
         "Glu Mobile Inc._Electronic Arts Inc..txt",
         "W_R_Grace_Co_40_North_Management_LLC.txt",
         "People_s United Financial, Inc._M_T Bank Corporation.txt",
@@ -946,11 +1001,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_776",
@@ -968,11 +1024,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and fails to provide any of the ordinary course of business covenants described in the ground truth, thus missing the essential information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1215",
@@ -990,6 +1047,7 @@
       ],
       "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": false,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -1012,11 +1070,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_273",
@@ -1034,11 +1093,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide any of the required information such as the exchange ratio of 0.275 share of Buyer Common Stock, the section reference, or any description of the consideration.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1371",
@@ -1056,11 +1116,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1576",
@@ -1078,11 +1139,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not convey any of the ordinary course of business covenants detailed in the ground truth, thus it fails to provide the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_617",
@@ -1098,13 +1160,14 @@
         "DSP_Group_Synaptics_Incorporated.txt",
         "Alaska Communications Systems Group, Inc._Investment Group.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the Merger Agreement between New York Community Bancorp, Inc. (NYCB) and Flagstar Bancorp, Inc., the specific closing condition regarding the compliance with covenants is found in **Parent Clause 2**.\n\n**Exact Contractual Clause:**\nThe excerpt states:\n> \"NYCB and Merger Sub shall have performed in all material respects the obligations, covenants and agreements required to be performed by it under this Agreement\"\n\n**Analysis:**\n*   **Parties Involved:** The condition specifically requires performance by **NYCB** and **Merger Sub**.\n*   **Standard of Performance:** The required standard is performance **\"in all material respects.\"**\n*   **Scope:** The obligation covers **\"obligations, covenants and agreements required to be performed by it under this Agreement.\"**\n\n*Note: The provided excerpts do not contain a corresponding clause explicitly stating that Flagstar or its Subsidiaries must perform their covenants in all material respects as a closing condition, nor do they provide a specific section number (e.g., Section 7.x) for this condition, as the clause is listed as \"Unnumbered\" in the context.*",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     }
   ]
 }

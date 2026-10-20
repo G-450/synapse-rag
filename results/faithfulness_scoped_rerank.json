@@ -1,9 +1,22 @@
 {
+  "config": {
+    "judge_model": "openai/gpt-oss-120b",
+    "generator_model": "openai/gpt-oss-20b",
+    "n": 50,
+    "scoped": true,
+    "rerank": true,
+    "limit_chunks": 8
+  },
   "metrics": {
     "hit_rate": 100.0,
-    "accuracy": 70.0,
+    "accuracy": 26.92,
     "faithfulness": 100.0,
-    "hallucination_rate": 0.0
+    "hallucination_rate": 0.0,
+    "refusal_rate": 30.0,
+    "accuracy_scored_n": 26,
+    "faithfulness_scored_n": 18,
+    "judge_unscored_accuracy": 24,
+    "judge_unscored_faithfulness": 32
   },
   "results": [
     {
@@ -20,12 +33,13 @@
         "Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt",
         "Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt"
       ],
-      "generated_answer": "**Answer:**  \nThe consideration for the acquisition is **cash**.\n\n**Supporting clause**\n\n- **Parent Clause\u202f4** (Document: *Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt*):  \n  > \u201cPurchaser shall commence a tender offer \u2026 to acquire all of the outstanding shares of Company Common Stock \u2026 for **$38.25 per share, net to the seller in cash, without interest** (such amount \u2026 being the \u201cOffer Price\u201d) \u2026\u201d\n\nThis clause explicitly states that the purchase price is paid in cash, thereby identifying the type of consideration as cash.",
+      "generated_answer": "**Answer \u2013 Type of Consideration**\n\n- **Contractual source:** *Parent Clause\u202f4* (Document: **Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt** \u2013 unnumbered clause).\n\n- **Exact language:**  \n  > \u201cPurchaser shall commence a tender offer \u2026 to acquire all of the outstanding shares of Company Common Stock (the \u201cShares\u201d), other than the Excluded Shares, **for $38.25 per share, net to the seller in cash, without interest** (such amount \u2026 being the \u201cOffer Price\u201d) \u2026\u201d\n\n- **Interpretation:** The consideration for the acquisition is **cash** \u2013 a fixed cash amount of **$38.25 per share** (subject to adjustments and tax withholdings). No other form of consideration (e.g., stock, earn\u2011out, or other securities) is mentioned in the excerpt.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "accuracy_reason": "The generated answer correctly identifies the consideration as cash at $38.25 per share, matching the ground truth language and details.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "The answer correctly identifies the consideration as cash ($38.25 per share) based directly on the quoted clause, without adding unsupported information.",
       "hallucination": 0
     },
     {
@@ -42,12 +56,13 @@
         "WPX Energy, Inc._Devon Energy Corporation.txt",
         "WPX Energy, Inc._Devon Energy Corporation.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe Merger Agreement expressly requires that the parties\u2019 obligations to consummate the Merger be conditioned on the other party\u2019s compliance with its covenants. The relevant provision is:\n\n> **Section\u202f6.2(a)** \u2013 *Additional Conditions to Central\u2019s and Merger Sub\u2019s Obligations*  \n> \u201c**East shall have performed or complied in all material respects with all of its covenants, obligations or agreements required to be performed or complied with under the Agreement prior to the Effective Time;**\u201d\n\nThis clause is the closing condition that addresses compliance with covenants. It states that Central and Merger Sub\u2019s obligations to consummate the Merger are subject to the satisfaction (or, where permitted by law, waiver) of this condition.",
+      "generated_answer": "**Relevant Clause**\n\n- **Section\u202f6.2 \u2013 \u201cAdditional Conditions to Central\u2019s and Merger Sub\u2019s Obligations.\u201d**  \n\n**Exact language (paragraph\u202f(a))**\n\n> \u201cEast shall have performed or complied in all material respects with all of its covenants, obligations or agreements required to be performed or complied with under the Agreement prior to the Effective Time;\u201d\n\n**Explanation**\n\nSection\u202f6.2 sets out the closing conditions that must be satisfied (or waived) before the Merger can be consummated. Paragraph\u202f(a) expressly makes *compliance with all material covenants, obligations or agreements* of East a required condition of closing. Thus, this clause directly answers the query regarding the \u201cClosing Condition: Compliance with Covenants\u201d in the Devon Energy\u2011WPX Energy Merger Agreement.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "accuracy_reason": "The generated answer correctly cites Section 6.2, reproduces paragraph (a) verbatim, and accurately describes it as the required compliance condition, matching the ground truth.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "The answer accurately quotes Section\u202f6.2(a) from the retrieved contract, which directly states that East must have performed or complied with its covenants, obligations, or agreements in all material respects before the Effective Time, correctly addressing the closing condition of compliance with co",
       "hallucination": 0
     },
     {
@@ -64,12 +79,13 @@
         "Pluralsight, Inc._Vista Equity Partners.txt",
         "Pluralsight, Inc._Vista Equity Partners.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe Acquisition Agreement defines an \u201cIntervening Event\u201d in the clause that follows the discussion of a \u201cSuperior Proposal.\u201d The definition is contained in the unnumbered Parent Clause\u202f6 of the agreement (Pluralsight, Inc._Vista Equity Partners.txt). It reads:\n\n> \u201c(i) other than in connection with a bona fide Acquisition Proposal that constitutes a Superior Proposal, the Company Board (or a committee thereof) may effect a Company Board Recommendation Change in response to any positive material event or development or material change in circumstances with respect to the Company that was (A) not actually known to, or reasonably expected by, the Company Board as of December\u202f11,\u202f2020; and (B) does not relate to (a) any Acquisition Proposal; or (b) the mere fact, in and of itself, that the Company meets or exceeds any internal or published projections, forecasts, estimates or predictions of revenue, earnings or other financial or operating metrics for any period ending on or after December\u202f11,\u202f2020, or changes after December\u202f11,\u202f2020 in the market price or trading volume of the Company Common Stock or the credit rating of the Company (it being understood that the underlying cause of any of the foregoing in this clause (b) may be considered and taken into account) **(each such event, an \u201cIntervening Event\u201d)** \u2026\u201d\n\nThus, an \u201cIntervening Event\u201d is any positive material event, development, or material change in circumstances that was not known or reasonably expected by the Company Board as of December\u202f11,\u202f2020, does not relate to an Acquisition Proposal, and is not merely the meeting or exceeding of internal or published projections or changes in market price, trading volume, or credit rating after that date.",
+      "generated_answer": "**Contractual source**  \n- **Document:** *Pluralsight, Inc. \u2013 Vista Equity Partners* (the Acquisition Agreement)  \n- **Clause:** *Parent Clause\u202f6* (un\u2011numbered clause) \u2013 the paragraph that begins \u201c(i) other than in connection with a bona\u2011fide Acquisition Proposal that constitutes a Superior Proposal\u2026\u201d.\n\n**Definition of \u201cIntervening Event\u201d (as written in the agreement)**  \n\n> \u201c...the Company Board (or a committee thereof) may effect a Company Board Recommendation Change in response to any positive material event or development or material change in circumstances with respect to the Company that was (A) not actually known to, or reasonably expected by, the Company Board as of December\u202f11,\u202f2020; and (B) does not relate to (a) any Acquisition Proposal; or (b) the mere fact, in and of itself, that the Company meets or exceeds any internal or published projections, forecasts, estimates or predictions of revenue, earnings or other financial or operating metrics for any period ending on or after December\u202f11,\u202f2020, or changes after December\u202f11,\u202f2020 in the market price or trading volume of the Company Common Stock or the credit rating of the Company (it being understood that the underlying cause of any of the foregoing in this clause (b) may be considered and taken into account) (each such event, an **\u201cIntervening Event\u201d**), if the Company Board (or a committee thereof) determines in good faith (after consultation with its financial advisor and outside legal counsel) that the failure to do so would be inconsistent with its fiduciary duties pursuant to applicable law and if and only if: \u2026\u201d\n\n**Key points extracted from the definition**\n\n- An **Intervening Event** is any **positive material event, development, or material change in circumstances** concerning the Company **that:**\n  1. **Was not actually known to, or reasonably expected by, the Company Board as of December\u202f11,\u202f2020;** and  \n  2. **Does not relate to an Acquisition Proposal** (or, alternatively, is simply the fact that the Company meets/exceeds its own forecasts or experiences market\u2011price or credit\u2011rating changes, provided the underlying cause is considered).\n\n- The event must be deemed, by the Company Board (or its committee) **in good faith after consulting its financial advisor and outside counsel**, to be something the Board would be **inconsistent with its fiduciary duties** if it failed to act on it.\n\nThus, the contract explicitly defines \u201cIntervening Event\u201d in the language quoted above.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "accuracy_reason": "The generated answer accurately reproduces the definition of \u201cIntervening Event\u201d from the agreement, matching the ground truth language and key conditions.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "The answer directly quotes and accurately summarizes the definition of \u201cIntervening Event\u201d from the provided clause, without adding any unsupported information.",
       "hallucination": 0
     },
     {
@@ -88,6 +104,7 @@
       ],
       "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -108,8 +125,9 @@
         "Weingarten Realty Investors_Kimco Realty Corporation.txt",
         "Weingarten Realty Investors_Kimco Realty Corporation.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain provisions regarding:\n*   **Section 5.4**: Non-Solicitation; Change in Recommendation (including the definition of \"Superior Proposal\" and conditions for engaging with third parties).\n*   **Section 7.1**: Termination (general header).\n*   **Section 7.2(b)(ii)**: Payment of the Company Termination Fee.\n\nNone of the provided excerpts contain a clause titled \"Specific Performance\" or language granting the right to seek specific performance as a remedy for breach.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -130,13 +148,14 @@
         "Translate_Bio_Sanofi_SA.txt",
         "Translate_Bio_Sanofi_SA.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "Based on the provided contract excerpts from the Agreement between Sanofi (Parent) and Translate Bio, Inc. (Company), the specific term \"Superior Proposal\" is **not** defined.\n\nHowever, the excerpts do provide the definition for the closely related term **\"Superior Offer.\"** Under the definitions section of the *Translate_Bio_Sanofi_SA.txt* document, **\"Superior Offer\"** is defined as:\n\n> \u201ca bona fide written Acquisition Proposal that the Company Board determines, in its good faith judgment, after consultation with its outside legal counsel and its financial advisor(s), is reasonably likely to be consummated in accordance with its terms and, taking into account all legal, regulatory and financing aspects (including certainty of closing) of the proposal and the Person making the proposal and other aspects of the Acquisition Proposal that the Company Board deems relevant, if consummated, would result in a transaction more favorable to the Company\u2019s stockholders (solely in their capacity as such) from a financial point of view than the transactions contemplated by this Agreement (including after giving effect to proposals, if any, made by Parent pursuant to Section 6.1(b)(i)); provided, that for purposes of the definition of \u201cSuperior Offer\u201d, the references to \u201c20% or more\u201d in the definition of Acquisition Proposal shall be deemed to be references to \u201cmore than 50%.\u201d\n\n**Key Conditions and Thresholds for a \"Superior Offer\":**\n1.  **Form:** Must be a \"bona fide written Acquisition Proposal.\"\n2.  **Board Determination:** The Company Board must determine, in good faith and after consulting outside legal counsel and financial advisors, that the offer is \"reasonably likely to be consummated.\"\n3.  **Financial Superiority:** The transaction must be \"more favorable to the Company\u2019s stockholders (solely in their capacity as such) from a financial point of view\" than the current Agreement.\n4.  **Ownership Threshold Adjustment:** For the purpose of this definition, the standard \"20% or more\" threshold found in the definition of \"Acquisition Proposal\" is raised to **\"more than 50%.\"**\n\n*Note: The excerpts do not contain a separate definition for \"Superior Proposal.\" If \"Superior Proposal\" is a distinct term used elsewhere in the full agreement, its definition is not present in the provided context.*",
       "retrieval_hit": true,
-      "accuracy": 0,
-      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
-      "faithfulness": 1,
-      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1102",
@@ -152,13 +171,14 @@
         "New_Home_Co_Apollo_Global_Management.txt",
         "New_Home_Co_Apollo_Global_Management.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe definition of an \u201cIntervening Event\u201d is provided in **Parent Clause\u202f6** of the Acquisition Agreement. The clause defines the term as follows:\n\n> **\u201cCompany Intervening Event\u201d means any fact, change, condition, occurrence, effect, event, circumstance or development with respect to the Company and the Company Subsidiaries, taken as a whole, that  \n> (a) was not known or reasonably foreseeable (with respect to substance or timing) to the Company Board, or a committee thereof, as of or prior to the date of this Agreement and  \n> (b) first becomes known to the Company Board after the execution of this Agreement and at any time prior to the Acceptance Time;**  \n> **provided, however, that any change, condition, occurrence, effect, event, circumstance or development**  \n> (i) that is set forth in clauses (i) through (vi) of the definition of \u201cCompany Material Adverse Effect\u201d,  \n> (ii) that involves or relates to a Company Acquisition Proposal or a Superior Company Proposal (which, for purposes of this definition, shall be read without reference to any percentages set forth in the definitions of \u201cCompany Acquisition Proposal\u201d or \u201cSuperior Company Proposal\u201d) or any inquiry or communications or matters relating thereto,  \n> (ii) resulting from a breach of this Agreement by the Company or  \n> (iii) solely resulting from a change after the execution and delivery of this Agreement in the market price or trading volume of the Company Shares, shall not be deemed to constitute a Company Intervening Event.**\n\n**Key points**\n\n- The definition is explicitly titled **\u201cCompany Intervening Event.\u201d**  \n- It specifies the circumstances that qualify as an intervening event and the exceptions that exclude certain events from that definition.  \n- No separate definition for \u201cIntervening Event\u201d (without the \u201cCompany\u201d prefix) appears in the provided excerpts.  \n\nIf you require the definition of a term without the \u201cCompany\u201d prefix, that term is not defined in the excerpts supplied.",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between Parent (referred to as \"Parent\" in the text, associated with the document *New_Home_Co_Apollo_Global_Management.txt*) and the Company (\"The New Home Company Inc.\"), the definition of **\"Company Intervening Event\"** is found in **Parent Clause 6**.\n\n**Definition of \"Company Intervening Event\":**\n\n> \u201cCompany Intervening Event\u201d means any fact, change, condition, occurrence, effect, event, circumstance or development with respect to the Company and the Company Subsidiaries, taken as a whole, that (a) was not known or reasonably foreseeable (with respect to substance or timing) to the Company Board, or a committee thereof, as of or prior to the date of this Agreement and (b) first becomes known to the Company Board after the execution of this Agreement and at any time prior to the Acceptance Time;\n\n**Exclusions (Carve-outs):**\n\nThe definition explicitly excludes the following from constituting a \"Company Intervening Event\":\n1.  Any change, condition, occurrence, effect, event, circumstance or development that is set forth in clauses (i) through (vi) of the definition of \u201cCompany Material Adverse Effect\u201d;\n2.  Any matter that involves or relates to a Company Acquisition Proposal or a Superior Company Proposal (read without reference to any percentages set forth in the definitions of \u201cCompany Acquisition Proposal\u201d or \u201cSuperior Company Proposal\u201d) or any inquiry or communications or matters relating thereto;\n3.  Any matter resulting from a breach of this Agreement by the Company; or\n4.  Any matter solely resulting from a change after the execution and delivery of this Agreement in the market price or trading volume of the Company Shares.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer accurately reproduces the definition and exclusions of \u201cCompany Intervening Event\u201d as set out in the ground truth, with only minor phrasing differences and an added (non\u2011contradictory) reference to a clause number.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_394",
@@ -174,8 +194,9 @@
         "Five Prime Therapeutics, Inc._Amgen Inc..txt",
         "Five Prime Therapeutics, Inc._Amgen Inc..txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain clauses related to **Termination Fees** (Section 9.3(b)), **Superior Offer** definitions and procedures (Section 6.3, Section 7.1(b)(i)), and general **Termination** rights (Section 9.1). However, none of the provided excerpts contain the specific **Closing Conditions** regarding \"Compliance with Covenants\" (typically found in a \"Conditions to the Obligations of the Parties\" or \"Conditions to Closing\" section, such as Section 8 or 9 in standard M&A agreements). Therefore, I cannot identify or quote the specific clause governing compliance with covenants as a closing condition.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -196,13 +217,14 @@
         "Leaf Group Ltd._Graham Holdings Company.txt",
         "Leaf Group Ltd._Graham Holdings Company.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe Acquisition Agreement defines \u201cKnowledge\u201d in the following clause:\n\n> **Parent Clause\u202f2** \u2013 \u201cKnowledge\u201d, whether or not capitalized, or any similar expression:  \n> **(i)** with respect to the Company, means the actual knowledge of the individuals named on Section\u202f1.1(a) of the Company Disclosure Schedule, in each case, after reasonable inquiry of those employees directly reporting to such Person;\n\nThus, \u201cKnowledge\u201d refers specifically to the actual knowledge possessed by the named individuals in the Company Disclosure Schedule, after a reasonable inquiry of their direct reports.",
+      "generated_answer": "Based on the provided contract excerpts from the Agreement between Graham Holdings Company (Parent) and Leaf Group Ltd. (Company), the definition of \"Knowledge\" is found in **Parent Clause 2**.\n\n**Definition of \"Knowledge\"**\n\nThe agreement defines \"Knowledge\" as follows:\n\n> \u201cKnowledge\u201d, whether or not capitalized, or any similar expression: (i) with respect to the Company, means the actual knowledge of the individuals named on Section 1.1(a) of the Company Disclosure Schedule, in each case, after reasonable inquiry of those employees directly reporting to such Person;\n\n**Key Elements:**\n*   **Scope:** The definition provided in the excerpt is specifically limited to its application **\"with respect to the Company.\"**\n*   **Standard:** It requires **\"actual knowledge\"** (not constructive knowledge).\n*   **Attribution:** Knowledge is attributed to specific **\"individuals named on Section 1.1(a) of the Company Disclosure Schedule.\"**\n*   **Diligence Requirement:** The knowledge must be acquired **\"after reasonable inquiry of those employees directly reporting to such Person.\"**\n\n*Note: The provided excerpts do not contain the definition of \"Knowledge\" with respect to the Parent (Graham Holdings Company).*",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_696",
@@ -218,13 +240,14 @@
         "Cincinnati Bell Inc._Macquarie Infrastructure and Real Assets.txt",
         "Cincinnati Bell Inc._Macquarie Infrastructure and Real Assets.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "Based on the provided contract excerpts, I cannot answer this question.\n\nThe provided excerpts do not contain a \"Tail\" provision (also known as a \"tail period\" or \"solicitation tail\") that would allow the Company Board to consider a \"Superior Company Proposal\" or \"Company Takeover Proposal\" after the termination of the Agreement.\n\nWhile the excerpts define **\"Superior Company Proposal\"** (Parent Clause 5) and outline the **\"No Solicitation\"** covenant in **Section 5.02** (Parent Clause 6), they do not include the specific clause that typically defines the duration of the tail period (e.g., \"for a period of 90 days following termination\") or the conditions under which the no-shop restrictions lapse to permit the Board to accept a superior proposal post-termination. The excerpts provided are limited to the definitions, the initial no-shop covenant, and conditions to the Parent's obligation, but do not include the specific tail provision language.",
       "retrieval_hit": true,
-      "accuracy": 0,
-      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
-      "faithfulness": 1,
-      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_951",
@@ -240,13 +263,14 @@
         "Sterling_Bancorp_Webster_Financial_Corporation.txt",
         "Sterling_Bancorp_Webster_Financial_Corporation.txt"
       ],
-      "generated_answer": "**Answer:**  \nYes. The Merger Agreement contains a tail provision that applies to acquisition proposals.\n\n**Clause that provides the tail:**  \n- **Section\u202f8.2(b)(i)** of the Merger Agreement (as reflected in the excerpt labeled \u201cParent Clause\u202f1\u201d).\n\n**Exact contractual language (verbatim):**  \n> \u201c...prior to the date that is twelve (12) months after the date of such termination, Sterling enters into a definitive agreement or consummates a transaction with respect to an Acquisition Proposal (whether or not the same Acquisition Proposal as that referred to above), then Sterling shall, on the earlier of the date it enters into such definitive agreement and the date of consummation of such transaction, pay Webster, by wire transfer of same\u2011day funds, a fee equal to $185,000,000 (the \u201cTermination Fee\u201d); provided, that for purposes of this Section\u202f8.2(b)(i), all references in the definition of Acquisition Proposal to \u201c25%\u201d shall instead refer to \u201c50%.\u201d\u201d\n\nThis clause imposes a financial obligation on Sterling if it completes an acquisition within 12\u202fmonths after the termination of the agreement, thereby functioning as a tail provision for acquisition proposals.",
+      "generated_answer": "**Yes**, the provided contract excerpts contain a \"Tail\" provision (specifically a termination fee triggered by subsequent acquisition proposals) located in **Section 8.2(b)(i)** of the Agreement between Sterling Bancorp and Webster Financial Corporation.\n\n**Analysis of the Tail Provision:**\n\nUnder **Section 8.2(b)(i)**, Sterling Bancorp is obligated to pay a termination fee to Webster Financial Corporation if specific conditions regarding subsequent acquisition proposals are met. The operative requirements are:\n\n1.  **Triggering Event (Acquisition Proposal):**\n    *   A \"bona fide Acquisition Proposal\" must be communicated to or made known to the Board of Directors or senior management of Sterling, made directly to Sterling\u2019s stockholders, or publicly announced (and not withdrawn at least two (2) business days prior to the Sterling Meeting).\n    *   *Note on Threshold:* The clause explicitly modifies the definition of \"Acquisition Proposal\" for this section: \"provided, that for purposes of this Section 8.2(b)(i), all references in the definition of Acquisition Proposal to \u201825%\u2019 shall instead refer to \u201850%\u2019.\"\n\n2.  **Termination Conditions:**\n    The Agreement must have been terminated in one of the following two ways:\n    *   (x) Terminated by either Webster or Sterling pursuant to **Section 8.1(c)** without the \"Requisite Sterling Vote\" having been obtained (provided all other conditions in Sections 7.1 and 7.3 were satisfied or capable of being satisfied prior to termination); **OR**\n    *   (y) Terminated by Webster pursuant to **Section 8.1(d)** as a result of a \"willful breach\" by Sterling.\n\n3.  **Subsequent Transaction Requirement:**\n    *   Sterling must enter into a definitive agreement or consummate a transaction with respect to an Acquisition Proposal (whether or not it is the same proposal referenced above).\n\n4.  **Time Limit (The \"Tail\" Period):**\n    *   The subsequent definitive agreement or consummation must occur **prior to the date that is twelve (12) months after the date of such termination**.\n\n5.  **Payment Obligation:**\n    *   If the above conditions are met, Sterling shall pay Webster a fee equal to **$185,000,000** (the \u201cTermination Fee\u201d).\n    *   Payment is due on the earlier of the date Sterling enters into the definitive agreement or the date of consummation of the transaction.\n    *   Payment must be made by \"wire transfer of same day funds.\"",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1544",
@@ -262,13 +286,14 @@
         "ORBCOMM Inc._GI Partners.txt",
         "ORBCOMM Inc._GI Partners.txt"
       ],
-      "generated_answer": "**Ordinary Course of Business Covenants**\n\n1. **Clause that sets the covenant**  \n   *Section\u202f5.1 \u2013 Conduct of Business by the Company Pending the Merger*  \n   > \u201cFrom and after the date hereof and prior to the Effective Time or the earlier termination of this Agreement, except (i) with the prior written consent of Parent (which consent shall not be unreasonably withheld, delayed or conditioned), (ii) as required by applicable Law, (iii) as expressly contemplated by this Agreement or (iv) as otherwise set forth in Section\u202f5.1 of the Company Disclosure Schedule, the Company shall, and shall cause its Subsidiaries to, carry on its business in all material respects in the **Ordinary Course of Business** and use commercially reasonable efforts to preserve its business organization intact and maintain existing relations with key customers, suppliers, partners, and other third parties with whom the Company and its Subsidiaries have significant business relationships.\u201d\n\n2. **Definition of \u201cOrdinary Course of Business\u201d**  \n   *Parent Clause\u202f4*  \n   > \u201c**Ordinary Course of Business** means the ordinary course of business consistent with the past practice of the Company;\u201d\n\nThese are the only ordinary\u2011course\u2011of\u2011business covenants that appear in the provided excerpts.",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between ORBCOMM Inc. and GI Partners (identified in the document header as \"ORBCOMM Inc._GI Partners.txt\"), the Ordinary Course of Business covenants are detailed in **Section 5.1**.\n\n**1. Covenant Requirement (Section 5.1(a))**\nUnder **Section 5.1(a)**, titled \"Conduct of Business by the Company Pending the Merger,\" the Company is obligated to:\n*   \"carry on its business in all material respects in the Ordinary Course of Business\";\n*   \"use commercially reasonable efforts to preserve its business organization intact\"; and\n*   \"maintain existing relations with key customers, suppliers, partners, and other third parties with whom the Company and its Subsidiaries have significant business relationships.\"\n\nThis obligation applies \"From and after the date hereof and prior to the Effective Time or the earlier termination of this Agreement.\"\n\n**2. Exceptions to the Covenant**\nThe covenant in Section 5.1(a) is subject to the following exceptions, where the Company is not required to act in the Ordinary Course of Business:\n*   With the \"prior written consent of Parent (which consent shall not be unreasonably withheld, delayed or conditioned)\";\n*   \"as required by applicable Law\";\n*   \"as expressly contemplated by this Agreement\"; or\n*   \"as otherwise set forth in Section 5.1 of the Company Disclosure Schedule.\"\n\n**3. Definition of \"Ordinary Course of Business\"**\nThe term is explicitly defined in the provided excerpts as:\n> \u201cOrdinary Course of Business\u201d means the ordinary course of business consistent with the past practice of the Company;\n\n**Note on Parties:**\nWhile the query references \"GI DI Orion Acquisition Inc,\" the provided excerpts are from a document labeled \"ORBCOMM Inc._GI Partners.txt.\" The analysis above is strictly grounded in the text provided in these excerpts.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer correctly restates the Section 5.1(a) covenants, the listed exceptions, and the definition of \"Ordinary Course of Business\" matching the ground truth, with only minor phrasing differences.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_78",
@@ -284,8 +309,9 @@
         "American_Renal_Associates_Holdings_IRC_Superman_Midco.txt",
         "American_Renal_Associates_Holdings_IRC_Superman_Midco.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain provisions regarding:\n*   Termination fees and conditions for payment (Section 8.2(b)(ii)).\n*   No-Shop covenants and restrictions (Section 6.1(b)).\n*   Representations regarding due authorization and binding obligation (unnumbered clause).\n*   Definition of \"Acquisition Proposal\" (unnumbered clause).\n*   Conditions to Obligations of Parent and Merger Sub regarding Representations and Warranties (Section 7.2(a)).\n\nNone of the provided excerpts contain a \"Specific Performance\" clause or section.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -306,13 +332,14 @@
         "The_ExOne_Company~Desktop_Metal.txt",
         "The_ExOne_Company~Desktop_Metal.txt"
       ],
-      "generated_answer": "**Answer \u2013 Ordinary\u2011Course\u2011of\u2011Business Covenants**\n\nThe Acquisition Agreement expressly requires the Target (\u201cCompany\u201d) and its subsidiaries to conduct their business \u201cin the ordinary course\u201d under **Section\u202f5.1 \u2013 Conduct of Business of the Company**.  The covenant is limited to the period from the date of the Agreement until the earlier of the Effective Time or the termination of the Agreement under Section\u202f7.1, and it is subject to the following exceptions:\n\n1. **Prior written consent of Parent** \u2013 the Company may deviate only with Parent\u2019s prior written consent, which \u201cshall not be unreasonably withheld, conditioned or delayed.\u201d  \n2. **Disclosures in the Company Disclosure Letter** \u2013 any matters expressly required or permitted by the Disclosure Letter.  \n3. **Legal requirements** \u2013 any action required by law.  \n\nThe covenant is further qualified by the definition of \u201cordinary course\u201d provided in the Agreement:\n\n> **Parent Clause\u202f2** \u2013 \u201cThe terms \u2018ordinary course\u2019 or \u2018ordinary course of business\u2019 or words of similar import when used in this Agreement mean \u2018ordinary course of business consistent with past practice\u2019.\u201d  \n\n**Exact contractual language**\n\n> **Section\u202f5.1 (a)**  \n> \u201cExcept (A) with the prior written consent of Parent (which consent shall not be unreasonably withheld, conditioned or delayed), (B) for matters set forth in Section\u202f5.1 of the Company Disclosure Letter or otherwise expressly required or permitted by this Agreement or (C) as may be required by Law, from the date of this Agreement until the earlier of the Effective Time and the date, if any, on which this Agreement is terminated in accordance with Section\u202f7.1, (x) the Company shall, and shall cause each of its Subsidiaries to, conduct its business and the business of its Subsidiaries in all material respects in the ordinary course (other than in connection with COVID\u201119 Measures).\u201d\n\n> **Parent Clause\u202f2**  \n> \u201cThe terms \u2018ordinary course\u2019 or \u2018ordinary course of business\u2019 or words of similar import when used in this Agreement mean \u2018ordinary course of business consistent with past practice\u2019.\u201d\n\nThese provisions constitute the ordinary\u2011course\u2011of\u2011business covenants in the Acquisition Agreement between DESKTOP METAL, INC. (Parent) and THE EXONE COMPANY (Target).",
+      "generated_answer": "Based on the provided contract excerpts from the Agreement between Desktop Metal, Inc. (Parent) and The ExOne Company (Company), the ordinary course of business covenants are detailed in **Section 5.1 (Conduct of Business of the Company)**.\n\n**1. Primary Covenant (Section 5.1(a))**\nUnder **Section 5.1(a)**, the Company is obligated to conduct its business in the ordinary course, subject to specific exceptions. The operative language states:\n\n> \"Except (A) with the prior written consent of Parent (which consent shall not be unreasonably withheld, conditioned or delayed), (B) for matters set forth in Section 5.1 of the Company Disclosure Letter or otherwise expressly required or permitted by this Agreement or (C) as may be required by Law, from the date of this Agreement until the earlier of the Effective Time and the date, if any, on which this Agreement is terminated in accordance with Section 7.1, (x) the Company shall, and shall cause each of its Subsidiaries to, conduct its business and the business of its Subsidiaries in all material respects in the ordinary course (other than in connection with COVID-19 Measures)\"\n\n**2. Definition of \"Ordinary Course\"**\nThe specific standard for \"ordinary course\" is defined in the provided excerpts as:\n\n> \"The terms \u201cordinary course\u201d or \u201cordinary course of business\u201d or words of similar import when used in this Agreement mean \u201cordinary course of business consistent with past practice\u201d.\"\n\n**3. Related Covenants Regarding Third-Party Proposals (Section 5.3)**\nWhile Section 5.1 establishes the general conduct of business, **Section 5.3** contains specific covenants restricting the Company\u2019s ability to engage with third parties regarding alternative transactions, which is a component of maintaining the status quo pending closing.\n\n*   **Restriction on Engagement:** The Company is generally restricted from proposing, negotiating, or committing to alternative transactions. However, **Section 5.3(c)** provides a carve-out allowing the Company to engage with a third party if:\n    1.  The Company receives a bona fide written \"Company Acquisition Proposal\" that did not arise from a material breach of Section 5.3.\n    2.  The Company Board determines in good faith (after consultation with outside legal counsel and financial advisors) that the proposal constitutes, or would reasonably be likely to constitute, a \"Company Superior Proposal.\"\n    3.  The Company Board determines in good faith that failure to act would be inconsistent with directors\u2019 fiduciary duties.\n    4.  The Company has not breached Section 5.3 in any material respect regarding that proposal.\n\n*   **Notification Requirement:** If the Company engages with a third party under the above conditions, it must:\n    *   Notify Parent in writing within **twenty-four (24) hours** of receiving the proposal or inquiry.\n    *   Provide a written summary of material terms and any new information made available to the third party.\n    *   Keep Parent reasonably informed of material developments within **24 hours**.\n\n**4. Regulatory Conduct Restrictions (Section 5.3(b) context)**\nAlthough labeled as part of the regulatory/antitrust context in the excerpt structure, **Section 5.3(b)** (referenced in Parent Clause 3) imposes covenants on **Parent** (and its Subsidiaries/Affiliates) rather than the Company. It states that Parent shall not, without the Company's consent (implied by the mutual nature of such clauses, though the text explicitly restricts Parent), take actions that would limit its freedom of action regarding the acquired assets, such as divesting assets or modifying existing relationships, in response to regulatory challenges.\n\n**Summary of Key Terms:**\n*   **Covenant Section:** Section 5.1(a)\n*   **Standard:** \"Ordinary course of business consistent with past practice\"\n*   **Duration:** From the date of the Agreement until the earlier of the Effective Time or termination.\n*   **Key Exceptions:** Parent consent, matters in the Company Disclosure Letter, or requirements of Law.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1134",
@@ -328,13 +355,14 @@
         "Echo_Global_Logistics_The_Jordan_Company_L_P.txt",
         "Echo_Global_Logistics_The_Jordan_Company_L_P.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "**Yes**, the provided contract excerpts contain a \"Tail\" provision (specifically a reverse termination fee trigger) related to acquisition proposals.\n\nThis provision is located in **Section 6.5(b)** (referenced in Parent Clause 2) and detailed in the unnumbered clause preceding it (Parent Clause 1), which outlines the conditions under which the Company must pay a termination fee if it completes a qualifying transaction after terminating the Agreement.\n\n**Relevant Contractual Language:**\n\n1.  **Triggering Conditions (Parent Clause 1):**\n    The excerpt describes a scenario where a \"Company Qualifying Transaction\" is publicly made or becomes known, followed by the termination of the Agreement, and subsequently the completion of that transaction within a specific timeframe. The text states:\n    > \"(b) In the event that: (i) (A)after the date of this Agreement, an Acquisition Proposal (substituting 50% for the 15% threshold set forth in the definition of \u201cAcquisition Proposal\u201d) (a \u201cCompany Qualifying Transaction \u201d ) shall have been publicly made, proposed or disclosed or otherwise becomes publicly known prior to such termination... (B)thereafter this Agreement is terminated by Parent or the Company pursuant to Section 6.2(a) (Outside Date) or 6.2(b) (Company Requisite Vote not Obtained) or by Parent pursuant to Section 6.4(a) (Company Breach), and (C)at any time on or prior to the 12-month anniversary of such termination, the Company enters into a definitive agreement regarding a Company Qualifying Transaction that is subsequently completed...\"\n\n2.  **Payment Obligation (Parent Clause 2):**\n    This clause confirms that the Company pays a fee in connection with termination for a Superior Proposal, referencing the specific section for the fee amount:\n    > \"6.3 Termination by the Company. This Agreement may be terminated and the Merger may be abandoned by the Company: (a) at any time prior to the time the Company Requisite Vote is obtained, if (i)the Company Board authorizes the Company... to enter into an Alternative Acquisition Agreement with respect to a Superior Proposal; and (ii)immediately prior to or concurrently with the termination of this Agreement the Company enters into an Alternative Acquisition Agreement with respect to a Superior Proposal; provided, that concurrently with such termination the Company pays the Company Termination Fee pursuant to Section 6.5(b);\"\n\n**Key Definitions and Thresholds Identified:**\n*   **Company Qualifying Transaction:** Defined in the excerpt as an \"Acquisition Proposal (substituting 50% for the 15% threshold set forth in the definition of \u201cAcquisition Proposal\u201d).\"\n*   **Tail Period:** The provision applies if the Company completes the transaction \"at any time on or prior to the **12-month anniversary** of such termination.\"\n*   **Termination Triggers:** The tail applies if the Agreement was terminated pursuant to \"Section 6.2(a) (Outside Date) or 6.2(b) (Company Requisite Vote not Obtained) or by Parent pursuant to Section 6.4(a) (Company Breach).\"",
       "retrieval_hit": true,
-      "accuracy": 0,
-      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
-      "faithfulness": 1,
-      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_411",
@@ -350,13 +378,14 @@
         "General Finance Corporation_United Rentals, Inc..txt",
         "General Finance Corporation_United Rentals, Inc..txt"
       ],
-      "generated_answer": "**Answer**\n\nThe definition of **\u201cSuperior Proposal\u201d** is contained in the excerpt labeled **\u201cParent Clause\u202f1\u201d** from the *General Finance Corporation_United Rentals, Inc.* agreement. The clause reads:\n\n> \u201c**Superior Proposal** means a bona fide written Acquisition Proposal, made after the date of this Agreement, that, if the transactions or series of related transactions contemplated thereby were consummated, would result in a Person or Group (other than Parent, Merger Sub or any of their Subsidiaries or any Group of which Parent, Merger Sub or any of their Subsidiaries is a member) becoming the beneficial owner of, directly or indirectly, at least 50 percent of the:  \n> (a) total voting power of the equity securities of the Company (or of the surviving entity in a merger involving the Company or the resulting, direct or indirect, parent of the Company or such surviving entity); or  \n> (b) consolidated net revenues, net income or total assets of the Company and its Subsidiaries, in each case of the foregoing clauses (a) and (b) of this definition, as of the date of such Acquisition Proposal, that the Company Board has determined in good faith, after consultation with outside legal counsel and its financial advisor, that (i) if consummated, would result in a transaction more favorable to the Company\u2019s stockholders from a financial point of view than the transactions contemplated by this Agreement (after taking into account any revisions to the terms and conditions of this Agreement proposed by Parent pursuant to Section\u202f6.02(d)(iii)) and (ii) is reasonably likely to be consummated, taking into account any legal, financial, regulatory and financing aspects (including the existence of a financing contingency), and the likelihood and timing of consummation thereof.\u201d\n\nThis is the sole definition of \u201cSuperior Proposal\u201d present in the provided contract excerpts.",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between General Finance Corporation and United Rentals, Inc., the definition of **\"Superior Proposal\"** is found in **Parent Clause 1**.\n\n**Definition of \"Superior Proposal\"**\n\nA **\"Superior Proposal\"** is defined as a **bona fide written Acquisition Proposal**, made after the date of the Agreement, that, if the transactions or series of related transactions contemplated thereby were consummated, would result in a Person or Group (other than Parent, Merger Sub or any of their Subsidiaries or any Group of which Parent, Merger Sub or any of their Subsidiaries is a member) becoming the beneficial owner of, directly or indirectly, at least **50 percent** of the:\n\n1.  **Total Voting Power:** The total voting power of the equity securities of the Company (or of the surviving entity in a merger involving the Company or the resulting, direct or indirect, parent of the Company or such surviving entity); **OR**\n2.  **Financial Metrics:** The consolidated net revenues, net income or total assets of the Company and its Subsidiaries, in each case as of the date of such Acquisition Proposal.\n\n**Conditions for Determination**\n\nThe Company Board must determine in **good faith**, after consultation with **outside legal counsel** and its **financial advisor**, that the proposal:\n\n1.  **Financial Favorability:** If consummated, would result in a transaction **more favorable to the Company\u2019s stockholders from a financial point of view** than the transactions contemplated by the Agreement (after taking into account any revisions to the terms and conditions of this Agreement proposed by Parent pursuant to Section 6.02(d)(iii)); **AND**\n2.  **Likelihood of Consummation:** Is **reasonably likely to be consummated**, taking into account any legal, financial, regulatory and financing aspects (including the existence of a financing contingency), and the likelihood and timing of consummation thereof.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_703",
@@ -374,6 +403,7 @@
       ],
       "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -394,13 +424,14 @@
         "Leaf Group Ltd._Graham Holdings Company.txt",
         "Leaf Group Ltd._Graham Holdings Company.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe contractual provision that functions as the \u201cClosing Conditions: Regulatory Approvals\u201d clause in the Acquisition Agreement between Graham Holdings Company (Parent) and Leaf Group Ltd. (Target) is found in **Parent Clause\u202f3** of the agreement.  The clause obligates both parties to obtain all necessary regulatory clearances before the transaction can close.\n\n**Exact clause (Parent Clause\u202f3)**  \n\n> \u201ceach of Parent and the Company (i) shall promptly provide all information requested by any Governmental Entity in connection with the Merger or any of the other Transactions and (ii) shall use its reasonable best efforts to promptly take, and cause its Affiliates to take, all actions and steps necessary to obtain and secure the expiration or termination of any applicable waiting periods under the HSR Act or other applicable Antitrust Laws and obtain any clearance or approval required to be obtained from the U.S. Federal Trade Commission, the U.S. Department of Justice, any state attorney general, any foreign competition authority or any other Governmental Entity in connection with the Transactions;\u201d\n\nThis clause is the sole excerpt in the provided contract that directly addresses the regulatory approvals required as a closing condition. No other clause or section number in the supplied excerpts contains a distinct \u201cClosing Conditions: Regulatory Approvals\u201d heading.",
+      "generated_answer": "Based on the provided contract excerpts, I cannot identify a specific clause explicitly titled \"Closing Conditions: Regulatory Approvals.\"\n\nHowever, **Parent Clause 3** contains the operative language regarding the parties' obligations to obtain regulatory approvals. While it is not labeled as a \"Closing Condition\" in the provided text, it details the covenants to secure necessary clearances.\n\n**Relevant Excerpt (Parent Clause 3):**\n> \"each of Parent and the Company (i) shall promptly provide all information requested by any Governmental Entity in connection with the Merger or any of the other Transactions and (ii) shall use its reasonable best efforts to promptly take, and cause its Affiliates to take, all actions and steps necessary to obtain and secure the expiration or termination of any applicable waiting periods under the HSR Act or other applicable Antitrust Laws and obtain any clearance or approval required to be obtained from the U.S. Federal Trade Commission, the U.S. Department of Justice, any state attorney general, any foreign competition authority or any other Governmental Entity in connection with the Transactions;\"\n\n**Note:** The provided excerpts do not contain the specific section header or numbered clause (e.g., Section 6.x) that formally lists \"Regulatory Approvals\" as a condition precedent to Closing. The text above represents the covenant to obtain such approvals, but the specific \"Closing Conditions\" section is not present in the retrieved context.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The answer reproduces the correct clause text but incorrectly asserts it is \"Parent Clause 3,\" a detail not present in the ground truth, making the location claim unsupported.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1656",
@@ -416,13 +447,14 @@
         "Premier Financial Bancorp, Inc._Peoples Bancorp Inc..txt",
         "Premier Financial Bancorp, Inc._Peoples Bancorp Inc..txt"
       ],
-      "generated_answer": "**Definition of \u201cSuperior Proposal\u201d**\n\nThe Acquisition Agreement expressly defines \u201cSuperior Proposal\u201d in the clause identified as **Parent Clause\u202f1** (Document: *Premier Financial Bancorp, Inc._Peoples Bancorp Inc.*). The definition reads:\n\n> \u201cSuperior Proposal\u201d means any bona fide written Acquisition Proposal on terms which the Premier Financial Board determines in good faith, after consultation with Premier Financial\u2019s outside legal counsel and independent financial advisors, and taking into account all the legal, financial, regulatory and other aspects of such Acquisition Proposal, including as to certainty and timing of consummation, **would, if consummated, result in a transaction that is more favorable to the holders of Premier Financial Common Stock from a financial point of view than the terms of this Agreement** (in each case, taking into account any revisions to this Agreement made or proposed by Peoples); **provided that for purposes of the definition of \u201cSuperior Proposal,\u201d the references to \u201c20% or more\u201d in the definition of Acquisition Proposal or Acquisition Transaction shall be deemed to be references to \u201c50% or more.\u201d**\n\nThis is the sole contractual provision in the provided excerpts that defines \u201cSuperior Proposal.\u201d",
+      "generated_answer": "**Direct Answer**\nBased on the provided contract excerpts, the definition of \"Superior Proposal\" is found in the unnumbered clause of the Agreement between Premier Financial Bancorp, Inc. and Peoples Bancorp Inc. It is defined as a bona fide written Acquisition Proposal that the Premier Financial Board determines, in good faith and after consultation with advisors, would result in a transaction more favorable to holders of Premier Financial Common Stock from a financial point of view than the terms of the Agreement.\n\n**Detailed Analysis & Verbatim Citation**\n\nUnder the provided excerpts from the *Premier Financial Bancorp, Inc._Peoples Bancorp Inc.* agreement, the specific definition is as follows:\n\n> \u201cSuperior Proposal\u201d means any bona fide written Acquisition Proposal on terms which the Premier Financial Board determines in good faith, after consultation with Premier Financial\u2019s outside legal counsel and independent financial advisors, and taking into account all the legal, financial, regulatory and other aspects of such Acquisition Proposal, including as to certainty and timing of consummation, would, if consummated, result in a transaction that is more favorable to the holders of Premier Financial Common Stock from a financial point of view than the terms of this Agreement (in each case, taking into account any revisions to this Agreement made or proposed by Peoples); provided that for purposes of the definition of \u201cSuperior Proposal,\u201d the references to \u201c20% or more\u201d in the definition of Acquisition Proposal or Acquisition Transaction shall be deemed to be references to \u201c50% or more.\u201d\n\n**Key Components of the Definition:**\n1.  **Form:** Must be a \"bona fide written Acquisition Proposal.\"\n2.  **Determination Standard:** The determination is made by the \"Premier Financial Board\" in \"good faith.\"\n3.  **Consultation Requirement:** The Board must consult with \"Premier Financial\u2019s outside legal counsel and independent financial advisors.\"\n4.  **Factors Considered:** The Board must take into account \"all the legal, financial, regulatory and other aspects of such Acquisition Proposal, including as to certainty and timing of consummation.\"\n5.  **Comparative Test:** The proposal must result in a transaction \"more favorable to the holders of Premier Financial Common Stock from a financial point of view than the terms of this Agreement.\"\n6.  **Revisions:** The comparison must account for \"any revisions to this Agreement made or proposed by Peoples.\"\n7.  **Threshold Adjustment:** For the specific purpose of this definition, the ownership threshold in the underlying definitions of \"Acquisition Proposal\" or \"Acquisition Transaction\" is raised from \"20% or more\" to \"50% or more.\"",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_443",
@@ -438,8 +470,9 @@
         "Adamas_Pharmaceuticals_Supernus_Pharmaceuticals.txt",
         "Adamas_Pharmaceuticals_Supernus_Pharmaceuticals.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain the Recitals (describing the Offer Price and Board resolutions), Section 6.3 (No Solicitation), Section 3.5 (Conversion of Shares), and the introductory line for Section 9.1 (Termination). However, none of the provided excerpts contain the specific \"Closing Conditions\" section (typically found in a section such as Section 8 or 9 in M&A agreements) or any clause detailing the condition of \"Compliance with Covenants\" as a requirement for closing. Therefore, I cannot identify or quote the specific contractual language regarding this closing condition.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -460,13 +493,14 @@
         "Acacia_Communications_Cisco_Systems.txt",
         "Acacia_Communications_Cisco_Systems.txt"
       ],
-      "generated_answer": "**Direct Answer**\n\nThe closing condition that requires the Target to have complied with its covenants is set out in **Parent Clause\u202f4 \u2013 \u201cb) Covenants and Agreements.\u201d**  \nThis clause expressly makes compliance with the covenants a prerequisite for the Closing.\n\n---\n\n### 1. Clause Identification  \n- **Document:** Acacia_Communications_Cisco_Systems.txt  \n- **Clause:** Parent Clause\u202f4 (unnumbered) \u2013 sub\u2011section **b) Covenants and Agreements**  \n- **Relevant Section Numbers Referenced:** 5.1, 5.2, 5.3, 5.5, 5.7, 5.15, 5.17, 5.18, 5.19\n\n---\n\n### 2. Exact Contractual Language (verbatim)\n\n> **b) Covenants and Agreements.**  \n> *\u201cThe Company shall have performed and complied in all material respects with the covenants and other obligations in Section 5.1, Section 5.2, Section 5.3, Section 5.5, Section 5.7, Section 5.15, Section 5.17, Section 5.18 and Section 5.19 required to be performed and complied with by it at or prior to the Closing. The Company shall not have intentionally or materially breached any other covenants or obligations in this Agreement required to be performed and complied with by it at or prior to the Closing.\u201d*\n\n---\n\n### 3. Contextual Connection to Closing Conditions\n\n- **Parent Clause\u202f1 (6.3)** lists the conditions that must be satisfied at or prior to the Closing.  \n- The covenant\u2011compliance requirement in Parent Clause\u202f4 is one of those conditions, thereby making it a **Closing Condition**.\n\n---\n\n**Conclusion**\n\nThe contractual provision that directly addresses the Closing Condition of \u201cCompliance with Covenants\u201d is **Parent Clause\u202f4, sub\u2011section b)**, which mandates that the Target must have performed and complied with the specified covenants in all material respects before the Closing.",
+      "generated_answer": "Based on the provided contract excerpts from the Acquisition Agreement between Cisco Systems, Inc. (Parent) and Acacia Communications, Inc. (Company), the specific closing condition regarding the compliance with covenants is found in **Section 6.3(b)** (referenced within the excerpt labeled \"Parent Clause 4\").\n\n**Direct Answer:**\nThe condition requires that the Company has performed and complied with specific enumerated covenants in all material respects, and has not intentionally or materially breached any other covenants required to be performed at or prior to the Closing.\n\n**Verbatim Citation:**\nUnder the section detailing \"Additional Conditions to the Obligations of Parent and Sub\" (Section 6.3), subsection **(b) Covenants and Agreements** states:\n\n> \"The Company shall have performed and complied in all material respects with the covenants and other obligations in **Section 5.1, Section 5.2, Section 5.3, Section 5.5, Section 5.7, Section 5.15, Section 5.17, Section 5.18 and Section 5.19** required to be performed and complied with by it at or prior to the Closing. The Company shall not have intentionally or materially breached any other covenants or obligations in this Agreement required to be performed and complied with by it at or prior to the Closing.\"\n\n**Key Details:**\n*   **Standard of Compliance:** \"in all material respects\" for the specifically listed sections.\n*   **General Breach Standard:** The Company must not have \"intentionally or materially breached\" any *other* covenants or obligations in the Agreement.\n*   **Specific Sections Cited:** Sections 5.1, 5.2, 5.3, 5.5, 5.7, 5.15, 5.17, 5.18, and 5.19.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_926",
@@ -482,13 +516,14 @@
         "Boston Private Financial Holdings, Inc._SVB Financial Group.txt",
         "Boston Private Financial Holdings, Inc._SVB Financial Group.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe Merger Agreement contains a no\u2011shop provision in **Section\u202f6.9 \u2013 \u201cAcquisition Proposals.\u201d**  \nThis section sets forth Boston Private\u2019s obligations to refrain from soliciting, negotiating with, or entering into any agreements (other than a confidentiality agreement) with any third party regarding an acquisition proposal, and requires Boston Private to notify SVB Financial of any such proposal within 24\u202fhours.\n\n**Relevant excerpt (Section\u202f6.9)**  \n\n> \u201c(a)\u202fBoston Private shall not, shall cause its Subsidiaries and its and their officers and directors not to, and shall use its reasonable best efforts to cause its and their agents, advisors and representatives not to, directly or indirectly, (i) initiate, solicit, knowingly encourage or knowingly facilitate inquiries or proposals with respect to, (ii) engage or participate in any negotiations with any person concerning, (iii) provide any confidential or nonpublic information or data to, or have or participate in any discussions with, any person relating to, any Acquisition Proposal or (iv) publicly propose any of the foregoing or propose any of the foregoing to a third party; \u2026\u201d  \n\n> \u201cBoston Private will promptly (and in any event within twenty\u2011four (24) hours and before entering into any discussions or providing any information) advise SVB Financial following receipt of any Acquisition Proposal or any inquiry which could reasonably be expected to lead to an Acquisition Proposal, and the substance thereof \u2026\u201d  \n\n> \u201cBoston Private shall use its reasonable best efforts to enforce any existing confidentiality or standstill agreements \u2026\u201d  \n\n> \u201cBoston Private shall not, and shall cause its Subsidiaries and its and their officers, directors, agents, advisors and representatives not to on its behalf, enter into any letter of intent, memorandum of understanding, agreement in principle, acquisition agreement, merger agreement, or other agreement (other than a confidentiality agreement referred to and entered into in accordance with this Section\u202f6.9(a)) relating to any Acquisition Proposal.\u201d  \n\nThis clause is the contractual embodiment of the no\u2011shop obligation. No other clause in the provided excerpts is labeled or functions as a separate \u201cNo\u2011Shop Clause.\u201d",
+      "generated_answer": "Based on the provided contract excerpts, the **No-Shop Clause** is located in **Section 6.9(a)** of the Merger Agreement between Boston Private Financial Holdings, Inc. and SVB Financial Group.\n\n**Section 6.9(a)** is explicitly titled **\"Acquisition Proposals\"** and contains the operative \"no-shop\" language restricting Boston Private from soliciting or engaging with third parties regarding competing transactions.\n\n**Key Provisions of the No-Shop Clause (Section 6.9(a)):**\n\n*   **General Prohibition:** Boston Private is prohibited from, directly or indirectly:\n    *   \"(i) initiate, solicit, knowingly encourage or knowingly facilitate inquiries or proposals with respect to,\"\n    *   \"(ii) engage or participate in any negotiations with any person concerning,\"\n    *   \"(iii) provide any confidential or nonpublic information or data to, or have or participate in any discussions with, any person relating to, any Acquisition Proposal or\"\n    *   \"(iv) publicly propose any of the foregoing or propose any of the foregoing to a third party.\"\n\n*   **Fiduciary Out Exception:** The clause includes a proviso allowing Boston Private to engage with third parties if it receives an \"unsolicited bona fide written Acquisition Proposal\" and its Board of Directors concludes in good faith (after receiving advice from outside counsel and financial advisors) that \"failure to take such actions would be more likely than not to result in a violation of its fiduciary duties under applicable law.\"\n\n*   **Conditions to the Exception:** If Boston Private exercises this exception, it must:\n    *   Provide the information to SVB Financial prior to or concurrently with providing it to the third party.\n    *   Enter into a confidentiality agreement with the third party on terms \"no less favorable to it than the Confidentiality Agreement.\"\n    *   Ensure the confidentiality agreement does not grant the third party any \"exclusive right to negotiate with Boston Private.\"\n\n*   **Notification Requirement:** Boston Private must \"promptly (and in any event within twenty-four (24) hours...)\" advise SVB Financial of any Acquisition Proposal or inquiry that could reasonably be expected to lead to one.\n\n*   **Definition of \"Acquisition Proposal\":** The clause defines this term to include offers for the acquisition of \"25% or more of the consolidated assets\" or \"25% or more of any class of equity or voting securities\" of Boston Private or its Subsidiaries, as well as mergers or business combinations involving assets constituting more than 25% of consolidated assets.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_213",
@@ -504,8 +539,9 @@
         "Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt",
         "Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts do not contain a definition for the term \"Interveining Event\" (or \"Intervening Event\"). The available text covers:\n*   Regulatory conduct restrictions (Parent Clause 1).\n*   No-shop/no-solicitation covenants during the Pre-Closing Period (Parent Clause 2).\n*   The tender offer price and structure ($38.25 per share) (Parent Clause 3).\n*   Conditions precedent to the Purchaser's obligation to accept shares, including compliance with covenants (Parent Clauses 4, 5, and 6).\n\nNone of these excerpts define \"Interveining Event.\"",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -526,13 +562,14 @@
         "CAI International, Inc._Mitsubishi HC Capital Inc..txt",
         "CAI International, Inc._Mitsubishi HC Capital Inc..txt"
       ],
-      "generated_answer": "**Direct answer:**  \nThe acquisition agreement provides a fiduciary\u2011termination right that is triggered when the Company Board (or a committee thereof) makes a *good\u2011faith determination*\u2014after consulting outside legal counsel and its financial advisor\u2014that \u201cthe failure to do so would be inconsistent with its fiduciary duties under applicable Law.\u201d  This determination is made under **Section\u202f6.4(a)**, and the Company may exercise the termination right under **Section\u202f8.3(a)**, provided the termination fee is paid.\n\n---\n\n### 1. Triggering clause \u2013 fiduciary\u2011duty determination  \n**Section\u202f6.4(a)** (excerpt):  \n\n> \u201c(ii) **except where the Company Board (or a committee thereof) makes a good faith determination, after consultation with outside legal counsel and its financial advisor, that the failure to do so would be inconsistent with its fiduciary duties under applicable Law,** amend or grant any waiver or release under any standstill or similar agreement with respect to any class of equity securities of the Company or any Company Subsidiaries;\u201d\n\nThis clause expressly allows the Board to determine that continuing the current course would violate its fiduciary duties, thereby authorizing a termination\u2011related action.\n\n### 2. Exercise of the termination right  \n**Section\u202f8.3(a)** (excerpt):  \n\n> \u201cThis Agreement may be terminated by the Company at any time prior to the Effective Time:  \n> (a) **if prior to the receipt of the Company Stockholder Approval at the Company Stockholders Meeting, the Company Board (or a committee thereof) authorizes the Company, in accordance with Section\u202f6.4, to terminate this Agreement and enter into a Company Acquisition Agreement in respect of a Superior Proposal;**  \n> provided, that in the event of such termination, the Company substantially concurrently enters into such Company Acquisition Agreement;  \n> provided, further, that the Company may only terminate the Agreement pursuant to this Section\u202f8.3(a) if it has paid to Parent the Termination Fee pursuant to Section\u202f8.6(a)(ii);\u201d\n\nThus, the fiduciary\u2011termination right is exercised by the Board\u2019s authorization under Section\u202f6.4, and the Company may terminate the agreement under Section\u202f8.3(a) once the termination fee is paid.\n\n---\n\n**No other fiduciary\u2011termination triggers are present in the provided excerpts.**",
+      "generated_answer": "Based on the provided contract excerpts, the **Fiduciary Termination Right** for the Company (Target) is found in **Section 8.3(a)** of the Agreement between CAI International, Inc. and Mitsubishi HC Capital Inc.\n\n**Direct Answer:**\nThe Company may terminate the Agreement pursuant to **Section 8.3(a)** if the Company Board authorizes the Company to enter into a \"Company Acquisition Agreement\" in respect of a \"Superior Proposal,\" provided that specific conditions regarding the payment of a Termination Fee and the timing relative to Stockholder Approval are met.\n\n**Detailed Analysis of Triggers and Conditions:**\n\n1.  **Primary Trigger (Section 8.3(a)):**\n    The termination right is triggered if:\n    *   It occurs **\"prior to the receipt of the Company Stockholder Approval at the Company Stockholders Meeting\"**;\n    *   The **\"Company Board (or a committee thereof) authorizes the Company, in accordance with Section 6.4, to terminate this Agreement and enter into a Company Acquisition Agreement in respect of a Superior Proposal.\"**\n\n2.  **Mandatory Conditions/Provisos:**\n    For the termination under Section 8.3(a) to be valid, the following conditions must be satisfied:\n    *   **Concurrent Execution:** The Company must **\"substantially concurrently enters into such Company Acquisition Agreement.\"**\n    *   **Termination Fee Payment:** The Company may only terminate if it has **\"paid to Parent the Termination Fee pursuant to Section 8.6(a)(ii).\"**\n\n3.  **Related Covenant Context (Section 6.4):**\n    The authorization to terminate is linked to the covenants in **Section 6.4 (Acquisition Proposals)**. Section 6.4(a) generally prohibits the Company from soliciting or facilitating \"Alternative Proposal[s]\" or entering into a \"Company Acquisition Agreement\" until the Effective Time or termination under Section 8.3(a). This implies that the \"Superior Proposal\" referenced in Section 8.3(a) is an exception to the general standstill/no-shop covenants in Section 6.4, allowing the Board to pivot to a superior offer.\n\n**Note on Parent's Termination Rights:**\nWhile **Section 8.4** outlines termination rights for the Parent, the provided excerpts for Section 8.4(a) are incomplete (cut off after \"If\"). Therefore, specific fiduciary or other triggers for *Parent's* termination cannot be fully detailed from the provided text, though Section 8.4(a) is referenced in Section 8.6(a)(i) regarding the Company's obligation to pay a Termination Fee if Parent terminates under that section.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1649",
@@ -548,13 +585,14 @@
         "Alaska Communications Systems Group, Inc._Investment Group.txt",
         "Alaska Communications Systems Group, Inc._Investment Group.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe Merger Agreement expressly limits the parties\u2019 antitrust\u2011related obligations in the following clause:\n\n> **\u201cprovided, that neither Parent nor the Company shall be required to agree to (1) any term or take any action in connection with receipt of consents under applicable Antitrust Laws or any Communications Consent that is not conditioned upon consummation of the Merger, or (2) any Remedy Action that would otherwise constitute a Burdensome Condition or Parent Burdensome Condition.\u201d**\n\nThis clause is the sole provision in the excerpts that addresses limitations on antitrust efforts. No other clause in the provided excerpts contains a definition, condition, or threshold related to antitrust compliance.",
+      "generated_answer": "Based on the provided contract excerpts, the specific clause detailing the **Limitations on Antitrust Efforts** is found in the unnumbered clause immediately following **Section 8.01 (Termination)** in the document *Alaska Communications Systems Group, Inc._Investment Group.txt*.\n\nWhile the excerpts do not provide the full text of the affirmative \"reasonable best efforts\" covenant regarding antitrust (only a fragment is visible in Parent Clause 6), they explicitly define the **negative covenants** (limitations) regarding what the Company and Parent are **not** required to do in connection with antitrust matters.\n\n**Relevant Excerpt (Parent Clause 2):**\n\n> \"provided, that neither Parent nor the Company shall be required to agree to (1) any term or take any action in connection with receipt of consents under applicable Antitrust Laws or any Communications Consent that is not conditioned upon consummation of the Merger, or (2) any Remedy Action that would otherwise constitute a Burdensome Condition or Parent Burdensome Condition.\"\n\n**Analysis of Limitations:**\n\n1.  **Conditionality Requirement:** The parties are not required to accept any antitrust consent or take any action related to \"applicable Antitrust Laws\" or \"Communications Consent\" if such consent/action is **\"not conditioned upon consummation of the Merger.\"**\n2.  **Burdensome Condition Carve-out:** The parties are not required to agree to any **\"Remedy Action\"** that constitutes a **\"Burdensome Condition\"** or a **\"Parent Burdensome Condition.\"**\n\n*Note: The provided excerpts do not contain the full definition of \"Burdensome Condition,\" \"Parent Burdensome Condition,\" or \"Remedy Action,\" nor do they contain the full affirmative covenant text preceding this proviso (other than the fragment in Parent Clause 6 regarding \"reasonable best efforts\"). Therefore, the specific thresholds or detailed criteria for what constitutes a \"Burdensome Condition\" cannot be determined from the provided text.*",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_779",
@@ -570,8 +608,9 @@
         "Proofpoint, Inc._Thoma Bravo, L.P..txt",
         "Proofpoint, Inc._Thoma Bravo, L.P..txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain clauses regarding conditions to the obligation of Parent and Merger Sub (Section 6(b)), definitions of \"Superior Proposal,\" antitrust/foreign investment covenants, termination rights, and conduct of business covenants (Section 5.1). However, none of the provided excerpts contain the \"Purchase Price\" or \"Consideration\" section (typically found in Section 2 or Section 3 of such agreements) that would specify the type of consideration (e.g., cash, stock, or a combination thereof) for the merger.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -592,13 +631,14 @@
         "Translate_Bio_Sanofi_SA.txt",
         "Translate_Bio_Sanofi_SA.txt"
       ],
-      "generated_answer": "**Answer \u2013 Location of the No\u2011Shop Clause**\n\nThe contract excerpts contain a clause that functions as the No\u2011Shop provision. It is found in **Parent Clause\u202f4** of the document *Translate_Bio_Sanofi_SA.txt* (the acquisition agreement between SANOFI and Translate\u202fBio, Inc.). The clause is not titled \u201cNo\u2011Shop Clause,\u201d but its operative language expressly prohibits the Target from soliciting, negotiating, or entering into any agreements that could lead to an Acquisition Proposal.\n\n**Exact clause text (Parent Clause\u202f4):**\n\n> \u201cExcept as permitted by this Section\u202f5.3, the Company shall, and shall direct its Representatives to, cease any direct or indirect solicitation, encouragement, discussions or negotiations with any Persons that may be ongoing with respect to an Acquisition Proposal and the Company shall not and shall direct its Representatives not to (i) continue any direct or indirect solicitation, knowing encouragement, knowing facilitation (including by way of providing non\u2011public information), discussions or negotiations with any Persons that may be ongoing with respect to an Acquisition Proposal and (ii) directly or indirectly, (A) solicit, initiate or knowingly facilitate or knowingly encourage (including by way of furnishing non\u2011public information) any inquiries regarding, or the making of any proposal or offer that constitutes, or could reasonably be expected to lead to, an Acquisition Proposal, (B) engage in, continue or otherwise participate in any discussions or negotiations regarding, or furnish to any other Person any non\u2011public information in connection with or for the purpose of knowingly encouraging or facilitating, an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal or (C) enter into any letter of intent, acquisition agreement, agreement in principle or similar agreement with respect to an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal.\u201d  \n\nThis clause is the contractual embodiment of the No\u2011Shop provision in the agreement. No other excerpt provided contains a separate No\u2011Shop clause.",
+      "generated_answer": "**Answer**\n\nThe contract contains a no\u2011shop provision in **Parent Clause\u202f4**.  \nThis clause requires the Company to cease all solicitation and negotiation activities that could lead to an Acquisition Proposal.\n\n**Exact wording (Parent Clause\u202f4)**  \n\n> \u201c(b) Except as permitted by this Section\u202f5.3, the Company shall, and shall direct its Representatives to, cease any direct or indirect solicitation, encouragement, discussions or negotiations with any Persons that may be ongoing with respect to an Acquisition Proposal and the Company shall not and shall direct its Representatives not to (i) continue any direct or indirect solicitation, knowing encouragement, knowing facilitation (including by way of providing non\u2011public information), discussions or negotiations with any Persons that may be ongoing with respect to an Acquisition Proposal and (ii) directly or indirectly, (A) solicit, initiate or knowingly facilitate or knowingly encourage (including by way of furnishing non\u2011public information) any inquiries regarding, or the making of any proposal or offer that constitutes, or could reasonably be expected to lead to, an Acquisition Proposal, (B) engage in, continue or otherwise participate in any discussions or negotiations regarding, or furnish to any other Person any non\u2011public information in connection with or for the purpose of knowingly encouraging or facilitating, an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal or (C) enter into any letter of intent, acquisition agreement, agreement in principle or similar agreement with respect to an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal.\u201d  \n\nThis is the sole clause in the provided excerpts that functions as a no\u2011shop provision. No other clause in the excerpts explicitly addresses a no\u2011shop requirement.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer incorrectly identifies the location as Parent Clause\u202f4, whereas the ground truth specifies the no\u2011shop clause is in Section\u202f5.3. This misstatement of the clause reference makes the answer inaccurate despite quoting the correct text.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_211",
@@ -614,13 +654,14 @@
         "Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt",
         "Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe No\u2011Shop provision is contained in **Parent Clause\u202f2** of the Acquisition Agreement (document: *Dicerna_Pharmaceuticals_Inc_Novo_Nordisk_A_S.txt*).  \nIt reads:\n\n> \u201c**Except as permitted by this Section\u202f5.3, during the Pre\u2011Closing Period the Acquired Corporations shall not, and shall cause their Representatives not to, directly or indirectly,**  \n> \n> (i) **continue any solicitation, knowing encouragement, discussions or negotiations with any Persons that may be ongoing as of the date of this Agreement with respect to an Acquisition Proposal;**  \n> \n> (ii) **(A) solicit, initiate or knowingly facilitate or encourage (including by way of furnishing non\u2011public information) any inquiries regarding, or the making of any proposal or offer that constitutes, or could reasonably be expected to lead to, an Acquisition Proposal, (B) engage in, continue or otherwise participate in any discussions or negotiations regarding, or furnish to any other Person any non\u2011public information in connection with, or for the purpose of soliciting or knowingly encouraging or facilitating, an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal or (C) enter into any letter of intent, acquisition agreement, agreement in principle or similar agreement with respect to an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal;**  \n> \n> (iii) **waive or release any Person from, forebear in the enforcement of, or amend any standstill agreement or any standstill provisions of any other Contract.\u201d**\n\nThis clause expressly prohibits the Acquired Corporations from engaging in any activity that could lead to a competing acquisition proposal during the pre\u2011closing period, thereby functioning as the No\u2011Shop clause.",
+      "generated_answer": "Based on the provided contract excerpts, the **No-Shop Clause** is located in **Section 5.3(b)** of the Agreement between Dicerna Pharmaceuticals, Inc. and Novo Nordisk A/S.\n\n**Relevant Excerpt:**\n> \"(b) Except as permitted by this Section 5.3, during the Pre-Closing Period the Acquired Corporations shall not, and shall cause their Representatives not to, directly or indirectly, (i) continue any solicitation, knowing encouragement, discussions or negotiations with any Persons that may be ongoing as of the date of this Agreement with respect to an Acquisition Proposal; (ii) (A) solicit, initiate or knowingly facilitate or encourage (including by way of furnishing non-public information) any inquiries regarding, or the making of any proposal or offer that constitutes, or could reasonably be expected to lead to, an Acquisition Proposal, (B) engage in, continue or otherwise participate in any discussions or negotiations regarding, or furnish to any other Person any non-public information in connection with, or for the purpose of soliciting or knowingly encouraging or facilitating, an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal or (C) enter into any letter of intent, acquisition agreement, agreement in principle or similar agreement with respect to an Acquisition Proposal or any proposal or offer that could reasonably be expected to lead to an Acquisition Proposal; or (iii) waive or release any Person from, forebear in the enforcement of, or amend any standstill agreement or any standstill provisions of any other Contract.\"\n\n**Analysis:**\nThis clause imposes a negative covenant on the \"Acquired Corporations\" (the Target) during the \"Pre-Closing Period.\" It prohibits the Target from:\n1.  Continuing existing solicitations or negotiations regarding an \"Acquisition Proposal.\"\n2.  Soliciting, initiating, facilitating, or encouraging new inquiries or proposals that could lead to an \"Acquisition Proposal.\"\n3.  Entering into letters of intent, acquisition agreements, or similar agreements regarding an \"Acquisition Proposal.\"\n4.  Waiving or amending standstill agreements.\n\nThe clause is subject to exceptions \"permitted by this Section 5.3,\" though the specific text of those exceptions is not included in the provided excerpts.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1109",
@@ -636,8 +677,9 @@
         "Eidos Therapeutics, Inc._BridgeBio Pharma, Inc..txt",
         "Eidos Therapeutics, Inc._BridgeBio Pharma, Inc..txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain definitions for \"Company Superior Proposal\" and \"Intervening Event,\" as well as clauses regarding Cooperation, Conditions to Obligations, Merger Consideration, and Performance of Obligations. However, none of the provided excerpts contain a definition for the term \"Knowledge.\"",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -658,13 +700,14 @@
         "Eidos Therapeutics, Inc._BridgeBio Pharma, Inc..txt",
         "Eidos Therapeutics, Inc._BridgeBio Pharma, Inc..txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "Based on the provided contract excerpts, the specific closing condition regarding the **Compliance with Covenants** (or performance of obligations) by the Company is found in **Parent Clause 5**.\n\n**1. Exact Contractual Clause:**\nThe relevant provision is labeled **\"(b) Performance of Obligations of the Company.\"**\n\n**2. Verbatim Quote of the Condition:**\n> \"The Company shall have performed in all material respects all obligations required to be performed by it under this Agreement at or prior to the Closing Date.\"\n\n**3. Analysis:**\nThis clause establishes that a condition to the closing (specifically tied to the obligations of the Company) is that the Company must have performed its contractual duties in \"all material respects\" by the \"Closing Date.\"\n\n*Note: While Parent Clause 2 introduces \"Conditions to Obligations of Parent, Merger Sub and Merger Sub II,\" the specific text detailing the compliance/performance condition for the Company is contained in Parent Clause 5.*",
       "retrieval_hit": true,
-      "accuracy": 0,
-      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
-      "faithfulness": 1,
-      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1436",
@@ -680,13 +723,14 @@
         "Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt",
         "Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe Merger Agreement between Sanofi and Kadmon\u202fHoldings,\u202fInc. contains an explicit definition of the term **\u201cSuperior Proposal.\u201d**  \nIt appears in an **unnumbered clause** of the Agreement (the clause is titled \u201cSuperior Proposal\u201d). The definition reads:\n\n> \u201c**Superior Proposal** means a bona fide written Acquisition Proposal that if consummated would result in a Person owning, directly or indirectly,  \n> (a) more than 50% of the outstanding shares of the Company Common Stock or  \n> (b) more than 50% of the assets of the Company and the Company Subsidiaries, taken as a whole, in either case, which the Company Board determines in good faith:  \n> (i) to be reasonably likely to be consummated if accepted; and  \n> (ii) if consummated, would result in a transaction more favorable to the Company\u2019s stockholders from a financial point of view than the Merger, in each case, taking into account at the time of determination any changes to the terms of this Agreement offered by Parent in response to such Acquisition Proposal.\u201d\n\n**Key points from the definition**\n\n- The proposal must be **bona fide** and **written**.  \n- It must give a Person ownership of **>\u202f50\u202f%** of either the Company\u2019s common shares or its assets (including those of its subsidiaries).  \n- The Company Board must, in good faith, find that the proposal is **reasonably likely to be consummated** and that it would be **financially more favorable** to the Company\u2019s stockholders than the Merger.  \n- The Board\u2019s assessment must consider any changes to the Merger Agreement terms that Parent may offer in response to the proposal.\n\nThis definition is the sole source in the provided excerpts for the term \u201cSuperior Proposal.\u201d",
+      "generated_answer": "**Direct Answer**\nUnder the Merger Agreement between Sanofi (Parent) and Kadmon Holdings, Inc., a **\"Superior Proposal\"** is defined as a bona fide written Acquisition Proposal that, if consummated, would result in a Person owning more than 50% of the Company\u2019s Common Stock or assets, and which the Company Board determines in good faith to be reasonably likely to be consummated and more favorable to stockholders financially than the Merger.\n\n**Detailed Analysis & Verbatim Citation**\nThe definition is found in the unnumbered clause of the *Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt*. The operative language is quoted verbatim below:\n\n> \u201cSuperior Proposal\u201d means a bona fide written Acquisition Proposal that if consummated would result in a Person owning, directly or indirectly, (a) more than 50% of the outstanding shares of the Company Common Stock or (b) more than 50% of the assets of the Company and the Company Subsidiaries, taken as a whole, in either case, which the Company Board determines in good faith: (i) to be reasonably likely to be consummated if accepted; and (ii) if consummated, would result in a transaction more favorable to the Company\u2019s stockholders from a financial point of view than the Merger, in each case, taking into account at the time of determination any changes to the terms of this Agreement offered by Parent in response to such Acquisition Proposal.\n\n**Key Elements of the Definition:**\n1.  **Form:** Must be a \"bona fide written Acquisition Proposal.\"\n2.  **Ownership Threshold:** Must result in a Person owning, directly or indirectly:\n    *   More than 50% of the outstanding shares of the Company Common Stock; **OR**\n    *   More than 50% of the assets of the Company and the Company Subsidiaries, taken as a whole.\n3.  **Board Determination:** The Company Board must determine in good faith that:\n    *   The proposal is \"reasonably likely to be consummated if accepted\"; **AND**\n    *   The transaction would be \"more favorable to the Company\u2019s stockholders from a financial point of view than the Merger.\"\n4.  **Consideration of Counteroffers:** The determination must take into account \"any changes to the terms of this Agreement offered by Parent in response to such Acquisition Proposal.\"",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1417",
@@ -702,13 +746,14 @@
         "Domtar Corporation_Paper Excellence Canada Group.txt",
         "Domtar Corporation_Paper Excellence Canada Group.txt"
       ],
-      "generated_answer": "**Answer \u2013 Fiduciary Exception to the No\u2011Shop Clause**\n\nThe acquisition agreement contains a specific \u201cfiduciary exception\u201d to the no\u2011shop restriction.  \nIt is set out in **Parent Clause\u202f4** of the Domtar Corporation_Paper Excellence Canada Group excerpts, and it refers to the definition of a \u201cSuperior Proposal\u201d in **Parent Clause\u202f6**.\n\n---\n\n### 1.  No\u2011Shop Clause (the restriction that is being exempted)\n\n> **Parent Clause\u202f3**  \n> \u201c(b) Except as expressly provided for in this Section\u202f7.2, from and after the date of this Agreement until the earlier to occur of the Effective Time and the termination of this Agreement in accordance with Article\u202fIX, the Company shall not, and shall cause its Subsidiaries not to, \u2026 (i) solicit, initiate, knowingly facilitate or encourage any inquiry, proposal or offer or the making of any proposal or offer that constitutes, or could reasonably be expected to lead to, a Company Acquisition Proposal \u2026\u201d\n\nThis is the no\u2011shop restriction that the parties agree to observe.\n\n---\n\n### 2.  Fiduciary Exception \u2013 Allowing the Company to Act on a Superior Proposal\n\n> **Parent Clause\u202f4**  \n> \u201c(c) If, at any time following the date of this Agreement and prior to the time the Company Stockholder Approval is obtained, the Company receives a bona fide written Company Acquisition Proposal that did not result from a breach of this Section\u202f7.2 and the Company Board determines in good faith, after consultation with the Company\u2019s outside financial advisors and outside legal counsel, that (i) such Company Acquisition Proposal is or could reasonably be expected to result in a Superior Proposal and (ii) that failure to take such action would reasonably be expected to be inconsistent with the directors\u2019 fiduciary duties under applicable Laws, then the Company may (A) at the request of the Person making such Company Acquisition Proposal, furnish nonpublic information relating to the Company and its Subsidiaries to the Person or group (or any of their Representatives) making such Company Acquisition Proposal and (B) engage in, enter into or otherwise participate in discussions or negotiations with such Person or group and their Representatives regarding such Company Acquisition Proposal;\u201d\n\nThis clause expressly provides the fiduciary exception: if a \u201cSuperior Proposal\u201d is received, the Company may disclose information and negotiate, notwithstanding the no\u2011shop restriction.\n\n---\n\n### 3.  Definition of \u201cSuperior Proposal\u201d (used in the exception)\n\n> **Parent Clause\u202f6**  \n> \u201c\u201cSuperior Proposal\u201d means a bona fide written Company Acquisition Proposal from any Person (other than Parent and its Subsidiaries) (with all references to \u201cmore than 20%\u201d in the definition of Company Acquisition Proposal being deemed to reference \u201cmore than 50%\u201d) which the Company Board determines in good faith, after consultation with the Company\u2019s outside financial advisors and outside legal counsel, (i) is reasonably capable of being consummated in accordance with its terms and (ii) is more favorable to the stockholders of the Company, from a financial point of view, than the transactions contemplated by this Agreement \u2026\u201d\n\n---\n\n**Bottom line:**  \nThe acquisition agreement\u2019s fiduciary exception to the no\u2011shop clause is expressly contained in **Parent Clause\u202f4**, which allows the Company to disclose information and negotiate with a \u201cSuperior Proposal\u201d (as defined in Parent Clause\u202f6), notwithstanding the no\u2011shop restriction set out in Parent Clause\u202f3.",
+      "generated_answer": "Based on the provided contract excerpts, the **Fiduciary Out** (or fiduciary exception) to the No-Shop Clause is detailed in **Section 7.2(c)** of the Agreement between Domtar Corporation (the \"Company\") and Parent (identified in the query as \"Karta Halten B.V.\", though the excerpts refer to it simply as \"Parent\").\n\nHere is the precise breakdown of the fiduciary exception as found in the text:\n\n**1. Triggering Conditions**\nUnder **Section 7.2(c)**, the Company may engage with a third party only if **all** of the following conditions are met:\n*   **Timing:** The event occurs \"at any time following the date of this Agreement and prior to the time the Company Stockholder Approval is obtained.\"\n*   **Proposal Validity:** The Company receives a \"bona fide written Company Acquisition Proposal\" that \"did not result from a breach of this Section 7.2.\"\n*   **Board Determination:** The Company Board determines in good faith, **after consultation with the Company\u2019s outside financial advisors and outside legal counsel**, that:\n    *   (i) \"such Company Acquisition Proposal is or could reasonably be expected to result in a **Superior Proposal**\"; **and**\n    *   (ii) \"failure to take such action would reasonably be expected to be inconsistent with the directors\u2019 fiduciary duties under applicable Laws.\"\n\n**2. Permitted Actions**\nIf the above conditions are satisfied, the Company is permitted to:\n*   **(A)** \"at the request of the Person making such Company Acquisition Proposal, furnish nonpublic information relating to the Company and its Subsidiaries to the Person or group (or any of their Representatives) making such Company Acquisition Proposal\"; **and**\n*   **(B)** \"engage in, enter into or otherwise participate in discussions or negotiations with such Person or group and their Representatives regarding such Company Acquisition Proposal.\"\n\n**3. Definition of \"Superior Proposal\"**\nThe exception relies on the definition of **\"Superior Proposal\"** provided in the excerpts, which means a bona fide written Company Acquisition Proposal from any Person (other than Parent and its Subsidiaries) (with all references to \u201cmore than 20%\u201d in the definition of Company Acquisition Proposal being deemed to reference \u201cmore than 50%\u201d) which the Company Board determines in good faith, after consultation with the Company\u2019s outside financial advisors and outside legal counsel:\n*   (i) \"is reasonably capable of being consummated in accordance with its terms\"; **and**\n*   (ii) \"is more favorable to the stockholders of the Company, from a financial point of view, than the transactions contemplated by this Agreement after taking into account the legal, financial (including the financing terms of any such Company Acquisition Proposal), regulatory, conditionality, timing or other aspects of such Company Acquisition Proposal, the Person or group making such Company Acquisition Proposal, the transactions contemplated hereby, any changes to the terms of this Agreement irrevocably offered in writing by Parent in response to such Company Acquisition Proposal pursuant to, and in accordance with, Section 7.2(f), and all other factors that the Company Board, in good faith, deems relevant.\"\n\n**4. Context of the No-Shop Restriction**\nThis exception applies to the general prohibition in **Section 7.2(b)**, which states that from the date of the Agreement until the earlier of the Effective Time or termination, the Company shall not, among other things:\n*   \"(i) solicit, initiate, knowingly facilitate or encourage any inquiry, proposal or offer... that constitutes, or could reasonably be expected to lead to, a Company Acquisition Proposal\";\n*   \"(ii) engage in, enter into, continue or otherwise participate in any discussions or negotiations regarding... any Company Acquisition Proposal\";\n*   \"(iii) approve, endorse or recommend... a Company Acquisition Proposal\";\n*   \"(iv) enter into any letter of intent, merger agreement or other similar agreement providing for a Company Acquisition Proposal (other than an Acceptable Confidentiality Agreement)\";\n*   \"(v) submit any Company Acquisition Proposal to a vote of the stockholders of the Company\";\n*   \"(vi) take any action to exempt any third party or transaction from the restrictions on \u201cbusiness combinations\u201d contained in Section 203 of the DGCL...\"; or\n*   \"(vii) authorize, resolve or agree to do any of the foregoing.\"\n\n**Note on Termination Fee Interaction:**\nWhile not part of the fiduciary out itself, **Section 9.3(b)(iii)** indicates that if the Company enters into or consummates a Company Acquisition Proposal within 12 months after termination, it must pay the \"Company Termination Fee,\" with a specific proviso that for this purpose, references to \"20%\" in the definition of \"Company Acquisition Proposal\" are replaced by \"50%.\"",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_707",
@@ -724,13 +769,14 @@
         "Constellation Pharmaceuticals, Inc._MorphoSys AG.txt",
         "Constellation Pharmaceuticals, Inc._MorphoSys AG.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe definition of a \u201cSuperior Proposal\u201d is contained in the **Parent Clause\u202f2** of the Acquisition Agreement between MorphoSys\u202fAG (Parent) and Constellation Pharmaceuticals, Inc. (Target). The clause defines the term \u201cSuperior Offer\u201d (which is the term used in the agreement for a superior proposal) as follows:\n\n> \u201c**Superior Offer** shall mean a bona fide written Acquisition Proposal that the Company Board determines, in its good\u2011faith judgment, after consultation with outside legal counsel and its financial advisors, taking into account all legal, regulatory, timing and financing aspects (including certainty of closing) of the proposal and the Person making the proposal and other aspects of the Acquisition Proposal that the Company Board deems relevant, would, if consummated, result in a transaction that is more favorable to the Company\u2019s stockholders (solely in their capacity as such) from a financial point of view than the Transactions; provided that for purposes of the definition of \u201cSuperior Offer,\u201d the references to \u201c20%\u201d in the definition of Acquisition Proposal shall be deemed to be references to \u201c50%.\u201d\u201d\n\nThis clause is the sole source in the provided excerpts that defines what constitutes a superior proposal.",
+      "generated_answer": "",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": 0,
+      "accuracy_reason": "The generated answer is empty and does not provide any of the definition details from the ground truth, thus failing to convey the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_601",
@@ -746,13 +792,14 @@
         "Boingo Wireless, Inc._Digital Colony Partners, LP.txt",
         "Boingo Wireless, Inc._Digital Colony Partners, LP.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 0,
-      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
-      "faithfulness": 1,
-      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer is empty and does not convey any of the detailed limitation provisions from the ground truth, thus failing to provide the required legal information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1265",
@@ -770,11 +817,12 @@
       ],
       "generated_answer": "",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1303",
@@ -790,12 +838,13 @@
         "Perspecta Inc._Veritas Capital.txt",
         "Perspecta Inc._Veritas Capital.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts from the \"Perspecta Inc._Veritas Capital.txt\" document do not contain the \"No-Shop\" clause (typically found in Section 6.2 or similar \"No Solicitation\" provisions) nor any specific \"Fiduciary Out\" or \"Fiduciary Exception\" language. The excerpts provided cover:\n*   Section 7.3 (Additional Parent Conditions to Closing)\n*   Definition of \"Company Material Adverse Effect\"\n*   Section 3.1(ii) (Conversion of Capital Stock)\n*   Section 6.1 (Conduct of Business)\n*   Section 8.2(C) (Termination Fee trigger)\n*   Section 7.1(b) (Covenants condition)\n\nNone of these sections address the restrictions on soliciting alternative proposals or the exceptions to such restrictions.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -812,13 +861,14 @@
         "Mackinac Financial Corporation_Nicolet Bankshares, Inc..txt",
         "Mackinac Financial Corporation_Nicolet Bankshares, Inc..txt"
       ],
-      "generated_answer": "**Answer**\n\nThe Merger Agreement defines \u201cSuperior Proposal\u201d in the clause headed **\u201cSuperior Proposal\u201d** (Parent Clause\u202f3). The definition is:\n\n> \u201cSuperior Proposal\u201d means a bona fide written Acquisition Proposal which the Company Board concludes in good faith to be more favorable from a financial point of view to the Company shareholders than the Merger and the other transactions contemplated hereby, (i) after receiving the advice of its financial advisors (which shall be Piper\u202fSandler\u202f&\u202fCo., or any nationally recognized investment banking firm), (ii) after taking into account the likelihood and timing of consummation of the proposed transaction on the terms set forth therein (as compared to, and with due regard for, the terms herein) and (iii) after taking into account all legal (with the advice of outside counsel), financial (including the financing terms of any such proposal), regulatory (including the advice of outside counsel regarding the potential for regulatory approval of any such proposal) and other aspects of such proposal and any other relevant factors permitted under applicable law.  \n\nThis definition is the sole contractual provision in the provided excerpts that directly answers the query.",
+      "generated_answer": "Based on the provided contract excerpts from the Merger Agreement between Mackinac Financial Corporation and Nicolet Bankshares, Inc., the definition of \"Superior Proposal\" is explicitly stated in **Parent Clause 3**.\n\n**Definition of \"Superior Proposal\"**\n\nThe agreement defines a **\"Superior Proposal\"** as:\n\n> \"a bona fide written Acquisition Proposal which the Company Board concludes in good faith to be more favorable from a financial point of view to the Company shareholders than the Merger and the other transactions contemplated hereby, (i) after receiving the advice of its financial advisors (which shall be Piper Sandler & Co., or any nationally recognized investment banking firm), (ii) after taking into account the likelihood and timing of consummation of the proposed transaction on the terms set forth therein (as compared to, and with due regard for, the terms herein) and (iii) after taking into account all legal (with the advice of outside counsel), financial (including the financing terms of any such proposal), regulatory (including the advice of outside counsel regarding the potential for regulatory approval of any such proposal) and other aspects of such proposal and any other relevant factors permitted under applicable law.\"\n\n**Key Elements of the Definition:**\n1.  **Form:** It must be a \"bona fide written Acquisition Proposal.\"\n2.  **Standard:** It must be concluded by the Company Board, in good faith, to be \"more favorable from a financial point of view to the Company shareholders\" than the current Merger.\n3.  **Required Consultations & Considerations:**\n    *   Advice from financial advisors (specifically Piper Sandler & Co. or a nationally recognized investment banking firm).\n    *   Assessment of the \"likelihood and timing of consummation\" compared to the current agreement.\n    *   Consideration of all legal, financial (including financing terms), and regulatory aspects, with specific reference to advice from outside counsel regarding legal and regulatory approval.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1539",
@@ -834,13 +884,14 @@
         "ORBCOMM Inc._GI Partners.txt",
         "ORBCOMM Inc._GI Partners.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "**Answer**\n\nThe Merger Agreement defines \u201cKnowledge\u201d in the clause that reads:\n\n> \u201cKnowledge\u201d means (i) with respect to the Company, the actual knowledge of those persons set forth in Section\u202f8.10(a) of the Company Disclosure Schedule, and \u2026  \n\n(The definition continues beyond the excerpt provided, but the portion shown above is the only part of the definition that appears in the supplied contract excerpts.)",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer correctly reproduces the definition of \"Knowledge\" as stated in the ground truth, including the reference to Section 8.10(a) of the Company Disclosure Schedule.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_970",
@@ -856,12 +907,13 @@
         "Select_Bancorp_Inc_First_Bancorp.txt",
         "Select_Bancorp_Inc_First_Bancorp.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain sections regarding corporate authorization (Parent Clause 1), conditions to obligations of the Buyer and each party (Parent Clauses 2, 3, 4, 5), and the effect on SB Common Stock (Parent Clause 6). None of the provided excerpts contain a \"No-Shop\" clause, nor do they reference a section number or heading typically associated with such a covenant (e.g., \"Non-Solicitation,\" \"No-Shop,\" or \"Exclusive Negotiations\").",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -878,8 +930,9 @@
         "Cornerstone_OnDemand_Clearlake_Capital_Group_L_P.txt",
         "Cornerstone_OnDemand_Clearlake_Capital_Group_L_P.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts from the document *Cornerstone_OnDemand_Clearlake_Capital_Group_L_P.txt* contain clauses regarding termination rights (Section 7.1), merger consideration (Section 1.5/1.6 context), compliance covenants, and superior offer provisions (Section 4.3/5.1 context). However, none of the provided excerpts contain the \"Definitions\" section or any clause defining the term \"Knowledge.\" Additionally, the excerpts do not reference a party named \"Sunshine Software Holdings, Inc.\"",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -900,12 +953,13 @@
         "County Bancorp, Inc._Nicolet Bankshares, Inc..txt",
         "County Bancorp, Inc._Nicolet Bankshares, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain sections regarding Consideration (Section 2.1), Operation of the Company (Section 5.2), Termination Fees (Section 10.3(c) context), Regulatory Approvals (Sections 7.1 and 8.5), and the definition of \"Superior Proposal.\" However, none of the provided excerpts explicitly contain the \"No-Shop\" clause or a section titled \"No-Shop\" or \"Exclusivity.\" While the definition of \"Superior Proposal\" and the Termination Fee provisions are often associated with no-shop provisions, the specific covenant restricting the Company from soliciting or engaging with other parties (the No-Shop clause itself) is not present in the text provided.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -922,13 +976,14 @@
         "Constellation Pharmaceuticals, Inc._MorphoSys AG.txt",
         "Constellation Pharmaceuticals, Inc._MorphoSys AG.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, I cannot answer this question regarding specific \"Limitations on Antitrust Efforts\" (such as a \"hell or high water\" clause, specific regulatory cooperation covenants, or limitations on divestiture obligations) because the specific clauses governing antitrust regulatory efforts are not present in the text.\n\nThe provided excerpts contain only the following references to Antitrust Law, which do not constitute a comprehensive section on limitations of antitrust efforts:\n\n1.  **Section 5.2(a) (Operation of the Acquired Corporations\u2019 Business):** This clause contains a carve-out from the requirement to obtain Parent's written consent for actions during the Pre-Closing Period. It states that no consent shall be required \"if the Company reasonably believes after consulting with outside legal counsel that seeking such consent would violate **Antitrust Law**.\"\n2.  **Parent Clause 2 (Unnumbered):** This fragment states that the Parties \"shall not be required to take or commit to take any such action... that would have a material adverse effect on the business of the Parent and the Acquired Corporations on a combined basis.\" While this may relate to regulatory or business actions, the specific context of \"Antitrust Efforts\" is not explicitly defined in this excerpt.\n\nNo other sections detailing the scope, limitations, or specific covenants regarding antitrust regulatory approvals are included in the provided context.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1463",
@@ -942,12 +997,13 @@
         "Raven Industries, Inc._CNH Industrial N.V..txt",
         "Raven Industries, Inc._CNH Industrial N.V..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts contain references to \"Governmental Authority\" approvals within a general efforts covenant (Parent Clause 3) and definitions for \"Superior Proposal\" and termination fees, but they do not contain the specific \"Closing Conditions: Regulatory Approvals\" clause (typically found in a section such as Section 3.01 or similar in M&A agreements) that details the specific regulatory approvals required as a condition to closing.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -964,13 +1020,14 @@
         "RigNet, Inc._Viasat, Inc..txt",
         "RigNet, Inc._Viasat, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, the ordinary course of business covenants are found in **Section 4.1(a)** of the Agreement between RigNet, Inc. and Viasat, Inc.\n\n**Section 4.1(a) (Interim Operations)** stipulates that during the period from the date of the Agreement through the earlier of the Closing or termination, the Company (RigNet, Inc.) shall, and shall cause the Company Subsidiaries to:\n\n1.  **Use reasonable best efforts** to conduct its business in the ordinary course consistent in all material respects with past practice; and\n2.  **Maintain and preserve intact** its business organization; and\n3.  **Maintain satisfactory relationships** with customers, suppliers, distributors, and other Persons with whom the Company or any Company Subsidiary has material business relations.\n\nThese obligations are subject to the following exceptions, where the Company is not required to adhere to the ordinary course standard without further action:\n*   To the extent Parent (Viasat, Inc.) gives its prior consent in writing (which consent shall not be unreasonably withheld, conditioned, or delayed);\n*   As set forth in Part 4.1(a) of the Company Disclosure Schedule;\n*   As may be required by applicable Legal Requirements;\n*   In connection with any COVID-19 Measures; or\n*   As expressly required by this Agreement.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1215",
@@ -986,13 +1043,14 @@
         "Cornerstone_OnDemand_Clearlake_Capital_Group_L_P.txt",
         "Cornerstone_OnDemand_Clearlake_Capital_Group_L_P.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, the Type of Consideration is **cash**.\n\n**Relevant Clause and Citation:**\nUnder the unnumbered clause labeled **(iii)** in the document *Cornerstone_OnDemand_Clearlake_Capital_Group_L_P.txt*, the agreement specifies the treatment of shares immediately prior to the Effective Time:\n\n> \"...each Share then outstanding immediately prior to the Effective Time (other than any Dissenting Shares, as defined below) shall be canceled and cease to exist and be converted into the right to receive **$57.50 in cash, without interest** (the \u201cMerger Consideration\u201d), subject to any withholding of Taxes required by applicable Legal Requirements in accordance with Section 1.6(e)...\"\n\n**Analysis:**\nThe excerpt explicitly defines the \"Merger Consideration\" as a fixed monetary amount of **$57.50 in cash** per share, payable without interest.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer correctly identifies the consideration as cash, matching the ground truth which specifies the Merger Consideration as $57.50 in cash per share.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_659",
@@ -1008,13 +1066,14 @@
         "CIT Group Inc._First Citizens BancShares, Inc..txt",
         "CIT Group Inc._First Citizens BancShares, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, the **Fiduciary Out** (or fiduciary exception to the No-Shop Clause) is addressed in the unnumbered clause referencing **Section 6.12** of the Agreement between CIT Group Inc. and First Citizens BancShares, Inc.\n\n**Direct Answer:**\nThe agreement permits a party (specifically CIT or BancShares) to engage with a third party making an unsolicited \"Acquisition Proposal\" if the board of directors concludes in good faith that the proposal constitutes a **\"Superior Proposal\"** or is reasonably likely to lead to one, and that failing to engage would likely result in a **violation of its fiduciary duty**.\n\n**Specific Contractual Terms and Conditions:**\nAccording to the excerpt labeled *Parent Clause 1*, the following conditions must be met for a party to furnish confidential information or participate in negotiations with a third party:\n\n1.  **Timing and Nature of Proposal:** The event must occur \"after the date of this Agreement and prior to the receipt of the Requisite BancShares Vote... or the Requisite CIT Vote.\" The proposal must be an \"unsolicited bona fide written Acquisition Proposal not solicited in violation of this Section 6.12.\"\n2.  **Board Determination:** The board of directors of the responding party must conclude **\"in good faith\"** (after receiving advice from outside counsel and financial advisors) that:\n    *   The Acquisition Proposal \"constitutes a Superior Proposal or is reasonably likely to lead to a Superior Proposal\"; **AND**\n    *   \"failure to take such actions would more likely than not result in a violation of its fiduciary duty under applicable law.\"\n3.  **Notice Requirement:** The party must provide **\"twenty four (24) hours\u2019 prior written notice\"** to the other party (CIT or BancShares, as applicable).\n4.  **Content of Notice:** The notice must identify \"the person making the Acquisition Proposal and all of the material terms and conditions of such Acquisition Proposal.\"\n\n**Relevant Excerpt Quote:**\n> \"Notwithstanding the foregoing, in the event that after the date of this Agreement and prior to the receipt of the Requisite BancShares Vote, in the case of BancShares, or the Requisite CIT Vote, in the case of CIT, a party receives an unsolicited bona fide written Acquisition Proposal not solicited in violation of this Section 6.12, such party may... furnish or cause to be furnished confidential or nonpublic information or data and participate in such negotiations or discussions with the person making the Acquisition Proposal if, but only if, the board of directors of such party concludes in good faith... that such Acquisition Proposal constitutes a Superior Proposal or is reasonably likely to lead to a Superior Proposal and that failure to take such actions would more likely than not result in a violation of its fiduciary duty under applicable law, and subject to providing twenty four (24) hours\u2019 prior written notice...\"\n\n*Note: While Parent Clause 3 references the authorization to enter into an \"Alternative Acquisition Agreement\" in response to a Superior Proposal under Section 6.3(b), the specific mechanics and fiduciary duty justification for the initial engagement with a third party are detailed in the clause above.*",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_273",
@@ -1030,13 +1089,14 @@
         "Meridian Bancorp, Inc._Independent Bank Corp..txt",
         "Meridian Bancorp, Inc._Independent Bank Corp..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, the **Type of Consideration** is **Buyer Common Stock**.\n\n**Relevant Clause:**\nSection 2.01(d) of the Agreement (Document: *Meridian Bancorp, Inc._Independent Bank Corp..txt*).\n\n**Verbatim Quote:**\n> \"(d) Each share of Company Common Stock issued and outstanding immediately prior to the Effective Time (other than shares described in Section 2.01(c) above) shall become and be converted into, as provided in and subject to the limitations set forth in this Agreement, the right to receive 0.275 of a share (the \u201cExchange Ratio\u201d) of **Buyer Common Stock** (the \u201cConsideration\u201d).\"\n\n**Analysis:**\nThe excerpt explicitly defines the \"Consideration\" as the right to receive shares of \"Buyer Common Stock\" at an \"Exchange Ratio\" of 0.275.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1371",
@@ -1052,13 +1112,14 @@
         "Eaton Vance Corp._Morgan Stanley.txt",
         "Eaton Vance Corp._Morgan Stanley.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the Agreement between Parent (Morgan Stanley) and Target (Eaton Vance Corp.), the definition of **\"Company Superior Proposal\"** is found in **Section 6.03(f)** (referenced within the excerpt labeled \"Parent Clause 1\").\n\n**Definition of \"Company Superior Proposal\":**\n\nUnder **Section 6.03(f)**, a \u201cCompany Superior Proposal\u201d is defined as:\n\n> \"any bona fide, written, Company Acquisition Proposal (other than a Company Acquisition Proposal which has resulted from a violation of this Section 6.03) (with all references to \u201c15%\u201d in the definition of Company Acquisition Proposal being deemed to be references to \u201c50%\u201d) on terms that the Board of Directors of the Company determines in good faith by majority vote, after consultation with a financial advisor of nationally recognized reputation and the Company\u2019s outside legal counsel, and taking into account all the terms and conditions of the Company Acquisition Proposal (including the identity of the Person making the Company Acquisition Proposal and the expected timing and likelihood of consummation, any governmental or other approval requirements (including divestitures and entry into other commitments and limitations), break-up fees, expense reimbursement provisions, conditions to consummation, availability of necessary financing and all other financial, regulatory, legal and other aspects of such Company Acquisition Proposal), would result in a transaction:\n>\n> (i) that, if consummated, is more favorable to the Company\u2019s stockholders from a financial point of view than the Transactions (taking into account any proposal by Parent to amend the terms of this Agreement proposed pursuant to Section 6.03(e)),\n>\n> (ii) that is reasonably capable of being completed on the terms proposed (taking into account the identity of the Person making the Company Acquisition Proposal, any approval requirements and all other financial, regulatory, legal and other aspects of such Company Acquisition Proposal) and\n>\n> (iii) for which financing, if a cash transaction (whether in whole or in part), is then fully committed and reasonably determined to be available by the Board of Directors of the Company.\"\n\n**Key Elements of the Definition:**\n1.  **Form:** Must be a \"bona fide, written\" proposal.\n2.  **Exclusion:** Excludes proposals resulting from a violation of Section 6.03 (No Solicitation).\n3.  **Threshold Adjustment:** References to \"15%\" in the underlying \"Company Acquisition Proposal\" definition are deemed to be \"50%\" for this specific definition.\n4.  **Board Determination:** Requires a good faith majority vote by the Board of Directors, after consultation with a nationally recognized financial advisor and outside legal counsel.\n5.  **Three-Part Test:** The proposal must result in a transaction that is:\n    *   (i) More favorable to stockholders financially than the current Transactions;\n    *   (ii) Reasonably capable of being completed; and\n    *   (iii) Fully committed and reasonably determined to be available (if it is a cash transaction).",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1576",
@@ -1074,13 +1135,14 @@
         "RealPage, Inc._Thoma Bravo, L.P..txt",
         "RealPage, Inc._Thoma Bravo, L.P..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, the ordinary course of business covenants are found in **Section 5.1 (Affirmative Obligations)** of the Agreement between RealPage, Inc. and Thoma Bravo, L.P. (referred to as \"Parent\" in the text).\n\n**Direct Answer:**\nDuring the \"Interim Period,\" the Company is required to use commercially reasonable efforts to conduct its business and operations in the ordinary course, subject to specific exceptions and restrictions.\n\n**Detailed Analysis & Verbatim Citations:**\n\n1.  **Primary Covenant (Section 5.1):**\n    The excerpt states that at all times during the \"Interim Period,\" the Company will:\n    > \"(ii) subject to the restrictions and exceptions set forth in Section 5.2 or elsewhere in this Agreement, use commercially reasonable efforts to conduct its business and operations, in all material respects, in the ordinary course of business;\"\n\n2.  **Definition of Interim Period:**\n    The obligation applies during the period defined as:\n    > \"the period commencing with the execution and delivery of this Agreement and continuing until the earlier to occur of the termination of this Agreement pursuant to Article VIII and the Effective Time (the \u201cInterim Period\u201d)\"\n\n3.  **Exceptions to the Ordinary Course Covenant:**\n    The covenant in Section 5.1 is subject to the following exceptions listed in the same clause:\n    *   \"(a) as contemplated by this Agreement;\"\n    *   \"(b) as set forth in Section 5.1 or Section 5.2 of the Company Disclosure Letter;\"\n    *   \"(c) as expressly prohibited by Section 5.2;\"\n    *   \"(d) as required by applicable Law;\"\n    *   \"(e) for any actions taken in good faith to respond to the actual or anticipated effects of COVID-19 or COVID-19 Measures; or\"\n    *   \"(f) as approved in writing in advance by Parent (which approval will not be unreasonably withheld, conditioned or delayed); provided that Parent shall be deemed to have approved in writing if it provides no response within five (5) Business Days after a request by the Company for such approval\"\n\n4.  **Related Maintenance Covenant:**\n    In addition to the ordinary course of business, Section 5.1(i) requires the Company to:\n    > \"maintain its existence in good standing pursuant to applicable law (to the extent that the concept of \u201cgood standing\u201d is applicable in the case of any jurisdiction outside the United States);\"\n\n**Note on Document Identity:**\nWhile the query references \"Mirasol Parent, LLC,\" the provided excerpts are explicitly from a document titled **\"RealPage, Inc._Thoma Bravo, L.P..txt\"** and refer to the acquirer as **\"Parent\"** without naming Mirasol. The analysis above is strictly based on the text provided in the excerpts for the agreement between RealPage, Inc. and the entity referred to as \"Parent.\"",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_617",
@@ -1096,12 +1158,13 @@
         "Flagstar Bancorp, Inc._New York Community Bancorp, Inc..txt",
         "Flagstar Bancorp, Inc._New York Community Bancorp, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     }
   ]

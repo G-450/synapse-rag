@@ -1,65 +1,69 @@
 ======================================================================
-  SYNAPSE RAG â€” FAITHFULNESS & ACCURACY EVALUATION
+  SYNAPSE RAG — FAITHFULNESS & ACCURACY EVALUATION
   Samples: 50 | Scoped: False | Chunks: 8 | Rerank: True
 ======================================================================
-[1/50] QA: maud_208        | Hit: N | Acc: Y | Faith: Y
-[2/50] QA: maud_1445       | Hit: N | Acc: Y | Faith: Y
-[3/50] QA: maud_1121       | Hit: N | Acc: Y | Faith: Y
-[4/50] QA: maud_1438       | Hit: N | Acc: Y | Faith: Y
-[5/50] QA: maud_1097       | Hit: Y | Acc: Y | Faith: Y
-[6/50] QA: maud_632        | Hit: N | Acc: Y | Faith: Y
-[7/50] QA: maud_1102       | Hit: N | Acc: Y | Faith: Y
-[8/50] QA: maud_394        | Hit: N | Acc: Y | Faith: Y
+[1/50] QA: maud_208        | Hit: N | Acc: N | Faith: Y
+[2/50] QA: maud_1445       | Hit: N | Acc: N | Faith: Y
+[3/50] QA: maud_1121       | Hit: N | Acc: N | Faith: Y
+[4/50] QA: maud_1438       | Hit: N | Acc: N | Faith: Y
+[5/50] QA: maud_1097       | Hit: Y | Acc: N | Faith: Y
+[6/50] QA: maud_632        | Hit: N | Acc: N | Faith: Y
+[7/50] QA: maud_1102       | Hit: N | Acc: N | Faith: Y
+[8/50] QA: maud_394        | Hit: N | Acc: N | Faith: Y
 [9/50] QA: maud_434        | Hit: N | Acc: N | Faith: Y
-[10/50] QA: maud_696        | Hit: N | Acc: Y | Faith: Y
-[11/50] QA: maud_951        | Hit: Y | Acc: Y | Faith: Y
-[12/50] QA: maud_1544       | Hit: Y | Acc: Y | Faith: Y
-[13/50] QA: maud_78         | Hit: N | Acc: Y | Faith: Y
-[14/50] QA: maud_389        | Hit: N | Acc: Y | Faith: Y
-[15/50] QA: maud_1134       | Hit: N | Acc: Y | Faith: Y
-[16/50] QA: maud_411        | Hit: N | Acc: Y | Faith: Y
-[17/50] QA: maud_703        | Hit: Y | Acc: Y | Faith: Y
-[18/50] QA: maud_439        | Hit: Y | Acc: Y | Faith: Y
-[19/50] QA: maud_1656       | Hit: Y | Acc: Y | Faith: Y
-[20/50] QA: maud_443        | Hit: N | Acc: N | Faith: Y
-[21/50] QA: maud_1379       | Hit: N | Acc: Y | Faith: Y
-[22/50] QA: maud_926        | Hit: Y | Acc: Y | Faith: Y
-[23/50] QA: maud_213        | Hit: N | Acc: Y | Faith: Y
-[24/50] QA: maud_1670       | Hit: N | Acc: Y | Faith: Y
+[10/50] QA: maud_696        | Hit: N | Acc: N | Faith: Y
+[11/50] QA: maud_951        | Hit: Y | Acc: ? | Faith: ?
+[12/50] QA: maud_1544       | Hit: Y | Acc: ? | Faith: ?
+[13/50] QA: maud_78         | Hit: N | Acc: N | Faith: ?
+[14/50] QA: maud_389        | Hit: N | Acc: N | Faith: ?
+[15/50] QA: maud_1134       | Hit: N | Acc: ? | Faith: ?
+[16/50] QA: maud_411        | Hit: N | Acc: N | Faith: ?
+[17/50] QA: maud_703        | Hit: Y | Acc: N | Faith: ?
+[18/50] QA: maud_439        | Hit: Y | Acc: N | Faith: Y
+[19/50] QA: maud_1656       | Hit: Y | Acc: ? | Faith: ?
+[20/50] QA: maud_443        | Hit: N | Acc: ? | Faith: ?
+[21/50] QA: maud_1379       | Hit: N | Acc: N | Faith: ?
+[22/50] QA: maud_926        | Hit: Y | Acc: ? | Faith: ?
+[23/50] QA: maud_213        | Hit: N | Acc: N | Faith: ?
+[24/50] QA: maud_1670       | Hit: N | Acc: N | Faith: Y
 [25/50] QA: maud_1649       | Hit: Y | Acc: N | Faith: Y
-[26/50] QA: maud_779        | Hit: N | Acc: Y | Faith: Y
-[27/50] QA: maud_631        | Hit: N | Acc: Y | Faith: Y
-[28/50] QA: maud_211        | Hit: N | Acc: Y | Faith: Y
-[29/50] QA: maud_1109       | Hit: N | Acc: Y | Faith: Y
-[30/50] QA: maud_1108       | Hit: N | Acc: Y | Faith: Y
-[31/50] QA: maud_1436       | Hit: Y | Acc: Y | Faith: Y
-[32/50] QA: maud_1417       | Hit: N | Acc: Y | Faith: Y
-[33/50] QA: maud_707        | Hit: N | Acc: Y | Faith: Y
-[34/50] QA: maud_601        | Hit: N | Acc: Y | Faith: Y
-[35/50] QA: maud_1265       | Hit: N | Acc: Y | Faith: Y
-[36/50] QA: maud_1303       | Hit: N | Acc: Y | Faith: Y
-[37/50] QA: maud_585        | Hit: Y | Acc: Y | Faith: Y
+[26/50] QA: maud_779        | Hit: N | Acc: N | Faith: ?
+[27/50] QA: maud_631        | Hit: N | Acc: ? | Faith: ?
+[28/50] QA: maud_211        | Hit: N | Acc: ? | Faith: ?
+[29/50] QA: maud_1109       | Hit: N | Acc: N | Faith: Y
+[30/50] QA: maud_1108       | Hit: N | Acc: N | Faith: ?
+[31/50] QA: maud_1436       | Hit: Y | Acc: N | Faith: ?
+[32/50] QA: maud_1417       | Hit: N | Acc: ? | Faith: ?
+[33/50] QA: maud_707        | Hit: N | Acc: N | Faith: ?
+[34/50] QA: maud_601        | Hit: N | Acc: N | Faith: Y
+[35/50] QA: maud_1265       | Hit: N | Acc: ? | Faith: ?
+[36/50] QA: maud_1303       | Hit: N | Acc: N | Faith: ?
+[37/50] QA: maud_585        | Hit: Y | Acc: ? | Faith: ?
 [38/50] QA: maud_1539       | Hit: N | Acc: N | Faith: Y
-[39/50] QA: maud_970        | Hit: Y | Acc: Y | Faith: Y
-[40/50] QA: maud_1217       | Hit: N | Acc: Y | Faith: Y
-[41/50] QA: maud_572        | Hit: N | Acc: Y | Faith: Y
-[42/50] QA: maud_713        | Hit: N | Acc: Y | Faith: Y
-[43/50] QA: maud_1463       | Hit: N | Acc: Y | Faith: Y
-[44/50] QA: maud_776        | Hit: N | Acc: Y | Faith: Y
+[39/50] QA: maud_970        | Hit: Y | Acc: N | Faith: ?
+[40/50] QA: maud_1217       | Hit: N | Acc: N | Faith: ?
+[41/50] QA: maud_572        | Hit: N | Acc: N | Faith: Y
+[42/50] QA: maud_713        | Hit: N | Acc: N | Faith: ?
+[43/50] QA: maud_1463       | Hit: N | Acc: ? | Faith: ?
+[44/50] QA: maud_776        | Hit: N | Acc: N | Faith: ?
 [45/50] QA: maud_1215       | Hit: N | Acc: N | Faith: Y
-[46/50] QA: maud_659        | Hit: Y | Acc: Y | Faith: Y
-[47/50] QA: maud_273        | Hit: N | Acc: Y | Faith: Y
-[48/50] QA: maud_1371       | Hit: N | Acc: Y | Faith: Y
-[49/50] QA: maud_1576       | Hit: N | Acc: Y | Faith: Y
-[50/50] QA: maud_617        | Hit: Y | Acc: Y | Faith: Y
+[46/50] QA: maud_659        | Hit: Y | Acc: ? | Faith: ?
+[47/50] QA: maud_273        | Hit: N | Acc: N | Faith: ?
+[48/50] QA: maud_1371       | Hit: N | Acc: ? | Faith: ?
+[49/50] QA: maud_1576       | Hit: N | Acc: N | Faith: ?
+[50/50] QA: maud_617        | Hit: Y | Acc: ? | Faith: ?
 
 ======================================================================
   EVALUATION SUMMARY RESULTS (50 Queries)
+  Judge model: openai/gpt-oss-120b
 ======================================================================
   Retrieval Hit Rate:   26.0% (13/50)
-  Answer Accuracy:      90.0% (45/50)
-  Faithfulness Score:  100.0% (50/50)
-  Hallucination Rate:    0.0% (0/50)
+  Answer Accuracy:       0.0% (0/35 scored)
+  Faithfulness Score:  100.0% (18/18 scored)
+  Hallucination Rate:    0.0%
+  Explicit refusals:   18/50 (scored as accuracy 0, faithfulness 1)
+  Judge calls unscored: accuracy 15/50 | faithfulness 32/50
+  WARNING: unscored judge calls are EXCLUDED from the rates above, not counted as passes.
 ======================================================================
 Saved results to: C:\Users\Mithul\Academics\Semester - 5\Deep Learning\synapse-rag\data\eval_faithfulness_results.json
 

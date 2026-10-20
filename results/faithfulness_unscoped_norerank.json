@@ -1,9 +1,22 @@
 {
+  "config": {
+    "judge_model": "openai/gpt-oss-120b",
+    "generator_model": "openai/gpt-oss-20b",
+    "n": 50,
+    "scoped": false,
+    "rerank": false,
+    "limit_chunks": 8
+  },
   "metrics": {
     "hit_rate": 30.0,
-    "accuracy": 92.0,
+    "accuracy": 4.55,
     "faithfulness": 100.0,
-    "hallucination_rate": 0.0
+    "hallucination_rate": 0.0,
+    "refusal_rate": 82.0,
+    "accuracy_scored_n": 44,
+    "faithfulness_scored_n": 41,
+    "judge_unscored_accuracy": 6,
+    "judge_unscored_faithfulness": 9
   },
   "results": [
     {
@@ -20,12 +33,13 @@
         "Translate_Bio_Sanofi_SA.txt",
         "Nuance Communications, Inc._Microsoft Corporation.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain definitions for \"Superior Proposal\" or \"Superior Offer\" from the following agreements:\n1. Endurance International Group Holdings, Inc. / Clearlake Capital Group, L.P.\n2. Flexion Therapeutics / Pacira BioSciences\n3. Eaton Vance Corp. / Morgan Stanley\n4. Five Prime Therapeutics, Inc. / Amgen Inc.\n5. Adamas Pharmaceuticals / Supernus Pharmaceuticals\n6. Goodrich Petroleum Corporation / EnCap Investments L.P.\n\nNone of the provided excerpts are from the Acquisition Agreement between **Novo Nordisk A/S** and **Dicerna Pharmaceuticals, Inc.**, nor do they contain information regarding the \"Type of Consideration\" for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -35,19 +49,20 @@
       "retrieved_files": [
         "W_R_Grace_Co_40_North_Management_LLC.txt",
         "Core-Mark Holding Company, Inc._Performance Food Group Company.txt",
-        "DSP_Group_Synaptics_Incorporated.txt",
         "Alaska Communications Systems Group, Inc._Investment Group.txt",
+        "DSP_Group_Synaptics_Incorporated.txt",
         "Select_Bancorp_Inc_First_Bancorp.txt",
         "Protective Insurance Corporation_The Progressive Corporation.txt",
         "Waddell _ Reed Financial, Inc._Macquarie Group Limited.txt",
         "New_Home_Co_Apollo_Global_Management.txt"
       ],
-      "generated_answer": "**Answer**\n\nThe only excerpt that directly addresses the requirement that the Company must have complied with all covenants and agreements as a condition to closing is:\n\n> **(b) Covenants and Agreements**  \n> *\u201cThe Company shall have performed or complied with in all material respects all of the covenants and agreements hereunder that this Agreement requires the Company to perform or comply with prior to the Closing.\u201d*  \n> *(Excerpt from \u201cCore\u2011Mark Holding Company, Inc._Performance Food Group Company.txt\u201d)*\n\nThis clause expressly makes compliance with covenants a prerequisite for consummation of the Merger.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts do not contain any text from a Merger Agreement between \"Devon Energy Corporation\" and \"WPX Energy, Inc.\" The excerpts provided are from the following unrelated agreements:\n1.  *W_R_Grace_Co_40_North_Management_LLC.txt*\n2.  *Core-Mark Holding Company, Inc._Performance Food Group Company.txt*\n3.  *Alaska Communications Systems Group, Inc._Investment Group.txt*\n4.  *DSP_Group_Synaptics_Incorporated.txt*\n5.  *Select_Bancorp_Inc_First_Bancorp.txt*\n6.  *Protective Insurance Corporation_The Progressive Corporation.txt*\n\nTherefore, I cannot provide the specific clause regarding the Closing Condition: Compliance with Covenants for the Devon Energy/WPX Energy transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -64,12 +79,13 @@
         "HMS Holdings Corp._Veritas Capital.txt",
         "FLIR Systems, Inc._Teledyne Technologies Incorporated.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Intervening Event\" (or similar terms like \"Company Intervening Event\") from the following agreements:\n1.  *The_ExOne_Company~Desktop_Metal.txt*\n2.  *Endurance International Group Holdings, Inc._Clearlake Capital Group, L.P..txt*\n3.  *Parsley Energy, Inc._Pioneer Natural Resources Company.txt*\n4.  *Altabancorp_Glacier Bancorp, Inc..txt* (defines \"Acquisition Event\")\n5.  *Nuance Communications, Inc._Microsoft Corporation.txt*\n6.  *Pandion Therapeutics, Inc._Merck _ Co., Inc..txt*\n\nNone of the provided excerpts correspond to the Acquisition Agreement between **Lake Holdings, LP** and **Pluralsight, Inc.** Therefore, the specific definition for that transaction is not available in the provided text.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -79,19 +95,20 @@
       "retrieved_files": [
         "Alexion Pharmaceuticals, Inc._AstraZeneca PLC.txt",
         "Navistar International Corporation_TRATON SE.txt",
-        "Tribune Publishing Company_Alden Global Capital LLC.txt",
         "Lydall, Inc._Clearlake Capital Group, L.P..txt",
+        "Tribune Publishing Company_Alden Global Capital LLC.txt",
         "Eaton Vance Corp._Morgan Stanley.txt",
         "Raven Industries, Inc._CNH Industrial N.V..txt",
         "Chiasma, Inc._Amryt Pharma plc.txt",
         "Protective Insurance Corporation_The Progressive Corporation.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains termination clauses (Section 10.01) from the following agreements:\n1. Alexion Pharmaceuticals, Inc. / AstraZeneca PLC\n2. Navistar International Corporation / TRATON SE\n3. Lydall, Inc. / Clearlake Capital Group, L.P.\n4. Tribune Publishing Company / Alden Global Capital LLC\n5. Eaton Vance Corp. / Morgan Stanley\n6. Raven Industries, Inc. / CNH Industrial N.V.\n\nThere are no excerpts provided for a Merger Agreement between **Sanofi** and **Kadmon Holdings, Inc.** Consequently, I cannot identify the specific Fiduciary Termination Right triggers for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -108,12 +125,13 @@
         "Alaska Communications Systems Group, Inc._Investment Group.txt",
         "Lydall, Inc._Clearlake Capital Group, L.P..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts from the document *Weingarten Realty Investors_Kimco Realty Corporation.txt* (Parent Clause 4) only contain language regarding the payment of the \"Company Termination Fee\" in the event of a subsequent acquisition within 12 months of termination. There is no text in the provided context that addresses \"Specific Performance\" or identifies the section number for such a clause.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -130,12 +148,13 @@
         "MSG Networks Inc._Madison Square Garden Entertainment Corp..txt",
         "Covanta_Holding_Corporation_EQT_Holdings_AB.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Superior Proposal\" for the following agreements:\n1. Raven Industries, Inc. / CNH Industrial N.V.\n2. ORBCOMM Inc. / GI Partners\n3. Nuance Communications, Inc. / Microsoft Corporation\n4. Domtar Corporation / Paper Excellence Canada Group\n5. Prevail Therapeutics Inc. / Eli Lilly and Company\n6. Weingarten Realty Investors / Kimco Realty Corporation\n\nThere is no excerpt provided for the Acquisition Agreement between **Sanofi** and **Translate Bio, Inc.** Therefore, I cannot provide the specific definition for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -152,12 +171,13 @@
         "FLIR Systems, Inc._Teledyne Technologies Incorporated.txt",
         "Medallia_Inc_Thoma_Bravo_L_P.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Intervening Event\" (or similar terms like \"Company Intervening Event\") for the following specific transactions:\n1.  **The ExOne Company / Desktop Metal**\n2.  **Altabancorp / Glacier Bancorp, Inc.** (defined as \"Acquisition Event\")\n3.  **Endurance International Group Holdings, Inc. / Clearlake Capital Group, L.P.**\n4.  **Nuance Communications, Inc. / Microsoft Corporation**\n5.  **Pandion Therapeutics, Inc. / Merck & Co., Inc.**\n6.  **HMS Holdings Corp. / Veritas Capital**\n\nThere is no excerpt provided for an agreement between **Newport Holdings, LLC** and **The New Home Company Inc.** Therefore, I cannot provide the specific definition for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -174,12 +194,13 @@
         "Lydall, Inc._Clearlake Capital Group, L.P..txt",
         "Translate_Bio_Sanofi_SA.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain definitions of \"Superior Proposal\" and a conduct of business clause from the following agreements:\n1. *Cloudera, Inc._Investment Group.txt*\n2. *Parsley Energy, Inc._Pioneer Natural Resources Company.txt*\n3. *Stamps_com_Inc_Thoma_Bravo_L_P.txt*\n4. *Alaska Communications Systems Group, Inc._Investment Group.txt*\n5. *Leaf Group Ltd._Graham Holdings Company.txt*\n6. *ORBCOMM Inc._GI Partners.txt*\n\nNone of the provided excerpts are from the Acquisition Agreement between **Amgen Inc.** and **Five Prime Therapeutics, Inc.**, nor do they contain specific clauses regarding \"Closing Condition: Compliance with Covenants\" for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -196,12 +217,13 @@
         "Coherent, Inc._II-VI Incorporated.txt",
         "New_Home_Co_Apollo_Global_Management.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -218,12 +240,13 @@
         "U.S. Concrete, Inc._Vulcan Materials Company.txt",
         "Alaska Communications Systems Group, Inc._Investment Group.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following agreements:\n1. *Chiasma, Inc._Amryt Pharma plc.txt*\n2. *Stamps_com_Inc_Thoma_Bravo_L_P.txt*\n3. *Nuance Communications, Inc._Microsoft Corporation.txt*\n4. *Zix_Corporation_Open_Text_Corporation.txt*\n5. *Lydall, Inc._Clearlake Capital Group, L.P..txt*\n6. *Hill_Rom_Holdings~Baxter_International_Inc.txt*\n\nThere are no excerpts provided for a Merger Agreement between \"Cincinnati Bell Inc.\" and \"RF Merger Sub Inc.\" Therefore, I cannot determine if that specific agreement contains a tail provision for acquisition proposals.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -240,13 +263,14 @@
         "Nuance Communications, Inc._Microsoft Corporation.txt",
         "Mackinac Financial Corporation_Nicolet Bankshares, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "**Yes**, the provided excerpts from the Merger Agreement between Sterling Bancorp and Webster Financial Corporation contain a provision that functions as a \"tail\" provision regarding acquisition proposals.\n\nThis mechanism is found in **Section 8.2(b)(i)** of the agreement. It imposes a financial obligation (a Termination Fee) on Sterling Bancorp if specific conditions regarding an \"Acquisition Proposal\" are met within a defined time period following the termination of the agreement.\n\n**Key Contractual Terms and Conditions:**\n\n*   **Triggering Events:** The provision is triggered if, after the date of the Agreement and prior to its termination:\n    1.  A \"bona fide Acquisition Proposal\" is communicated to or made known to the Board of Directors or senior management of Sterling, made directly to stockholders, or publicly announced (and not withdrawn at least two (2) business days prior to the Sterling Meeting).\n    2.  **AND** the Agreement is subsequently terminated by either Webster or Sterling pursuant to **Section 8.1(c)** (without the Requisite Sterling Vote having been obtained) or by Webster pursuant to **Section 8.1(d)** (as a result of a willful breach by Sterling).\n    3.  **AND** \"prior to the date that is **twelve (12) months** after the date of such termination,\" Sterling enters into a definitive agreement or consummates a transaction with respect to an Acquisition Proposal.\n\n*   **Financial Consequence:** If these conditions are met, Sterling shall pay Webster a fee equal to **$185,000,000** (the \u201cTermination Fee\u201d) by wire transfer of same-day funds on the earlier of the date it enters into such definitive agreement and the date of consummation of such transaction.\n\n*   **Definition Modification:** The clause specifies that \"for purposes of this Section 8.2(b)(i), all references in the definition of Acquisition Proposal to \u201825%\u2019 shall instead refer to \u201850%\u2019.\"\n\nThis structure\u2014requiring the target company to pay a fee if it enters into a similar transaction within a specific period (12 months) after the merger agreement is terminated under certain circumstances\u2014is the standard legal definition of a tail provision.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1544",
@@ -262,12 +286,13 @@
         "Glu Mobile Inc._Electronic Arts Inc..txt",
         "IMMUNOMEDICSINC_08_07_2019-EX-10.1-PROMOTION AGREEMENT.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following documents:\n1.  *TRICITYBANKSHARESCORP_05_15_1998-EX-10-OUTSOURCING AGREEMENT.txt*\n2.  *Meridian Bancorp, Inc._Independent Bank Corp..txt*\n3.  *Flagstar Bancorp, Inc._New York Community Bancorp, Inc..txt*\n4.  *CORIOINC_07_20_2000-EX-10.5-LICENSE AND HOSTING AGREEMENT.txt*\n5.  *Select_Bancorp_Inc_First_Bancorp.txt*\n6.  *Sterling_Bancorp_Webster_Financial_Corporation.txt*\n\nNone of these documents correspond to the Merger Agreement between \"GI DI Orion Acquisition Inc\" and \"ORBCOMM Inc,\" nor do they contain covenants regarding the \"Ordinary course of business\" for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -284,12 +309,13 @@
         "MSG Networks Inc._Madison Square Garden Entertainment Corp..txt",
         "Covanta_Holding_Corporation_EQT_Holdings_AB.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain definitions of \"Superior Proposal\" or \"Superior Offer\" from the following agreements:\n1. Goodrich Petroleum Corporation / EnCap Investments L.P.\n2. Alaska Communications Systems Group, Inc. / Investment Group\n3. Flexion Therapeutics / Pacira BioSciences\n4. Five Prime Therapeutics, Inc. / Amgen Inc.\n5. Prevail Therapeutics Inc. / Eli Lilly and Company\n6. Adamas Pharmaceuticals / Supernus Pharmaceuticals\n\nNone of the provided excerpts are from the Acquisition Agreement between \"IRC Superman Midco, LLC\" and \"American Renal Associates Holdings, Inc.\" Consequently, there is no information regarding a Specific Performance clause for that specific transaction in the provided text.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -306,12 +332,13 @@
         "Alexion Pharmaceuticals, Inc._AstraZeneca PLC.txt",
         "Parsley Energy, Inc._Pioneer Natural Resources Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain clauses from the following agreements:\n1. *Maxim Integrated Products, Inc. / Analog Devices, Inc.*\n2. *W.R. Grace Co. / 40 North Management LLC*\n3. *MSG Networks Inc. / Madison Square Garden Entertainment Corp.*\n4. *Eaton Vance Corp. / Morgan Stanley*\n5. *American Renal Associates Holdings / IRC Superman Midco*\n6. *Domtar Corporation / Paper Excellence Canada Group*\n\nNone of the provided excerpts are from the Acquisition Agreement between **Desktop Metal, Inc.** and **The Exone Company**, nor do they contain any provisions regarding \"Ordinary course of business covenants.\"",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -328,12 +355,13 @@
         "Endurance International Group Holdings, Inc._Clearlake Capital Group, L.P..txt",
         "Chiasma, Inc._Amryt Pharma plc.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain termination fee and \"Superior Proposal\" definitions from the following agreements:\n1.  *Lydall, Inc._Clearlake Capital Group, L.P.*\n2.  *Bank of Commerce Holdings_Columbia Banking System, Inc.*\n3.  *Nuance Communications, Inc._Microsoft Corporation*\n4.  *Viela Bio, Inc._Horizon Therapeutics Public Limited Company*\n5.  *Alaska Communications Systems Group, Inc._Investment Group*\n6.  *TIFFANY_&_CO._LVMH_MO\u00cbT_HENNESSY-LOUIS_VUITTON*\n\nNone of the provided excerpts correspond to the Acquisition Agreement between **Einstein MidCo, LLC** and **Echo Global Logistics, Inc.** Therefore, I cannot determine if that specific agreement contains a tail provision based strictly on the provided text.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -350,12 +378,13 @@
         "Weingarten Realty Investors_Kimco Realty Corporation.txt",
         "Domtar Corporation_Paper Excellence Canada Group.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Superior Proposal\" for the following agreements:\n1.  Raven Industries, Inc. / CNH Industrial N.V.\n2.  ORBCOMM Inc. / GI Partners\n3.  Nuance Communications, Inc. / Microsoft Corporation\n4.  Prevail Therapeutics Inc. / Eli Lilly and Company\n5.  MSG Networks Inc. / Madison Square Garden Entertainment Corp.\n6.  Slack Technologies, Inc. / salesforce.com, inc.\n\nThere is no excerpt provided for the Acquisition Agreement between **United Rentals (North America), Inc.** and **General Finance Corporation**.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -372,8 +401,9 @@
         "Coherent, Inc._II-VI Incorporated.txt",
         "Inovalon_Holdings_Management_Led_Buyout.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts are from the following agreements:\n1. *Columbia Property / Pacific Investment Management*\n2. *W.R. Grace Co. / 40 North Management LLC*\n3. *Concho Resources Inc. / ConocoPhillips*\n4. *Parsley Energy, Inc. / Pioneer Natural Resources Company*\n5. *Soliton Inc. / AbbVie Inc.*\n6. *At Home Group Inc. / Hellman & Friedman LLC*\n\nNone of the provided excerpts correspond to the Acquisition Agreement between **MorphoSys AG** and **Constellation Pharmaceuticals, Inc.** Therefore, the specific representation and warranty regarding No Material Adverse Effect for that specific transaction is not present in the provided text.",
       "retrieval_hit": false,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -394,12 +424,13 @@
         "Sykes Enterprises, Incorporated_CREADEV.txt",
         "W_R_Grace_Co_40_North_Management_LLC.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts from the *Leaf Group Ltd._Graham Holdings Company* agreement (Parent Clause 2) only address the Company's right to terminate the agreement to accept a \"Superior Proposal\" prior to obtaining \"Company Stockholder Approval.\" The excerpts do not contain the \"Closing Conditions: Regulatory Approvals\" clause for this specific agreement.\n\n(Note: While Parent Clause 4 contains a \"Regulatory Approvals\" closing condition, it is explicitly identified as being from the *Select_Bancorp_Inc_First_Bancorp* document, not the *Leaf Group Ltd._Graham Holdings Company* document.)",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -416,13 +447,14 @@
         "Mackinac Financial Corporation_Nicolet Bankshares, Inc..txt",
         "Domtar Corporation_Paper Excellence Canada Group.txt"
       ],
-      "generated_answer": "Error: Connection error.",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between **Peoples Bancorp Inc.** (Parent) and **Premier Financial Bancorp, Inc.** (Target), the definition of \"Superior Proposal\" is as follows:\n\n**Definition of \"Superior Proposal\"**\n\nUnder the agreement between Premier Financial Bancorp, Inc. and Peoples Bancorp Inc., **\u201cSuperior Proposal\u201d** is defined as:\n\n> \u201cany bona fide written Acquisition Proposal on terms which the Premier Financial Board determines in good faith, after consultation with Premier Financial\u2019s outside legal counsel and independent financial advisors, and taking into account all the legal, financial, regulatory and other aspects of such Acquisition Proposal, including as to certainty and timing of consummation, would, if consummated, result in a transaction that is more favorable to the holders of Premier Financial Common Stock from a financial point of view than the terms of this Agreement (in each case, taking into account any revisions to this Agreement made or proposed by Peoples); provided that for purposes of the definition of \u2018Superior Proposal,\u2019 the references to \u201820% or more\u2019 in the definition of Acquisition Proposal or Acquisition Transaction shall be deemed to be references to \u201850% or more.\u2019\u201d\n\n**Key Elements of the Definition:**\n*   **Form:** Must be a \"bona fide written Acquisition Proposal.\"\n*   **Determination Standard:** The Premier Financial Board must determine in \"good faith\" that the proposal is \"more favorable to the holders of Premier Financial Common Stock from a financial point of view\" than the current agreement.\n*   **Consultation Requirement:** The Board must consult with \"outside legal counsel and independent financial advisors.\"\n*   **Factors Considered:** The Board must take into account \"all the legal, financial, regulatory and other aspects of such Acquisition Proposal, including as to certainty and timing of consummation.\"\n*   **Revisions:** The determination must account for \"any revisions to this Agreement made or proposed by Peoples.\"\n*   **Threshold Adjustment:** For the purpose of this definition, the standard threshold in the definition of \"Acquisition Proposal\" or \"Acquisition Transaction\" of \"20% or more\" is deemed to be **\"50% or more.\"**",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_443",
@@ -438,8 +470,9 @@
         "Adamas_Pharmaceuticals_Supernus_Pharmaceuticals.txt",
         "Sykes Enterprises, Incorporated_CREADEV.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts do not contain any text from an agreement between \"SUPERNUS PHARMACEUTICALS, INC.\" and \"ADAMAS PHARMACEUTICALS, INC.\" The excerpts provided are from agreements involving Alexion Pharmaceuticals/AstraZeneca, Leaf Group/Graham Holdings, ImmunoMedics/Janssen, Alaska Communications/Investment Group, W.R. Grace/North Management, and U.S. Concrete/Vulcan Materials. Therefore, I cannot identify the specific closing condition regarding compliance with covenants for the Supernus/Adamas transaction.",
       "retrieval_hit": true,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -460,13 +493,14 @@
         "Inovalon_Holdings_Management_Led_Buyout.txt",
         "Alexion Pharmaceuticals, Inc._AstraZeneca PLC.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between **Acacia Communications, Inc.** and **Cisco Systems, Inc.**, the specific closing condition regarding compliance with covenants is found in the excerpt labeled **Parent Clause 4**.\n\n**1. Exact Contractual Clause and Section Reference**\nThe relevant provision is titled **\"(b) Covenants and Agreements.\"** While the specific Article number (e.g., Article 6) is not explicitly numbered in the provided text snippet, the clause functions as a condition precedent to Closing.\n\n**2. Verbatim Quotation of the Condition**\nThe clause states:\n> \"The Company shall have performed and complied in all material respects with the covenants and other obligations in **Section 5.1, Section 5.2, Section 5.3, Section 5.5, Section 5.7, Section 5.15, Section 5.17, Section 5.18 and Section 5.19** required to be performed and complied with by it at or prior to the Closing. The Company shall not have intentionally or materially breached any other covenants or obligations in this Agreement required to be performed and complied with by it at or prior to the Closing.\"\n\n**3. Analysis of Thresholds and Scope**\n*   **Specific Sections:** The condition explicitly lists nine specific sections (5.1, 5.2, 5.3, 5.5, 5.7, 5.15, 5.17, 5.18, and 5.19) that must be performed or complied with.\n*   **Standard of Compliance:**\n    *   For the listed sections: Compliance must be in **\"all material respects.\"**\n    *   For all other covenants: The Company must not have **\"intentionally or materially breached\"** them.\n*   **Timing:** Performance and compliance are required **\"at or prior to the Closing.\"**",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_926",
@@ -482,12 +516,13 @@
         "IEC_Electronics_Corp_Lindsay_Goldberg_LLC.txt",
         "Adamas_Pharmaceuticals_Supernus_Pharmaceuticals.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts from the *Boston Private Financial Holdings, Inc._SVB Financial Group* agreement contain:\n1.  Section 1.5 regarding the \"Conversion of Boston Private Common Stock\" and the definition of \"Merger Consideration.\"\n2.  The definition of \"Superior Proposal.\"\n3.  A fragment referencing the \"Requisite Boston Private Vote.\"\n\nNone of the provided excerpts contain the text of a \"No-Shop\" clause (often titled \"No Solicitation,\" \"Exclusivity,\" or \"No-Shop/No-Talk\"). While the definition of \"Superior Proposal\" is typically associated with no-shop provisions, the actual covenant restricting Boston Private from soliciting or engaging with other parties is not present in the provided text.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -504,12 +539,13 @@
         "FLIR Systems, Inc._Teledyne Technologies Incorporated.txt",
         "Soliton_Inc_Abbvie_Inc.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Intervening Event\" (or similar terms like \"Company Intervening Event\") from the following agreements:\n1.  *The ExOne Company / Desktop Metal*\n2.  *Altabancorp / Glacier Bancorp, Inc.* (defines \"Acquisition Event\")\n3.  *Endurance International Group Holdings, Inc. / Clearlake Capital Group, L.P.*\n4.  *Nuance Communications, Inc. / Microsoft Corporation*\n5.  *HMS Holdings Corp. / Veritas Capital*\n6.  *Pandion Therapeutics, Inc. / Merck & Co., Inc.*\n\nThere is no excerpt provided for the Acquisition Agreement between **Novo Nordisk A/S** and **Dicerna Pharmaceuticals, Inc.** Therefore, I cannot provide the specific definition of \"Intervening Event\" for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -526,12 +562,13 @@
         "ORBCOMM Inc._GI Partners.txt",
         "Alaska Communications Systems Group, Inc._Investment Group.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts are from the following agreements:\n1. *Varian Medical Systems, Inc._Siemens Healthineers AG*\n2. *Sykes Enterprises, Incorporated_CREADEV*\n3. *J Alexander's Holdings Inc_SPB Hospitality LLC*\n4. *Virtusa Corporation_Baring Private Equity Asia*\n5. *Tribune Publishing Company_Alden Global Capital LLC*\n6. *Cloudera, Inc._Investment Group*\n\nNone of the provided excerpts correspond to the Acquisition Agreement between **Mitsubishi HC Capital Inc.** and **CAI International, Inc.** Therefore, I cannot provide the specific fiduciary termination right triggers for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -548,12 +585,13 @@
         "WPX Energy, Inc._Devon Energy Corporation.txt",
         "Contango_Oil_&_Gas_KKR_&_Co.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following agreements:\n1. *RealPage, Inc._Thoma Bravo, L.P.*\n2. *Translate_Bio_Sanofi_SA*\n3. *Protective Insurance Corporation_The Progressive Corporation*\n4. *Marlin Business Services Corp._HPS Investment Partners, LLC*\n5. *IEC_Electronics_Corp_Lindsay_Goldberg_LLC*\n6. *Select_Bancorp_Inc_First_Bancorp*\n\nNone of the provided excerpts are from the Merger Agreement between **Alaska Communications Systems Group, Inc.** and **Project 8 MergerSub, Inc.** Therefore, I cannot provide information regarding the \"Limitations on Antitrust Efforts\" for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -570,12 +608,13 @@
         "Parsley Energy, Inc._Pioneer Natural Resources Company.txt",
         "Retail_Properties_of_America_Inc_Kite_Realty_Group_Trust.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain clauses from agreements involving **Eaton Vance Corp.**, **Covanta Holding Corporation**, **Lydall, Inc.**, **Cloudera, Inc.**, **Tiffany & Co.**, and **MGM Growth Properties LLC**. None of the provided excerpts reference an agreement between \"Project Kafka Parent, LLC\" and \"Proofpoint, Inc.\" nor do they contain the specific \"Type of Consideration\" clause for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -592,12 +631,13 @@
         "County Bancorp, Inc._Nicolet Bankshares, Inc..txt",
         "Leaf Group Ltd._Graham Holdings Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains no references to an agreement between \"SANOFI\" and \"TRANSLATE BIO, INC.\" The excerpts provided are from the following unrelated agreements:\n1.  *Medallia_Inc_Thoma_Bravo_L_P.txt*\n2.  *American_Renal_Associates_Holdings_IRC_Superman_Midco.txt*\n3.  *Boingo Wireless, Inc._Digital Colony Partners, LP.txt*\n4.  *Parsley Energy, Inc._Pioneer Natural Resources Company.txt*\n5.  *Nuance Communications, Inc._Microsoft Corporation.txt*\n6.  *People_s United Financial, Inc._M_T Bank Corporation.txt*\n\nTherefore, I cannot identify the specific No-Shop Clause for the Sanofi/Translate Bio transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -614,12 +654,13 @@
         "Flexion_Therapeutics_Pacira_BioSciences.txt",
         "Five Prime Therapeutics, Inc._Amgen Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts are from the following agreements:\n1. *American_Renal_Associates_Holdings_IRC_Superman_Midco.txt*\n2. *QTS Realty Trust, Inc._The Blackstone Group Inc..txt*\n3. *Sykes Enterprises, Incorporated_CREADEV.txt*\n4. *Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt*\n5. *simply-fashion---standard-nda.txt*\n6. *Boingo Wireless, Inc._Digital Colony Partners, LP.txt*\n\nNone of the provided excerpts correspond to an Acquisition Agreement between **Novo Nordisk A/S** and **Dicerna Pharmaceuticals, Inc.** Therefore, I cannot identify the specific No-Shop Clause for that transaction based strictly on the provided text.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -636,13 +677,14 @@
         "Coherent, Inc._II-VI Incorporated.txt",
         "Forterra, Inc._Quikrete Holdings, Inc..txt"
       ],
-      "generated_answer": "**Answer (based strictly on the provided excerpts)**  \n\nThe Acquisition Agreement between BridgeBio\u202fPharma,\u202fInc. (Parent) and Eidos\u202fTherapeutics,\u202fInc. (Target) contains an unnumbered clause that defines \u201cKnowledge.\u201d The definition, as quoted verbatim from the excerpt, is:\n\n> \u201cKnowledge\u201d or any similar phrase means (a) with respect to the Company, the collective actual knowledge of the individuals set forth in Section\u202f10.15 of the Company Disclosure Letter and  \n\n(The excerpt ends here; no further text is provided in the supplied material.)\n\n**Source**  \n- Unnumbered clause in the document *Eidos\u202fTherapeutics,\u202fInc._BridgeBio\u202fPharma,\u202fInc..txt* (Acquisition Agreement).",
+      "generated_answer": "**Answer**\n\nUnder the Acquisition Agreement between BridgeBio\u202fPharma,\u202fInc. (the \u201cParent\u201d) and Eidos\u202fTherapeutics,\u202fInc. (the \u201cCompany\u201d), the term \u201cKnowledge\u201d (or any similar phrase) is defined in the following clause:\n\n> \u201cKnowledge\u201d or any similar phrase means (a) with respect to the Company, the collective actual knowledge of the individuals set forth in Section\u202f10.15 of the Company Disclosure Letter and \u2026  \n\n*(The excerpt provided ends after \u201cand \u2026\u201d, indicating that the definition continues beyond the supplied text.)*  \n\n**Key points from the excerpt**\n\n- The definition is tied specifically to the Company (Eidos\u202fTherapeutics,\u202fInc.).\n- It references \u201cthe collective actual knowledge\u201d of individuals listed in Section\u202f10.15 of the Company Disclosure Letter.\n- The clause is unnumbered in the provided excerpt but is identified as \u201cParent Clause\u202f5\u201d in the document *Eidos\u202fTherapeutics, Inc._BridgeBio\u202fPharma, Inc.*.  \n\n**Note**  \nThe excerpt supplied is incomplete; the definition continues beyond the provided text. No additional clauses or sections are available in the excerpts to complete the definition.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer correctly reproduces the definition of \"Knowledge\" as stated in the ground truth, matching the phrasing and reference to Section 10.15, and does not introduce any contradictory information.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1108",
@@ -658,12 +700,13 @@
         "Knoll_Inc_Herman_Miller_Inc.pdf.txt",
         "Inovalon_Holdings_Management_Led_Buyout.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts do not contain any text from an agreement between \"BridgeBio Pharma, Inc.\" and \"Eidos Therapeutics, Inc.\" The excerpts provided are from agreements involving Alaska Communications Systems Group, Acceleron Pharma/Merck, Alexion Pharmaceuticals/AstraZeneca, Sykes Enterprises/CREADEV, Leaf Group/Graham Holdings, and W.R. Grace/North Management. Therefore, I cannot identify the specific closing condition regarding compliance with covenants for the BridgeBio/Eidos transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -680,13 +723,14 @@
         "Raven Industries, Inc._CNH Industrial N.V..txt",
         "Nuance Communications, Inc._Microsoft Corporation.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the Merger Agreement between **Kadmon Holdings, Inc.** and **Sanofi SA** (Document: `Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt`), the definition of \"Superior Proposal\" is as follows:\n\n**Definition of \"Superior Proposal\"**\n\nA \u201cSuperior Proposal\u201d is defined as a **bona fide written Acquisition Proposal** that meets the following specific criteria:\n\n1.  **Ownership Threshold:** If consummated, the proposal would result in a Person owning, directly or indirectly:\n    *   (a) **more than 50%** of the outstanding shares of the Company Common Stock; **or**\n    *   (b) **more than 50%** of the assets of the Company and the Company Subsidiaries, taken as a whole.\n\n2.  **Board Determination:** The Company Board must determine in good faith that the proposal:\n    *   (i) is **reasonably likely to be consummated** if accepted; and\n    *   (ii) if consummated, would result in a transaction **more favorable to the Company\u2019s stockholders from a financial point of view** than the Merger.\n\n3.  **Consideration of Changes:** In making this determination, the Board must take into account, at the time of determination, **any changes to the terms of this Agreement offered by Parent in response to such Acquisition Proposal**.\n\n*Source: Parent Clause 5 | Document: Kadmon_Holdings_Sanofi_SA_Merger_Agreement.txt*",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1417",
@@ -702,12 +746,13 @@
         "Domtar Corporation_Paper Excellence Canada Group.txt",
         "Chiasma, Inc._Amryt Pharma plc.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts are from the following agreements:\n1.  *Acceleron Pharma Inc. / Merck & Co.*\n2.  *Bank of Commerce Holdings / Columbia Banking System, Inc.*\n3.  *Inovalon Holdings / Management Led Buyout*\n4.  *Lydall, Inc. / Clearlake Capital Group, L.P.*\n5.  *Cornerstone OnDemand / Clearlake Capital Group, L.P.*\n6.  *Prevail Therapeutics Inc. / Eli Lilly and Company*\n\nNone of the provided excerpts correspond to the Acquisition Agreement between **Karta Halten B.V.** and **Domtar Corporation**. Therefore, I cannot provide the specific fiduciary exception clause for that specific transaction.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -724,12 +769,13 @@
         "U.S. Concrete, Inc._Vulcan Materials Company.txt",
         "Prevail Therapeutics Inc._Eli Lilly and Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Superior Proposal\" for the following transactions:\n1. ORBCOMM Inc. / GI Partners\n2. Slack Technologies, Inc. / salesforce.com, inc.\n3. Raven Industries, Inc. / CNH Industrial N.V.\n4. Tribune Publishing Company / Alden Global Capital LLC\n5. Nuance Communications, Inc. / Microsoft Corporation\n6. Tiffany & Co. / LVMH Mo\u00ebt Hennessy-Louis Vuitton\n\nThere is no excerpt provided for the Acquisition Agreement between **MorphoSys AG** and **Constellation Pharmaceuticals, Inc.** Therefore, I cannot provide the specific definition for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -746,12 +792,13 @@
         "American_Renal_Associates_Holdings_IRC_Superman_Midco.txt",
         "Soliton_Inc_Abbvie_Inc.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following documents:\n1. *Alaska Communications Systems Group, Inc._Investment Group.txt*\n2. *RealPage, Inc._Thoma Bravo, L.P..txt*\n3. *Translate_Bio_Sanofi_SA.txt*\n4. *Leaf Group Ltd._Graham Holdings Company.txt*\n5. *Stamps_com_Inc_Thoma_Bravo_L_P.txt*\n6. *Select_Bancorp_Inc_First_Bancorp.txt*\n\nNone of the provided excerpts are from the Merger Agreement between \"White Sands Parent, Inc.\" and \"Boingo Wireless, Inc.\" Therefore, I cannot provide information regarding the specific \"Limitations on Antitrust Efforts\" for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -768,12 +815,13 @@
         "Viela Bio, Inc._Horizon Therapeutics Public Limited Company.txt",
         "Domtar Corporation_Paper Excellence Canada Group.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain definitions of \"Superior Proposal\" from the following agreements:\n1. Weingarten Realty Investors / Kimco Realty Corporation\n2. Eaton Vance Corp. / Morgan Stanley\n3. Alaska Communications Systems Group, Inc. / Investment Group\n4. Cloudera, Inc. / Investment Group\n5. Parsley Energy, Inc. / Pioneer Natural Resources Company\n6. Lydall, Inc. / Clearlake Capital Group, L.P.\n\nNone of the provided excerpts correspond to the Acquisition Agreement between **RMR Mortgage Trust** and **Tremont Mortgage Trust**, nor do they contain information regarding the \"Type of Consideration\" for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -790,12 +838,13 @@
         "PRA Health Sciences, Inc._ICON plc.txt",
         "Sykes Enterprises, Incorporated_CREADEV.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following documents:\n1. *Alaska Communications Systems Group, Inc._Investment Group.txt*\n2. *Select_Bancorp_Inc_First_Bancorp.txt*\n3. *Translate_Bio_Sanofi_SA.txt*\n4. *People_s United Financial, Inc._M_T Bank Corporation.txt*\n5. *American_Renal_Associates_Holdings_IRC_Superman_Midco.txt*\n6. *Constellation Pharmaceuticals, Inc._MorphoSys AG.txt*\n\nNone of the provided excerpts are from a Merger Agreement between \"Perspecta Inc.\" and \"Jaguar Parentco Inc.\" Furthermore, none of the provided excerpts contain language regarding a \"No-Shop Clause\" or a \"Fiduciary exception.\" Therefore, I cannot provide the specific contractual clause or definition requested.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -812,13 +861,14 @@
         "U.S. Concrete, Inc._Vulcan Materials Company.txt",
         "Chiasma, Inc._Amryt Pharma plc.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the Merger Agreement between **Mackinac Financial Corporation** and **Nicolet Bankshares, Inc.**, the definition of \"Superior Proposal\" is as follows:\n\n**Definition of \"Superior Proposal\"**\n\nUnder the Mackinac Financial Corporation_Nicolet Bankshares, Inc. agreement, **\u201cSuperior Proposal\u201d** is defined as:\n\n> \u201ca bona fide written Acquisition Proposal which the Company Board concludes in good faith to be more favorable from a financial point of view to the Company shareholders than the Merger and the other transactions contemplated hereby, (i) after receiving the advice of its financial advisors (which shall be Piper Sandler & Co., or any nationally recognized investment banking firm), (ii) after taking into account the likelihood and timing of consummation of the proposed transaction on the terms set forth therein (as compared to, and with due regard for, the terms herein) and (iii) after taking into account all legal (with the advice of outside counsel), financial (including the financing terms of any such proposal), regulatory (including the advice of outside counsel regarding the potential for regulatory approval of any such proposal) and other aspects of such proposal and any other relevant factors permitted under applicable law.\u201d\n\n**Key Elements of the Definition:**\n*   **Form:** Must be a \"bona fide written Acquisition Proposal.\"\n*   **Standard:** Must be concluded by the Company Board in \"good faith\" to be \"more favorable from a financial point of view to the Company shareholders\" than the current Merger.\n*   **Required Consultations:**\n    *   Advice from financial advisors (specifically identified as \"Piper Sandler & Co., or any nationally recognized investment banking firm\").\n    *   Advice from outside counsel regarding legal and regulatory aspects.\n*   **Factors Considered:**\n    *   Likelihood and timing of consummation.\n    *   Legal, financial (including financing terms), and regulatory aspects (including potential for regulatory approval).\n    *   Any other relevant factors permitted under applicable law.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer accurately reproduces the full definition of \u201cSuperior Proposal\u201d from the ground truth, including all required elements and conditions.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1539",
@@ -834,12 +884,13 @@
         "Eidos Therapeutics, Inc._BridgeBio Pharma, Inc..txt",
         "Slack Technologies, Inc._salesforce.com, inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Knowledge\" for the following specific transactions:\n1.  Columbia Property / Pacific Investment Management\n2.  W.R. Grace Co. / 40 North Management LLC\n3.  U.S. Concrete, Inc. / Vulcan Materials Company\n4.  PRA Health Sciences, Inc. / ICON plc\n5.  Echo Global Logistics / The Jordan Company L.P.\n6.  Altabancorp / Glacier Bancorp, Inc.\n\nThere are no excerpts provided for a Merger Agreement between \"GI DI Orion Acquisition Inc\" and \"ORBCOMM Inc.\"",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -856,12 +907,13 @@
         "XENCORINC_10_25_2013-EX-10.24-COLLABORATION AGREEMENT (3).txt",
         "County Bancorp, Inc._Nicolet Bankshares, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpt from the **Select_Bancorp_Inc_First_Bancorp.txt** document (Parent Clause 1) contains only a provision regarding **\"Regulatory Approvals\"** (specifically subsection (b)). It does not contain a No-Shop Clause, nor does it reference any section number or text related to no-shop restrictions.\n\nWhile other documents in the context (e.g., *Boingo Wireless, Inc._Digital Colony Partners, LP.txt* and *American_Renal_Associates_Holdings_IRC_Superman_Midco.txt*) contain detailed No-Shop Clauses, these are from different agreements and do not apply to the Select Bancorp/First Bancorp merger.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -876,10 +928,11 @@
         "Echo_Global_Logistics_The_Jordan_Company_L_P.txt",
         "Forterra, Inc._Quikrete Holdings, Inc..txt",
         "PRA Health Sciences, Inc._ICON plc.txt",
-        "General Finance Corporation_United Rentals, Inc..txt"
+        "BioTelemetry, Inc._Koninklijke Philips N.V..txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Knowledge\" for the following specific transactions:\n1.  W. R. Grace & Co. / 40 North Management LLC\n2.  Columbia Property / Pacific Investment Management\n3.  U.S. Concrete, Inc. / Vulcan Materials Company\n4.  Eidos Therapeutics, Inc. / BridgeBio Pharma, Inc.\n5.  Echo Global Logistics / The Jordan Company L.P.\n6.  Forterra, Inc. / Quikrete Holdings, Inc.\n\nThere are no excerpts provided for a Merger Agreement between \"Sunshine Software Holdings, Inc.\" and \"Cornerstone OnDemand, Inc.\"",
       "retrieval_hit": false,
+      "refused": true,
       "accuracy": 0,
       "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
@@ -898,14 +951,15 @@
         "Pandion Therapeutics, Inc._Merck _ Co., Inc..txt",
         "Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt",
         "ANIXABIOSCIENCESINC_06_09_2020-EX-10.1-COLLABORATION AGREEMENT.txt",
-        "New Senior Investment Group Inc._Ventas, Inc..txt"
+        "Weingarten Realty Investors_Kimco Realty Corporation.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts are from the following documents:\n1. *Select_Bancorp_Inc_First_Bancorp.txt*\n2. *InvendaCorp_20000828_S-1A_EX-10.2_2588206_EX-10.2_Co-Branding Agreement.txt*\n3. *TRICITYBANKSHARESCORP_05_15_1998-EX-10-OUTSOURCING AGREEMENT.txt*\n4. *XENCORINC_10_25_2013-EX-10.24-COLLABORATION AGREEMENT (3).txt*\n5. *Pandion Therapeutics, Inc._Merck _ Co., Inc..txt*\n6. *Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt*\n\nNone of these excerpts correspond to a Merger Agreement between \"Nicolet Bankshares, Inc.\" and \"County Bancorp, Inc.\" Consequently, there is no information regarding a No-Shop Clause for that specific transaction in the provided text.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -922,13 +976,14 @@
         "Select_Bancorp_Inc_First_Bancorp.txt",
         "Inphi Corporation_Marvell Technology Group Ltd..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts, the specific limitation on antitrust efforts for the agreement between **Constellation Pharmaceuticals, Inc.** (Parent) and **MorphoSys AG** (Acquired Corporations/Target) is found in **Parent Clause 3**.\n\n**Direct Answer:**\nThe parties are not required to take actions or agree to conditions that would have a material adverse effect on their combined business.\n\n**Verbatim Citation:**\nUnder the excerpt from *Constellation Pharmaceuticals, Inc._MorphoSys AG.txt*, the limitation is stated as follows:\n\n> \"provided, however, that the Parties shall not be required to take or commit to take any such action, or agree to any such condition or restriction that would have a material adverse effect on the business of the Parent and the Acquired Corporations on a combined basis\"\n\n**Analysis:**\n*   **Scope:** This clause limits the obligation to obtain antitrust approvals or implement remedies.\n*   **Threshold:** The limitation is triggered if the required action or condition would result in a **\"material adverse effect\"** on the business of the Parent and the Acquired Corporations **\"on a combined basis.\"**\n*   **Note:** The provided excerpts do not contain the specific section number (e.g., Section 6.08) for this particular agreement, only the unnumbered clause text. Additionally, the excerpts do not define \"material adverse effect\" for this specific contract, nor do they specify other limitations (such as \"Burdensome Conditions\" or specific asset divestiture prohibitions) applicable to this specific transaction, as those terms appear in different documents within the context.",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_1463",
@@ -944,12 +999,13 @@
         "Inovalon_Holdings_Management_Led_Buyout.txt",
         "RigNet, Inc._Viasat, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following agreements:\n1. *Soliton Inc. / AbbVie Inc.*\n2. *Sykes Enterprises, Incorporated / CREADEV*\n3. *Change Healthcare Inc. / UnitedHealth Group Incorporated*\n4. *Perspecta Inc. / Veritas Capital*\n5. *Endurance International Group Holdings, Inc. / Clearlake Capital Group, L.P.*\n6. *HMS Holdings Corp. / Veritas Capital*\n\nNone of the provided excerpts are from the Acquisition Agreement between **CNH Industrial N.V.** and **Raven Industries, Inc.** Therefore, I cannot identify the location of the \"Closing Conditions: Regulatory Approvals\" clause for that specific transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -966,12 +1022,13 @@
         "MSG Networks Inc._Madison Square Garden Entertainment Corp..txt",
         "Sykes Enterprises, Incorporated_CREADEV.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts do not contain any text from an agreement between \"Viasat, Inc.\" and \"RigNet, Inc.\" The excerpts provided are from the following unrelated documents:\n1. *W_R_Grace_Co_40_North_Management_LLC.txt*\n2. *Constellation Pharmaceuticals, Inc._MorphoSys AG.txt*\n3. *Sterling_Bancorp_Webster_Financial_Corporation.txt*\n4. *Parsley Energy, Inc._Pioneer Natural Resources Company.txt*\n5. *Five Prime Therapeutics, Inc._Amgen Inc..txt*\n6. *Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt*\n\nFurthermore, none of the provided excerpts contain specific \"Ordinary course of business\" covenants; they primarily address enforceability, no-shop provisions, and superior proposal exceptions.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -988,12 +1045,13 @@
         "InvendaCorp_20000828_S-1A_EX-10.2_2588206_EX-10.2_Co-Branding Agreement.txt",
         "U.S. Concrete, Inc._Vulcan Materials Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains excerpts from the following agreements:\n1. *Goodrich Petroleum Corporation / EnCap Investments L.P.*\n2. *Chiasma, Inc. / Amryt Pharma plc*\n3. *Cincinnati Bell Inc. / Macquarie Infrastructure and Real Assets*\n4. *Meridian Bancorp, Inc. / Independent Bank Corp.*\n5. *Select Bancorp Inc. / First Bancorp*\n6. *Translate Bio / Sanofi SA*\n\nNone of the provided excerpts are from a Merger Agreement between \"Sunshine Software Holdings, Inc.\" and \"Cornerstone OnDemand, Inc.\" Consequently, there is no information regarding the type of consideration for that specific transaction in the provided text.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -1010,13 +1068,14 @@
         "Acceleron_Pharma_Inc_Merck_Co.txt",
         "QTS Realty Trust, Inc._The Blackstone Group Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "Based on the provided contract excerpts from the agreement between **CIT Group Inc.** and **First Citizens BancShares, Inc.**, the Fiduciary exception to the No-Shop Clause is detailed in **Section 6.12**.\n\n**Direct Answer:**\nUnder **Section 6.12** of the CIT Group Inc. / First Citizens BancShares, Inc. agreement, a party (CIT or BancShares) is permitted to furnish confidential or nonpublic information and participate in negotiations with a third party making an unsolicited Acquisition Proposal if specific fiduciary duty conditions are met.\n\n**Specific Conditions and Requirements:**\nAccording to the excerpt, the party may take these actions **only if** the following conditions are satisfied:\n\n1.  **Timing and Nature of Proposal:** The event occurs \"after the date of this Agreement and prior to the receipt of the Requisite BancShares Vote, in the case of BancShares, or the Requisite CIT Vote, in the case of CIT.\" The proposal must be an \"unsolicited bona fide written Acquisition Proposal not solicited in violation of this Section 6.12.\"\n2.  **Board Determination:** The board of directors of the receiving party must conclude in good faith, after receiving advice from outside counsel and financial advisors, that:\n    *   The Acquisition Proposal \"constitutes a Superior Proposal or is reasonably likely to lead to a Superior Proposal\"; **AND**\n    *   \"failure to take such actions would more likely than not result in a violation of its fiduciary duty under applicable law.\"\n3.  **Notice Requirement:** The party is subject to providing \"twenty four (24) hours\u2019 prior written notice of its decision to take such action to CIT or BancShares, as applicable.\"\n4.  **Notice Content:** The notice must identify \"the person making the Acquisition Proposal and all of the material terms and conditions of such Acquisition Proposal.\"\n\n**Verbatim Quote of Operative Language:**\n> \"Notwithstanding the foregoing, in the event that after the date of this Agreement and prior to the receipt of the Requisite BancShares Vote, in the case of BancShares, or the Requisite CIT Vote, in the case of CIT, a party receives an unsolicited bona fide written Acquisition Proposal not solicited in violation of this Section 6.12, such party may, and may permit its Subsidiaries and its and its Subsidiaries\u2019 Representatives to, furnish or cause to be furnished confidential or nonpublic information or data and participate in such negotiations or discussions with the person making the Acquisition Proposal if, but only if, the board of directors of such party concludes in good faith (after receiving the advice of its outside counsel, and with respect to financial matters, its financial advisors) that such Acquisition Proposal constitutes a Superior Proposal or is reasonably likely to lead to a Superior Proposal and that failure to take such actions would more likely than not result in a violation of its fiduciary duty under applicable law, and subject to providing twenty four (24) hours\u2019 prior written notice of its decision to take such action to CIT or BancShares, as applicable, and identifying the person making the Acquisition Proposal and all of the material terms and conditions of such Acquisition Proposal;\"",
       "retrieval_hit": true,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
-      "hallucination": 0
+      "refused": false,
+      "accuracy": null,
+      "accuracy_reason": "empty judge response",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     },
     {
       "id": "maud_273",
@@ -1032,12 +1091,13 @@
         "Constellation Pharmaceuticals, Inc._MorphoSys AG.txt",
         "Parsley Energy, Inc._Pioneer Natural Resources Company.txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context excerpts contain definitions of \"Company Superior Proposal\" or \"Superior Proposal\" and covenants regarding regulatory filings from the following agreements:\n1. *Eaton Vance Corp._Morgan Stanley.txt*\n2. *Pacific Mercantile Bancorp_Banc of California, Inc..txt*\n3. *Lydall, Inc._Clearlake Capital Group, L.P..txt*\n4. *Endurance International Group Holdings, Inc._Clearlake Capital Group, L.P..txt*\n5. *Domtar Corporation_Paper Excellence Canada Group.txt*\n6. *Goodrich_Petroleum_Corporation_EnCap_Investments_L_P.txt*\n\nNone of the provided excerpts correspond to an agreement between \"Independent Bank Corp.\" and \"Meridian Bancorp, Inc.,\" nor do they contain clauses defining the \"Type of Consideration\" for such a transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -1054,12 +1114,13 @@
         "Prevail Therapeutics Inc._Eli Lilly and Company.txt",
         "Mackinac Financial Corporation_Nicolet Bankshares, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided context contains definitions of \"Superior Proposal\" for the following agreements:\n1. Nuance Communications, Inc. / Microsoft Corporation\n2. ORBCOMM Inc. / GI Partners\n3. Slack Technologies, Inc. / salesforce.com, inc.\n4. Weingarten Realty Investors / Kimco Realty Corporation\n5. Zix Corporation / Open Text Corporation\n6. Domtar Corporation / Paper Excellence Canada Group\n\nThere is no excerpt provided for an agreement between **Morgan Stanley** and **Eaton Vance Corp.** Therefore, I cannot provide the specific definition for that transaction.",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -1076,12 +1137,13 @@
         "Glu Mobile Inc._Electronic Arts Inc..txt",
         "Bank of Commerce Holdings_Columbia Banking System, Inc..txt"
       ],
-      "generated_answer": "",
+      "generated_answer": "I cannot answer this question based on the provided contract excerpts.\n\nThe provided excerpts do not contain any text from an agreement between \"Mirasol Parent, LLC\" and \"RealPage, Inc.\" Additionally, none of the provided excerpts contain clauses, definitions, or covenants regarding \"Ordinary course of business.\" The available excerpts relate to:\n1.  Execution and delivery obligations (Documents: *W_R_Grace_Co_40_North_Management_LLC.txt*, *Sykes Enterprises, Incorporated_CREADEV.txt*).\n2.  Acquisition Proposal restrictions (Document: *Sterling_Bancorp_Webster_Financial_Corporation.txt*).\n3.  Termination and Superior Proposal conditions (Document: *Retail_Properties_of_America_Inc_Kite_Realty_Group_Trust.txt*).\n4.  Information exchange regarding unsolicited Acquisition Proposals (Document: *Marlin Business Services Corp._HPS Investment Partners, LLC.txt*).\n5.  A limitation on actions having a material adverse effect (Document: *Constellation Pharmaceuticals, Inc._MorphoSys AG.txt*).",
       "retrieval_hit": false,
-      "accuracy": 1,
-      "accuracy_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "refused": true,
+      "accuracy": 0,
+      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
       "faithfulness": 1,
-      "faithfulness_reason": "Error: Error code: 404 - {'error': {'message': 'The model `llama-3.1-8b-instant` does not exist or y",
+      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
       "hallucination": 0
     },
     {
@@ -1098,13 +1160,14 @@
         "Flagstar Bancorp, Inc._New York Community Bancorp, Inc..txt",
         "Protective Insurance Corporation_The Progressive Corporation.txt"
       ],
-      "generated_answer": "I cannot answer this question based on the provided contract excerpts.",
+      "generated_answer": "Based on the provided contract excerpts, I cannot answer this question regarding the specific \"Closing Condition: Compliance with Covenants\" for the Merger Agreement between New York Community Bancorp, Inc. and Flagstar Bancorp, Inc.\n\nThe provided excerpts from the *Flagstar Bancorp, Inc._New York Community Bancorp, Inc.* document (Parent Clause 1) only address the limitation on actions required to obtain governmental permits, consents, approvals, and authorizations that would have a \"Material Adverse Effect\" (defined as a \"Materially Burdensome Regulatory Condition\"). The excerpts do not contain the specific clause detailing the closing condition regarding the compliance with covenants.",
       "retrieval_hit": true,
+      "refused": false,
       "accuracy": 0,
-      "accuracy_reason": "Model refrained from answering because the required clause was absent from context.",
-      "faithfulness": 1,
-      "faithfulness_reason": "Model faithfully abstained from hallucinating when context was absent.",
-      "hallucination": 0
+      "accuracy_reason": "The generated answer fails to state the required closing condition that NYCB and Merger Sub must have performed in all material respects the obligations, covenants, and agreements under the agreement, instead claiming the information is unavailable.",
+      "faithfulness": null,
+      "faithfulness_reason": "empty judge response",
+      "hallucination": null
     }
   ]
 }
