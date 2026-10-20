@@ -311,8 +311,12 @@ Respond strictly in valid JSON format:
         faith_data = parse_judge_json(faith_resp)
         ref_app_score = faith_data["score"]
         ref_app_reason = faith_data.get("reason", "")
-        faith_score = ref_app_score
-        faith_reason = ref_app_reason
+        # faithfulness / hallucination are defined only for affirmative answers that make
+        # factual claims; a refusal fabricates nothing, so it must not enter the grounding
+        # denominator. Keeping faith_score=None here lets the rate() helper filter refusals
+        # out by predicate (not by treating them as failed judge calls).
+        faith_score = None
+        faith_reason = ""
     else:
         faith_prompt = f"""You are an expert legal evaluation judge measuring FAITHFULNESS (grounding) in a Retrieval-Augmented Generation (RAG) system.
 
@@ -409,20 +413,35 @@ def main():
         print("No evaluations completed.")
         return
 
-    def rate(key):
-        """Percentage over the items the judge actually scored, plus the number it did not."""
-        scored = [r[key] for r in results if r[key] is not None]
-        unscored = n - len(scored)
+    refusals = sum(1 for r in results if r.get("refused"))
+    gen_failures = sum(1 for r in results if r.get("generation_failed"))
+    n_affirmative = n - refusals - gen_failures
+
+    def rate(key, predicate=None):
+        """Percentage over items the judge actually scored that satisfy predicate.
+
+        predicate: optional callable(result) -> bool that restricts the denominator.
+        Items excluded by predicate are not counted as unscored — they are structurally
+        outside the metric's scope (e.g. refusals are outside faithfulness' scope).
+        Items included by predicate but with key=None are genuinely unscored judge calls.
+        """
+        pool = results if predicate is None else [r for r in results if predicate(r)]
+        pool_n = len(pool)
+        scored = [r[key] for r in pool if r[key] is not None]
+        unscored = pool_n - len(scored)
         pct = (sum(scored) / len(scored)) * 100 if scored else None
         return pct, len(scored), sum(scored), unscored
+
+    is_affirmative = lambda r: not r.get("refused") and not r.get("generation_failed")
+    is_refusal_row = lambda r: r.get("refused") and not r.get("generation_failed")
 
     hits = sum(r["retrieval_hit"] for r in results)
     hit_rate = (hits / n) * 100
     acc_rate, acc_n, acc_pass, acc_unscored = rate("accuracy")
-    faith_rate, faith_n, faith_pass, faith_unscored = rate("faithfulness")
+    # faithfulness is defined only over affirmative answers — refusals are excluded by
+    # construction, not treated as missing judge calls.
+    faith_rate, faith_n, faith_pass, faith_unscored = rate("faithfulness", predicate=is_affirmative)
     halluc_rate = None if faith_rate is None else 100.0 - faith_rate
-    refusals = sum(1 for r in results if r.get("refused"))
-    gen_failures = sum(1 for r in results if r.get("generation_failed"))
 
     def fmt(pct):
         return "  n/a" if pct is None else f"{pct:5.1f}%"
@@ -433,16 +452,16 @@ def main():
     print("=" * 70)
     print(f"  Retrieval Hit Rate:  {hit_rate:5.1f}% ({hits}/{n})")
     print(f"  Answer Accuracy:     {fmt(acc_rate)} ({acc_pass}/{acc_n} scored)")
-    print(f"  Faithfulness Score:  {fmt(faith_rate)} ({faith_pass}/{faith_n} scored)")
-    print(f"  Hallucination Rate:  {fmt(halluc_rate)}")
-    print(f"  Explicit refusals:   {refusals}/{n} (scored as accuracy 0; refusal appropriateness judged)")
+    print(f"  Faithfulness Score:  {fmt(faith_rate)} ({faith_pass}/{faith_n} scored, affirmative answers only)")
+    print(f"  Hallucination Rate:  {fmt(halluc_rate)}  (1 - faithfulness over affirmative answers)")
+    print(f"  Explicit refusals:   {refusals}/{n} (scored as accuracy 0; refusal appropriateness judged separately)")
     if refusals > 0:
-        ref_rate, ref_n, ref_pass, ref_unscored = rate("refusal_appropriate")
+        ref_rate, ref_n, ref_pass, ref_unscored = rate("refusal_appropriate", predicate=is_refusal_row)
         print(f"  Refusal Appropriate: {fmt(ref_rate)} ({ref_pass}/{ref_n} scored)")
     else:
-        ref_rate, ref_n = None, 0
+        ref_rate, ref_n, ref_unscored = None, 0, 0
     print(f"  Generations failed:  {gen_failures}/{n} (not judged, excluded from rates)")
-    print(f"  Judge calls unscored: accuracy {acc_unscored}/{n} | faithfulness {faith_unscored}/{n}")
+    print(f"  Judge calls unscored: accuracy {acc_unscored}/{n} | faithfulness {faith_unscored}/{n_affirmative}")
     if acc_unscored or faith_unscored:
         print("  WARNING: unscored calls are EXCLUDED from the rates above, not counted as passes.")
         print("  Check accuracy_reason/faithfulness_reason in the saved JSON for the cause; a daily")
@@ -471,6 +490,7 @@ def main():
                     "refusal_appropriate_scored_n": ref_n,
                     "accuracy_scored_n": acc_n,
                     "faithfulness_scored_n": faith_n,
+                    "faithfulness_denominator": n_affirmative,
                     "generation_failures": gen_failures,
                     "judge_unscored_accuracy": acc_unscored,
                     "judge_unscored_faithfulness": faith_unscored,
