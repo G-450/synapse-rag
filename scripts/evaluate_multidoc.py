@@ -46,27 +46,44 @@ from langchain_groq import ChatGroq
 from app.rag import SYSTEM_PROMPT, fan_out_retrieve, format_fan_out_context, get_llm
 
 
+# The judge is deliberately a different, larger model than the generator (GROQ_MODEL), so that it is
+# not grading its own output. Override with JUDGE_MODEL when the default is retired.
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", "openai/gpt-oss-120b")
+
+
 def get_judge_llm() -> ChatGroq:
     """Returns a deterministic LLM for evaluation."""
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         raise ValueError("GROQ_API_KEY environment variable is required.")
     return ChatGroq(
-        model="llama-3.1-8b-instant",
+        model=JUDGE_MODEL,
         api_key=api_key,
         temperature=0.0,
-        max_tokens=512,
+        # The gpt-oss judges spend part of their completion budget on reasoning tokens before they
+        # emit the JSON verdict. At 512 tokens a long context could consume the whole budget and
+        # return empty content, which the aggregation then had to discard; low reasoning effort plus
+        # a slightly larger ceiling keeps the verdict inside the budget and the token spend down.
+        max_tokens=768,
+        model_kwargs={"reasoning_effort": "low"},
     )
 
 
 def call_llm_with_retry(llm, messages, retries: int = 5) -> str:
-    """Invoke LLM with exponential backoff for rate limits."""
+    """Invoke LLM with exponential backoff for rate limits.
+
+    Every failure path returns a string starting with "Error:" so that parse_judge_json records an
+    unscored verdict with a readable cause. Returning a bare empty string here used to make an
+    exhausted rate-limit budget look like an empty model response.
+    """
+    last_err = "retries exhausted"
     for attempt in range(retries):
         try:
             res = llm.invoke(messages)
             return res.content if hasattr(res, "content") else str(res)
         except Exception as e:
-            err_str = str(e).lower()
+            last_err = str(e)
+            err_str = last_err.lower()
             if "429" in err_str or "rate limit" in err_str:
                 wait_sec = 3 * (attempt + 1)
                 time.sleep(wait_sec)
@@ -74,25 +91,40 @@ def call_llm_with_retry(llm, messages, retries: int = 5) -> str:
                 return f"Error: {e}"
             else:
                 time.sleep(1.5)
-    return ""
+    return f"Error: {last_err}"
 
 
 def parse_judge_json(content: str) -> dict:
-    """Safely extracts structured JSON from LLM judge responses."""
-    try:
-        cleaned = content.strip()
-        if "```json" in cleaned:
-            cleaned = cleaned.split("```json")[1].split("```")[0].strip()
-        elif "```" in cleaned:
-            cleaned = cleaned.split("```")[1].split("```")[0].strip()
+    """
+    Extracts a structured verdict from an LLM judge response.
 
-        match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-        if match:
-            return json.loads(match.group(0))
-        return json.loads(cleaned)
-    except Exception:
-        score = 1 if "1" in content and "0" not in content[:15] else 0
-        return {"score": score, "reason": content[:100]}
+    A failed or unparseable judge call returns score=None, which the aggregation below excludes
+    from the metrics and counts separately. It must never be coerced to a pass: silently scoring
+    transport errors as 1 is what invalidated the earlier runs of this benchmark.
+    """
+    if not content or content.startswith("Error:"):
+        return {"score": None, "reason": (content or "empty judge response")[:200]}
+
+    cleaned = content.strip()
+    if "```json" in cleaned:
+        cleaned = cleaned.split("```json")[1].split("```")[0].strip()
+    elif "```" in cleaned:
+        cleaned = cleaned.split("```")[1].split("```")[0].strip()
+
+    for candidate in (re.search(r"\{.*\}", cleaned, re.DOTALL), None):
+        try:
+            data = json.loads(candidate.group(0) if candidate else cleaned)
+            score = data.get("score")
+            if score in (0, 1, "0", "1"):
+                return {"score": int(score), "reason": str(data.get("reason", ""))[:300]}
+        except Exception:
+            continue
+
+    bare = re.fullmatch(r"\s*([01])\s*", cleaned)
+    if bare:
+        return {"score": int(bare.group(1)), "reason": "bare score, no JSON"}
+
+    return {"score": None, "reason": f"unparseable judge response: {cleaned[:160]}"}
 
 
 def evaluate_multidoc_query(
@@ -154,7 +186,7 @@ Respond strictly in valid JSON format:
 {{"score": 1, "reason": "Detailed 1-2 sentence explanation of synthesis"}} or {{"score": 0, "reason": "Detailed 1-2 sentence explanation of failure to synthesize"}}"""
     synth_resp = call_llm_with_retry(judge_llm, [HumanMessage(content=synth_prompt)])
     synth_data = parse_judge_json(synth_resp)
-    synthesis_score = 1 if int(synth_data.get("score", 0)) == 1 else 0
+    synthesis_score = synth_data["score"]
     synthesis_reason = synth_data.get("reason", "")
 
     # 5. Metric 3: Multi-Doc Faithfulness (LLM Judge)
@@ -179,7 +211,7 @@ Respond strictly in valid JSON format:
 {{"score": 1, "reason": "Detailed 1-2 sentence explanation of grounding"}} or {{"score": 0, "reason": "Detailed 1-2 sentence explanation of unsupported claims"}}"""
         faith_resp = call_llm_with_retry(judge_llm, [HumanMessage(content=faith_prompt)])
         faith_data = parse_judge_json(faith_resp)
-        faith_score = 1 if int(faith_data.get("score", 0)) == 1 else 0
+        faith_score = faith_data["score"]
         faith_reason = faith_data.get("reason", "")
 
     return {
@@ -189,12 +221,13 @@ Respond strictly in valid JSON format:
         "retrieved_documents": distinct_docs,
         "distinct_docs_count": len(distinct_docs),
         "generated_answer": answer,
+        "refused": is_refusal,
         "diversity_pass": diversity_pass,
         "synthesis_score": synthesis_score,
         "synthesis_reason": synthesis_reason,
         "faithfulness": faith_score,
         "faithfulness_reason": faith_reason,
-        "hallucination": 1 - faith_score,
+        "hallucination": None if faith_score is None else 1 - faith_score,
     }
 
 
@@ -230,8 +263,8 @@ def main():
         )
         results.append(res)
         d = f"{res['distinct_docs_count']} docs"
-        s = "Y" if res["synthesis_score"] else "N"
-        f = "Y" if res["faithfulness"] else "N"
+        s = {1: "Y", 0: "N", None: "?"}[res["synthesis_score"]]
+        f = {1: "Y", 0: "N", None: "?"}[res["faithfulness"]]
         print(f"[{i}/{len(benchmark)}] Query: {res['id']:<12} | Diversity: {d:<7} | Synth: {s} | Faith: {f}")
         time.sleep(1.5)
 
@@ -240,29 +273,53 @@ def main():
         print("No evaluations completed.")
         return
 
+    def rate(key):
+        """Percentage over the items the judge actually scored, plus the number it did not."""
+        scored = [r[key] for r in results if r[key] is not None]
+        pct = (sum(scored) / len(scored)) * 100 if scored else None
+        return pct, len(scored), sum(scored), n - len(scored)
+
     div_rate = (sum(r["diversity_pass"] for r in results) / n) * 100
-    synth_rate = (sum(r["synthesis_score"] for r in results) / n) * 100
-    faith_rate = (sum(r["faithfulness"] for r in results) / n) * 100
     avg_docs = sum(r["distinct_docs_count"] for r in results) / n
+    synth_rate, synth_n, synth_pass, synth_unscored = rate("synthesis_score")
+    faith_rate, faith_n, faith_pass, faith_unscored = rate("faithfulness")
+
+    def fmt(pct):
+        return "  n/a" if pct is None else f"{pct:5.1f}%"
 
     print("\n" + "=" * 70)
     print(f"  MULTI-DOCUMENT BENCHMARK RESULTS ({n} Queries)")
+    print(f"  Judge model: {JUDGE_MODEL}")
     print("=" * 70)
     print(f"  Multi-Doc Diversity Rate (>=2 docs): {div_rate:5.1f}% ({sum(r['diversity_pass'] for r in results)}/{n})")
     print(f"  Avg Distinct Documents Retrieved:    {avg_docs:5.2f} docs / query")
-    print(f"  Synthesis Accuracy Score:            {synth_rate:5.1f}% ({sum(r['synthesis_score'] for r in results)}/{n})")
-    print(f"  Attribution Faithfulness Score:      {faith_rate:5.1f}% ({sum(r['faithfulness'] for r in results)}/{n})")
+    print(f"  Synthesis Accuracy Score:            {fmt(synth_rate)} ({synth_pass}/{synth_n} scored)")
+    print(f"  Attribution Faithfulness Score:      {fmt(faith_rate)} ({faith_pass}/{faith_n} scored)")
+    print(f"  Judge calls unscored: synthesis {synth_unscored}/{n} | faithfulness {faith_unscored}/{n}")
+    if synth_unscored or faith_unscored:
+        print("  WARNING: unscored judge calls are EXCLUDED from the rates above, not counted as passes.")
     print("=" * 70)
 
     out_file = root_dir / "data" / "eval_multidoc_results.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(
             {
+                "config": {
+                    "judge_model": JUDGE_MODEL,
+                    "generator_model": os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"),
+                    "n": n,
+                    "top_docs": args.top_docs,
+                    "chunks_per_doc": args.chunks_per_doc,
+                },
                 "metrics": {
                     "diversity_rate": round(div_rate, 2),
                     "avg_docs": round(avg_docs, 2),
-                    "synthesis_rate": round(synth_rate, 2),
-                    "faithfulness": round(faith_rate, 2),
+                    "synthesis_rate": None if synth_rate is None else round(synth_rate, 2),
+                    "faithfulness": None if faith_rate is None else round(faith_rate, 2),
+                    "synthesis_scored_n": synth_n,
+                    "faithfulness_scored_n": faith_n,
+                    "judge_unscored_synthesis": synth_unscored,
+                    "judge_unscored_faithfulness": faith_unscored,
                 },
                 "results": results,
             },
